@@ -21,7 +21,7 @@ smallText, midText, desc, product, buttonText, image
           <h3>{midText}</h3>
           <p>{desc}</p>
           <Link href={`/product/${product}`}>
-            <button type="button">{buttonText}</button>
+            <button type="button" className="btn">{buttonText}</button>
           </Link>
         </div>
 
