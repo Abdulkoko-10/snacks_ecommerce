@@ -10,7 +10,7 @@ import {
 } from "react-icons/ai";
 
 import { client, urlFor } from "../../lib/client";
-import Image from 'next/image'; // Ensure Image is imported
+//import Image from 'next/image'; // Ensure Image is imported
 import Product from "../../components/Product";
 import { useStateContext } from "../../context/StateContext";
 import StarRating from '../../components/StarRating'; // Import StarRating
@@ -136,7 +136,7 @@ const ProductDetails = ({ product, products, reviews: initialReviews }) => {
         <div>
           <div className="image-container">
             {image && image[index] && ( // Check if image and image[index] exist
-              <Image
+              <img
                 src={urlFor(image[index]).url()}
                 alt={name}
                 width={400} // From CSS .product-detail-image
@@ -149,7 +149,7 @@ const ProductDetails = ({ product, products, reviews: initialReviews }) => {
           <div className="small-images-container">
             {image?.map((item, i) => (
               item && ( // Ensure item exists before rendering Image
-                <Image
+                <img
                   key={i}
                   src={urlFor(item).url()}
                   alt={`${name} - view ${i + 1}`}
