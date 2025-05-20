@@ -10,7 +10,7 @@ slug, price } }) => {
     <div>
       <Link href={`/product/${slug.current}`}>
         <div className="product-card">
-          <Img
+          <img
             src={urlFor(image && image[0]).url()} // Add .url()
             alt={name} // Already using name for alt
             width={250}
