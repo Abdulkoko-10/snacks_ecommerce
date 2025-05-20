@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Image from "next/image";
 
 import {
   AiOutlineMinus,
@@ -36,28 +35,24 @@ const ProductDetails = ({ product, products }) => {
       <div className="product-detail-container">
         <div>
           <div className="image-container">
-            {image && image[index] && (
-              <Image
-                src={urlFor(image && image[index])}
-                width={400}
-                height={400}
-                className="product-detail-image"
-                alt={name}
-              />
-            )}
+            <img
+              src={urlFor(image && image[index])}
+              //  width={250}
+              //  height={250}
+              className="product-detail-image"
+              alt=""
+            />
           </div>
           <div className="small-images-container">
             {image?.map((item, i) => (
-              <Image
+              <img
                 key={i}
                 src={urlFor(item)}
-                width={70}
-                height={70}
                 className={
                   i === index ? "small-image selected-image" : "small-image"
                 }
                 onMouseEnter={() => setIndex(i)}
-                alt={`${name} - thumbnail ${i + 1}`}
+                alt=""
               />
             ))}
           </div>

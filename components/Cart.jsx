@@ -1,5 +1,4 @@
 import React, { useRef } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import {
   AiOutlineMinus,
@@ -78,11 +77,8 @@ const Cart = () => {
           {cartItems.length >= 1 &&
             cartItems.map((item) => (
               <div className="product" key={item._id}>
-                <Image
+                <img
                   src={urlFor(item.image[0])}
-                  alt={item.name}
-                  width={100}
-                  height={100}
                   className="cart-product-image"
                 />
                 <div className="item-desc">
