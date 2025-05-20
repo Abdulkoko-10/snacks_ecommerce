@@ -14,7 +14,7 @@ const Success = () => {
     setTotalPrice(0);
     setTotalQuantities(0);
     runRealistic();
-  }, [setCartItems, setTotalPrice, setTotalQuantities, runRealistic]);
+  }, [setCartItems, setTotalPrice, setTotalQuantities]);
 
   return (
     <div className="success-wrapper">

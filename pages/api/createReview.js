@@ -1,4 +1,4 @@
-import { client } from '../../lib/client';
+import { client as baseClient } from '../../lib/client'; // Import as baseClient
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
@@ -28,12 +28,20 @@ export default async function handler(req, res) {
         approved: false, // Reviews default to not approved
       };
 
-      await client.create(doc);
+      // Create a new client instance configured for writes
+      const writeClient = baseClient.withConfig({
+        token: process.env.NEXT_PUBLIC_SANITY_TOKEN,
+        useCdn: false, // Ensure CDN is false for writes
+        // projectId and dataset are inherited from baseClient
+      });
+
+      await writeClient.create(doc);
       res.status(200).json({ message: 'Review submitted successfully and is awaiting approval!' });
     } catch (error) {
       console.error('Error creating review:', error);
       // It's good practice to not expose detailed Sanity client errors to the user
       // but log them server-side for debugging.
+      // Also, ensure the token has write access to the dataset in Sanity manage.
       res.status(500).json({ message: 'Error submitting review' });
     }
   } else {
