@@ -1,9 +1,9 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { StateContext } from '../context/StateContext';
-import Navbar from './Navbar'; // Assuming Navbar.jsx is in the same directory or correctly pathed
+import Navbar from './Navbar';
 
-// Mock Cart component as it's rendered by Navbar but not the focus of this test
+// Mock Cart component
 jest.mock('./Cart', () => {
   const CartMock = () => <div data-testid="cart-mock">Cart Mock</div>;
   CartMock.displayName = 'Cart';
@@ -17,57 +17,75 @@ jest.mock('next/link', () => {
   return LinkMock;
 });
 
-// Helper function to render Navbar with StateContext
-const renderNavbarWithContext = (contextValues = {}) => {
-  // Default context values that might be needed by Navbar
-  const defaults = {
-    showCart: false,
-    setShowCart: jest.fn(),
-    totalQuantities: 0,
-    theme: 'light', // Default to light for testing
-    toggleTheme: jest.fn(),
-    ...contextValues, // Override defaults with provided values
-  };
+const mockStateContextValues = {
+  showCart: false,
+  setShowCart: jest.fn(),
+  totalQuantities: 0,
+  // Theme related props are not needed from context as Navbar manages its own theme state
+};
+
+const renderNavbar = (contextValues = mockStateContextValues) => {
   return render(
-    <StateContext.Provider value={defaults}>
+    <StateContext.Provider value={contextValues}>
       <Navbar />
     </StateContext.Provider>
   );
 };
 
-describe('Navbar - Dark Mode Toggle', () => {
+describe('Navbar - Theme Toggle Functionality', () => {
   beforeEach(() => {
-    // Clear localStorage and reset data-theme before each test
+    // Clear localStorage
     localStorage.clear();
-    document.documentElement.removeAttribute('data-theme');
-    // Reset window.matchMedia mock for each test if necessary
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: jest.fn().mockImplementation(query => ({
-        matches: false, // Default to light mode preference
-        media: query,
-        onchange: null,
-        addListener: jest.fn(), 
-        removeListener: jest.fn(), 
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-      })),
+    // Reset class list on documentElement
+    document.documentElement.className = '';
+    // Reset matchMedia mock to default (prefers light)
+    window.matchMedia.mockImplementation(query => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: jest.fn(),
+      removeListener: jest.fn(),
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+      dispatchEvent: jest.fn(),
+    }));
+  });
+
+  test('renders without crashing', () => {
+    renderNavbar();
+    expect(screen.getByText('Snacks')).toBeInTheDocument(); // Logo text
+    expect(screen.getByRole('checkbox')).toBeInTheDocument(); // Theme toggle switch
+    expect(screen.getByRole('button', { name: /cart-icon/i })).toBeInTheDocument(); // Cart icon button
+  });
+
+  describe('Initial Render', () => {
+    test('initializes to light mode by default (no localStorage, no system preference)', () => {
+      renderNavbar();
+      expect(document.documentElement.classList.contains('dark-mode')).toBe(false);
+      expect(localStorage.getItem('theme')).toBe('light'); // Navbar sets this default
+      const toggleSwitch = screen.getByRole('checkbox');
+      expect(toggleSwitch.checked).toBe(false);
     });
-  });
 
-  test('initializes with light theme by default if no system preference or localStorage', () => {
-    renderNavbarWithContext();
-    // BsMoon icon is for light theme, to switch to dark
-    expect(screen.getByRole('button', { name: /moon/i })).toBeInTheDocument();
-    expect(document.documentElement.getAttribute('data-theme')).toBe('light');
-  });
+    test('initializes to dark mode if localStorage has "dark" theme saved', () => {
+      localStorage.setItem('theme', 'dark');
+      renderNavbar();
+      expect(document.documentElement.classList.contains('dark-mode')).toBe(true);
+      const toggleSwitch = screen.getByRole('checkbox');
+      expect(toggleSwitch.checked).toBe(true);
+    });
 
-  test('initializes with dark theme if system prefers dark and no localStorage', () => {
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: jest.fn().mockImplementation(query => ({
-        matches: query === '(prefers-color-scheme: dark)', // System prefers dark
+    test('initializes to light mode if localStorage has "light" theme saved', () => {
+      localStorage.setItem('theme', 'light');
+      renderNavbar();
+      expect(document.documentElement.classList.contains('dark-mode')).toBe(false);
+      const toggleSwitch = screen.getByRole('checkbox');
+      expect(toggleSwitch.checked).toBe(false);
+    });
+
+    test('initializes to dark mode if system preference is "dark" and no localStorage', () => {
+      window.matchMedia.mockImplementation(query => ({
+        matches: true, // System prefers dark
         media: query,
         onchange: null,
         addListener: jest.fn(),
@@ -75,101 +93,60 @@ describe('Navbar - Dark Mode Toggle', () => {
         addEventListener: jest.fn(),
         removeEventListener: jest.fn(),
         dispatchEvent: jest.fn(),
-      })),
+      }));
+      renderNavbar();
+      expect(document.documentElement.classList.contains('dark-mode')).toBe(true);
+      expect(localStorage.getItem('theme')).toBe('dark'); // Navbar sets this based on system pref
+      const toggleSwitch = screen.getByRole('checkbox');
+      expect(toggleSwitch.checked).toBe(true);
     });
-    // We need to re-trigger the useEffect in StateContext that sets the initial theme.
-    // This is tricky as StateContext is outside this test's direct render.
-    // For this test, we'll simulate it by providing the theme directly based on this logic.
-    renderNavbarWithContext({ theme: 'dark' }); // Simulate that StateContext picked up dark
-    document.documentElement.setAttribute('data-theme', 'dark'); // Simulate StateContext's action
-
-    // BsSun icon is for dark theme, to switch to light
-    expect(screen.getByRole('button', { name: /sun/i })).toBeInTheDocument();
-    expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
-  });
-  
-  test('initializes with theme from localStorage if present', () => {
-    localStorage.setItem('theme', 'dark');
-    // Similar to above, simulating StateContext's initial load
-    renderNavbarWithContext({ theme: 'dark' });
-    document.documentElement.setAttribute('data-theme', 'dark');
-
-    expect(screen.getByRole('button', { name: /sun/i })).toBeInTheDocument();
-    expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
   });
 
-  test('toggles theme from light to dark and updates data-theme attribute and icon', () => {
-    const toggleThemeMock = jest.fn();
-    let currentTheme = 'light';
-    
-    // Custom mock for toggleTheme that updates the 'theme' prop for Navbar
-    const customToggleTheme = () => {
-      currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', currentTheme); // Simulate StateContext
-      // Re-render or update props would be needed for icon change in a real scenario
-      // For testing, we can check the mock was called and assume StateContext handles the rest
-      toggleThemeMock(); // Call the original mock if needed for other checks
-    };
+  describe('Theme Toggling', () => {
+    test('switches from light to dark mode on toggle', () => {
+      renderNavbar(); // Initial is light mode by default setup in beforeEach/default mocks
 
-    const { rerender } = render(
-      <StateContext.Provider value={{ showCart: false, setShowCart: jest.fn(), totalQuantities: 0, theme: currentTheme, toggleTheme: customToggleTheme }}>
-        <Navbar />
-      </StateContext.Provider>
-    );
+      const toggleSwitch = screen.getByRole('checkbox');
+      expect(toggleSwitch.checked).toBe(false); // Starts unchecked (light)
+      expect(document.documentElement.classList.contains('dark-mode')).toBe(false);
 
-    expect(screen.getByRole('button', { name: /moon/i })).toBeInTheDocument(); // Initial: Light theme, Moon icon shown
-    expect(document.documentElement.getAttribute('data-theme')).toBe(currentTheme);
+      fireEvent.click(toggleSwitch);
 
-    const themeToggleButton = screen.getByRole('button', { name: /moon/i });
-    fireEvent.click(themeToggleButton);
-    
-    // After click, theme becomes dark
-    // Update context for re-render
-    rerender(
-      <StateContext.Provider value={{ showCart: false, setShowCart: jest.fn(), totalQuantities: 0, theme: currentTheme, toggleTheme: customToggleTheme }}>
-        <Navbar />
-      </StateContext.Provider>
-    );
+      expect(toggleSwitch.checked).toBe(true); // Now checked (dark)
+      expect(document.documentElement.classList.contains('dark-mode')).toBe(true);
+      expect(localStorage.getItem('theme')).toBe('dark');
+    });
 
-    expect(screen.getByRole('button', { name: /sun/i })).toBeInTheDocument(); // Dark theme, Sun icon shown
-    expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
-    expect(localStorage.getItem('theme')).toBe('dark'); // StateContext should handle this
-  });
+    test('switches from dark to light mode on toggle', () => {
+      localStorage.setItem('theme', 'dark'); // Start in dark mode
+      renderNavbar();
 
-  test('toggles theme from dark to light and updates data-theme attribute and icon', () => {
-    // Set initial theme to dark in localStorage and context
-    localStorage.setItem('theme', 'dark');
-    document.documentElement.setAttribute('data-theme', 'dark');
-    let currentTheme = 'dark';
+      const toggleSwitch = screen.getByRole('checkbox');
+      expect(toggleSwitch.checked).toBe(true); // Starts checked (dark)
+      expect(document.documentElement.classList.contains('dark-mode')).toBe(true);
+      expect(localStorage.getItem('theme')).toBe('dark');
 
-    const toggleThemeMock = jest.fn();
-     const customToggleTheme = () => {
-      currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', currentTheme);
-      localStorage.setItem('theme', currentTheme); // Simulate StateContext
-      toggleThemeMock();
-    };
-    
-    const { rerender } = render(
-      <StateContext.Provider value={{ showCart: false, setShowCart: jest.fn(), totalQuantities: 0, theme: currentTheme, toggleTheme: customToggleTheme }}>
-        <Navbar />
-      </StateContext.Provider>
-    );
 
-    expect(screen.getByRole('button', { name: /sun/i })).toBeInTheDocument(); // Initial: Dark theme, Sun icon shown
-    expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
+      fireEvent.click(toggleSwitch);
 
-    const themeToggleButton = screen.getByRole('button', { name: /sun/i });
-    fireEvent.click(themeToggleButton);
+      expect(toggleSwitch.checked).toBe(false); // Now unchecked (light)
+      expect(document.documentElement.classList.contains('dark-mode')).toBe(false);
+      expect(localStorage.getItem('theme')).toBe('light');
+    });
 
-    rerender(
-      <StateContext.Provider value={{ showCart: false, setShowCart: jest.fn(), totalQuantities: 0, theme: currentTheme, toggleTheme: customToggleTheme }}>
-        <Navbar />
-      </StateContext.Provider>
-    );
-    
-    expect(screen.getByRole('button', { name: /moon/i })).toBeInTheDocument(); // Light theme, Moon icon shown
-    expect(document.documentElement.getAttribute('data-theme')).toBe('light');
-    expect(localStorage.getItem('theme')).toBe('light');
+    test('toggle switch state reflects theme changes accurately', () => {
+      renderNavbar();
+      const toggleSwitch = screen.getByRole('checkbox');
+
+      // Light to Dark
+      fireEvent.click(toggleSwitch);
+      expect(toggleSwitch.checked).toBe(true);
+      expect(localStorage.getItem('theme')).toBe('dark');
+
+      // Dark to Light
+      fireEvent.click(toggleSwitch);
+      expect(toggleSwitch.checked).toBe(false);
+      expect(localStorage.getItem('theme')).toBe('light');
+    });
   });
 });
