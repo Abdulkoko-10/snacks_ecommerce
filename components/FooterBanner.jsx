@@ -1,6 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
-import Image from 'next/image'; // Import next/image
+//import Image from 'next/image'; // Import next/image
 
 import { urlFor } from '../lib/client'
 
@@ -31,7 +31,7 @@ smallText, midText, desc, product, buttonText, image
           className="footer-banner-image"
         /> */}
         <div className="footer-banner-image-container"> {/* Added a container for positioning context if needed */}
-          <Image
+          <img
             src={urlFor(image).url()}
             alt={midText || 'Footer banner promotion'}
             width={450} // From CSS
