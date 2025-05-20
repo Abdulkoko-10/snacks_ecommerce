@@ -11,7 +11,11 @@ jest.mock('./Cart', () => {
 });
 
 // Mock next/link
-jest.mock('next/link', () => ({ children, href }) => <a href={href}>{children}</a>);
+jest.mock('next/link', () => {
+  const LinkMock = ({ children, href }) => <a href={href}>{children}</a>;
+  LinkMock.displayName = 'Link';
+  return LinkMock;
+});
 
 // Helper function to render Navbar with StateContext
 const renderNavbarWithContext = (contextValues = {}) => {
