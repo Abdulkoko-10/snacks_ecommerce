@@ -1,26 +1,26 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import ProductDetails, { getStaticPaths, getStaticProps } from './[slug]'; // Adjust path if needed
-import { StateContext } from '../../context/StateContext'; // Adjust path
-import { client } from '../../lib/client'; // Adjust path
+import ProductDetails, { getStaticPaths, getStaticProps } from '../../../pages/product/[slug]'; // Corrected path
+import { StateContext } from '../../../context/StateContext'; // Corrected path
+import { client } from '../../../lib/client'; // Corrected path
 
 // Mock child components to simplify testing of ProductDetails page logic
-jest.mock('../../components/Product', () => {
+jest.mock('../../../components/Product', () => { // Corrected path
   const MockProduct = () => <div data-testid="product-component-mock" />;
-  MockProduct.displayName = 'Product'; // Assigning displayName
+  MockProduct.displayName = 'Product'; 
   return MockProduct;
 });
-jest.mock('../../components/StarRating', () => jest.fn((props) => (
+jest.mock('../../../components/StarRating', () => jest.fn((props) => ( // Corrected path
   <div data-testid="star-rating-mock">Aggregate Rating: {props.rating} ({props.starSize}px)</div>
 )));
-jest.mock('../../components/ReviewList', () => jest.fn(({ reviews }) => (
+jest.mock('../../../components/ReviewList', () => jest.fn(({ reviews }) => ( // Corrected path
   <div data-testid="review-list-mock">
     {reviews.length} review(s) displayed
     {reviews.map(r => <p key={r._id}>{r.comment}</p>)}
   </div>
 )));
-jest.mock('../../components/ReviewForm', () => jest.fn(({ productId, onSubmitSuccess }) => (
+jest.mock('../../../components/ReviewForm', () => jest.fn(({ productId, onSubmitSuccess }) => ( // Corrected path
   <form data-testid="review-form-mock" onSubmit={() => onSubmitSuccess()}>
     <input name="productId" type="hidden" value={productId} />
     <button type="submit">Submit Mock Review</button>
@@ -30,16 +30,16 @@ jest.mock('../../components/ReviewForm', () => jest.fn(({ productId, onSubmitSuc
 // Mock next/router
 jest.mock('next/router', () => ({
   useRouter: () => ({
-    asPath: '/product/test-product-slug', // Example path
+    asPath: '/product/test-product-slug', 
   }),
 }));
 
 // Mock Sanity client
-jest.mock('../../lib/client', () => ({
+jest.mock('../../../lib/client', () => ({ // Corrected path
   client: {
     fetch: jest.fn(),
   },
-  urlFor: jest.fn((source) => ({ // Basic mock for urlFor
+  urlFor: jest.fn((source) => ({ 
     url: () => `https://cdn.sanity.io/images/projectid/dataset/${source?.asset?._ref || 'test-image.jpg'}`,
   })),
 }));
