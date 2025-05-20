@@ -1,6 +1,5 @@
 import React from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 
 import { urlFor } from '../lib/client'
 
@@ -26,12 +25,8 @@ smallText, midText, desc, product, buttonText, image
           </Link>
         </div>
 
-        <Image
+        <img 
           src={urlFor(image)}
-          alt="Footer Banner"
-          width={500}
-          height={300}
-          layout="responsive"
           className="footer-banner-image"
         />
       </div>

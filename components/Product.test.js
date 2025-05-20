@@ -4,11 +4,7 @@ import Product from './Product'; // Assuming Product.jsx is in the same director
 import { StateContext } from '../context/StateContext'; // Product might not use it, but good for consistency if other components do
 
 // Mock next/link
-jest.mock('next/link', () => {
-  const LinkMock = ({ children, href }) => <a href={href}>{children}</a>;
-  LinkMock.displayName = 'Link';
-  return LinkMock;
-});
+jest.mock('next/link', () => ({ children, href }) => <a href={href}>{children}</a>);
 
 // Mock urlFor from lib/client as it's used in Product component
 jest.mock('../lib/client', () => ({

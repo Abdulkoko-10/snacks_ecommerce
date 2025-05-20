@@ -4,18 +4,10 @@ import { StateContext } from '../context/StateContext';
 import Navbar from './Navbar'; // Assuming Navbar.jsx is in the same directory or correctly pathed
 
 // Mock Cart component as it's rendered by Navbar but not the focus of this test
-jest.mock('./Cart', () => {
-  const CartMock = () => <div data-testid="cart-mock">Cart Mock</div>;
-  CartMock.displayName = 'Cart';
-  return CartMock;
-});
+jest.mock('./Cart', () => () => <div data-testid="cart-mock">Cart Mock</div>);
 
 // Mock next/link
-jest.mock('next/link', () => {
-  const LinkMock = ({ children, href }) => <a href={href}>{children}</a>;
-  LinkMock.displayName = 'Link';
-  return LinkMock;
-});
+jest.mock('next/link', () => ({ children, href }) => <a href={href}>{children}</a>);
 
 // Helper function to render Navbar with StateContext
 const renderNavbarWithContext = (contextValues = {}) => {
