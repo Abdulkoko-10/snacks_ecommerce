@@ -10,6 +10,7 @@ import {
 } from "react-icons/ai";
 
 import { client, urlFor } from "../../lib/client";
+import Image from 'next/image'; // Ensure Image is imported
 import Product from "../../components/Product";
 import { useStateContext } from "../../context/StateContext";
 import StarRating from '../../components/StarRating'; // Import StarRating
@@ -66,10 +67,6 @@ const ProductDetails = ({ product, products, reviews: initialReviews }) => {
     setCurrentReviews(updatedReviews);
     // Could also add a "Thank you for your review, it's awaiting approval" message.
   };
-
-
-  };
-
 
   // Construct JSON-LD data
   const siteBaseUrl = typeof window !== 'undefined' 
@@ -138,23 +135,32 @@ const ProductDetails = ({ product, products, reviews: initialReviews }) => {
       <div className="product-detail-container">
         <div>
           <div className="image-container">
-            <img
-              src={urlFor(image && image[index])}
-              className="product-detail-image"
-              alt={name}
-            />
+            {image && image[index] && ( // Check if image and image[index] exist
+              <Image
+                src={urlFor(image[index]).url()}
+                alt={name}
+                width={400} // From CSS .product-detail-image
+                height={400} // From CSS .product-detail-image
+                className="product-detail-image"
+                priority // Main product image, likely LCP
+              />
+            )}
           </div>
           <div className="small-images-container">
             {image?.map((item, i) => (
-              <img
-                key={i}
-                src={urlFor(item)}
-                className={
-                  i === index ? "small-image selected-image" : "small-image"
-                }
-                onMouseEnter={() => setIndex(i)}
-                alt={`${name} - view ${i + 1}`}
-              />
+              item && ( // Ensure item exists before rendering Image
+                <Image
+                  key={i}
+                  src={urlFor(item).url()}
+                  alt={`${name} - view ${i + 1}`}
+                  width={70} // From CSS .small-image
+                  height={70} // From CSS .small-image
+                  className={
+                    i === index ? "small-image selected-image" : "small-image"
+                  }
+                  onMouseEnter={() => setIndex(i)}
+                />
+              )
             ))}
           </div>
         </div>

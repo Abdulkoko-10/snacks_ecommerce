@@ -1,5 +1,7 @@
 import React from 'react';
+import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image'; // Import next/image
 
 import { urlFor } from '../lib/client';
 
@@ -9,8 +11,9 @@ slug, price } }) => {
     <div>
       <Link href={`/product/${slug.current}`}>
         <div className="product-card">
-          <img
-            src={urlFor(image && image[0])}
+          <Image
+            src={urlFor(image && image[0]).url()} // Add .url()
+            alt={name} // Already using name for alt
             width={250}
             height={250}
             className="product-image"

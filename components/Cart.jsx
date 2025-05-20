@@ -8,6 +8,7 @@ import {
 } from "react-icons/ai";
 import { TiDeleteOutline } from "react-icons/ti";
 import toast from "react-hot-toast";
+import Image from 'next/image'; // Import next/image
 
 import { useStateContext } from "../context/StateContext";
 import { urlFor } from "../lib/client";
@@ -77,9 +78,18 @@ const Cart = () => {
           {cartItems.length >= 1 &&
             cartItems.map((item) => (
               <div className="product" key={item._id}>
-                <img
+                {/* <img
                   src={urlFor(item.image[0])}
                   className="cart-product-image"
+                /> */}
+                <Image
+                  src={urlFor(item.image[0]).url()}
+                  alt={item.name}
+                  width={180} // from CSS .cart-product-image
+                  height={150} // from CSS .cart-product-image
+                  className="cart-product-image"
+                  // layout="responsive" // This might require parent to have defined aspect ratio or size
+                  // objectFit="cover" // If using layout="responsive" or "fill"
                 />
                 <div className="item-desc">
                   <div className="flex top">

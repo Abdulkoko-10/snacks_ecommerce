@@ -6,7 +6,11 @@ import { StateContext } from '../../context/StateContext'; // Adjust path
 import { client } from '../../lib/client'; // Adjust path
 
 // Mock child components to simplify testing of ProductDetails page logic
-jest.mock('../../components/Product', () => () => <div data-testid="product-component-mock" />);
+jest.mock('../../components/Product', () => {
+  const MockProduct = () => <div data-testid="product-component-mock" />;
+  MockProduct.displayName = 'Product'; // Assigning displayName
+  return MockProduct;
+});
 jest.mock('../../components/StarRating', () => jest.fn((props) => (
   <div data-testid="star-rating-mock">Aggregate Rating: {props.rating} ({props.starSize}px)</div>
 )));
