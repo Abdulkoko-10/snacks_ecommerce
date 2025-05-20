@@ -8,7 +8,7 @@ import {
 } from "react-icons/ai";
 import { TiDeleteOutline } from "react-icons/ti";
 import toast from "react-hot-toast";
-import Image from 'next/image'; // Import next/image
+//import Image from 'next/image'; // Import next/image
 
 import { useStateContext } from "../context/StateContext";
 import { urlFor } from "../lib/client";
@@ -82,7 +82,7 @@ const Cart = () => {
                   src={urlFor(item.image[0])}
                   className="cart-product-image"
                 /> */}
-                <Image
+                <img
                   src={urlFor(item.image[0]).url()}
                   alt={item.name}
                   width={180} // from CSS .cart-product-image
