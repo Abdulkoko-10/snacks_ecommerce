@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Quicksand:wght@500;700&display=swap');
+
 :root {
   --primary-color: #f02d34;
   --secondary-color: #324d67;
@@ -13,6 +15,8 @@
   --glass-border-dark: rgba(60, 60, 60, 0.28);
   --glass-box-shadow-light: rgba(31, 38, 135, 0.37);
   --glass-box-shadow-dark: rgba(0, 0, 0, 0.37);
+  --product-card-hover-shadow-light: rgba(0, 0, 0, 0.1);
+  --product-card-hover-shadow-dark: rgba(255, 255, 255, 0.15);
 
   /* Default to light mode */
   --text-color: var(--text-color-light);
@@ -21,6 +25,7 @@
   --glass-background-color: var(--glass-background-light);
   --glass-border-color: var(--glass-border-light);
   --glass-box-shadow-color: var(--glass-box-shadow-light);
+  --product-card-hover-shadow: var(--product-card-hover-shadow-light);
 }
 
 .dark-mode {
@@ -30,12 +35,15 @@
   --glass-background-color: var(--glass-background-dark);
   --glass-border-color: var(--glass-border-dark);
   --glass-box-shadow-color: var(--glass-box-shadow-dark);
+  --product-card-hover-shadow: var(--product-card-hover-shadow-dark);
 }
 
 /* Apply theme to body by default, can be toggled */
 body {
   background-color: var(--primary-background-color);
   color: var(--text-color);
+  font-family: 'Open Sans', sans-serif;
+  line-height: 1.6;
 }
 
 html,
@@ -43,10 +51,29 @@ body,
 * {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: 'Open Sans', sans-serif; /* Base font for all elements */
   box-sizing: border-box;
 }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Quicksand', sans-serif; /* Headings font */
+  color: var(--text-color); /* Ensure headings use theme color */
+  font-weight: 700; /* Default bold for headings */
+  line-height: 1.3; /* Default line height for headings */
+}
+
+h1 { font-size: 2.8rem; margin-bottom: 1.5rem; line-height: 1.2; }
+h2 { font-size: 2.2rem; margin-bottom: 1.25rem; line-height: 1.3; }
+h3 { font-size: 1.8rem; margin-bottom: 1rem; line-height: 1.4; }
+h4 { font-size: 1.5rem; font-weight: 500; margin-bottom: 0.75rem; line-height: 1.4; }
+h5 { font-size: 1.25rem; font-weight: 500; margin-bottom: 0.5rem; line-height: 1.5; }
+h6 { font-size: 1rem; font-weight: 500; margin-bottom: 0.5rem; line-height: 1.5; }
+
+p {
+  margin-bottom: 1rem; /* Default spacing for paragraphs */
+  line-height: 1.6; /* Ensure paragraphs also have good line height */
+}
+
 ::-webkit-scrollbar {
   width: 0px;
 }
@@ -62,16 +89,16 @@ a {
   width: 100%;
 }
 .layout {
-  padding: 10px;
-  /* background-color might be needed here if body doesn't cover everything */
+  padding: 20px;
 }
 
 .navbar-container {
   display: flex;
   justify-content: space-between;
-  margin: 6px 18px;
+  align-items: center;
+  margin: 10px 25px;
+  padding: 10px 0;
   position: relative;
-  /* background: var(--primary-background-color); Ensure navbar background adapts */
 }
 
 .nav-items-right {
@@ -132,8 +159,9 @@ input:checked + .slider:before {
 /* End Theme Toggle Switch Styles */
 
 .marquee-text {
-  font-size: 29px;
-  font-weight: 600;
+  font-family: 'Quicksand', sans-serif; /* Use heading font */
+  font-size: 2rem; /* Adjusted size */
+  font-weight: 700;
   margin: 60px 0px;
   color: var(--primary-color);
 }
@@ -168,8 +196,10 @@ span.text-red {
   margin-left: 6px;
 }
 .logo {
-  color: var(--secondary-color); /* Was gray */
-  font-size: 18px;
+  font-family: 'Quicksand', sans-serif;
+  color: var(--secondary-color);
+  font-size: 24px;
+  font-weight: 700;
 }
 .cart-icon {
   font-size: 25px;
@@ -186,8 +216,8 @@ span.text-red {
 .cart-item-qty {
   position: absolute;
   right: -8px;
-  font-size: 12px;
-  color: var(--background-light); /* Was #eee */
+  font-size: 0.75rem; /* Adjusted for Open Sans */
+  color: var(--background-light);
   background-color: var(--primary-color);
   width: 18px;
   height: 18px;
@@ -199,75 +229,146 @@ span.text-red {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 15px;
-  margin-top: 20px;
+  gap: 25px;
+  margin-top: 30px;
   width: 100%;
 }
 .product-card {
   cursor: pointer;
   transform: scale(1, 1);
   transition: transform 0.5s ease;
-  color: var(--secondary-color); /* Was #324d67 */
-  background-color: var(--primary-background-color); /* Add background for cards */
-  border: 1px solid var(--glass-border-color); /* Optional: border for cards */
-  border-radius: 15px; /* Match product-image */
+  color: var(--secondary-color);
+  background-color: var(--primary-background-color);
+  border: 1px solid var(--glass-border-color);
+  border-radius: 15px;
+  padding: 20px; 
+  position: relative; /* For positioning hover buttons */
+  overflow: hidden; /* To contain hover buttons if they animate from outside */
 }
 .product-card:hover {
-  transform: scale(1.1, 1.1);
+  transform: scale(1.03); /* Subtler zoom */
+  box-shadow: 0 10px 20px var(--product-card-hover-shadow); /* More pronounced shadow */
 }
+
+/* Placeholder buttons container on product card */
+.product-card-hover-buttons {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 15px;
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%); /* Subtle gradient for text readability */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+}
+
+.product-card:hover .product-card-hover-buttons {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.product-card-hover-buttons button {
+  width: 100%;
+  padding: 8px 10px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-add-to-cart-hover {
+  background-color: var(--primary-color);
+  color: var(--background-light);
+}
+.btn-add-to-cart-hover:hover {
+  background-color: var(--secondary-color); /* Darken on hover */
+}
+
+.btn-quick-view-hover {
+  background-color: var(--secondary-background-color);
+  color: var(--text-color);
+  border: 1px solid var(--glass-border-color);
+}
+.btn-quick-view-hover:hover {
+  background-color: var(--text-color);
+  color: var(--primary-background-color);
+}
+
+
 .product-image {
   border-radius: 15px;
-  background-color: var(--secondary-background-color); /* Was #ebebeb */
+  background-color: var(--secondary-background-color);
   transform: scale(1, 1);
   transition: transform 0.5s ease;
 }
 
 .product-name {
-  font-weight: 500;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
   color: var(--text-color);
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
 }
 .product-price {
-  font-weight: 800;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1.2rem;
   margin-top: 6px;
-  color: var(--text-color); /* Was black, now uses theme text color */
+  color: var(--text-color);
 }
 
 .hero-banner-container {
-  padding: 100px 40px;
-  background-color: var(--secondary-background-color); /* Was #dcdcdc */
+  padding: 100px 40px; /* Reverted to original padding */
+  background-color: var(--secondary-background-color);
   border-radius: 15px;
   position: relative;
   height: 500px;
-  line-height: 0.9;
+  line-height: 1.2;
   width: 100%;
 }
 .hero-banner-container .beats-solo {
-  font-size: 20px;
+  font-size: 1.25rem; 
+  font-weight: 500; /* Quicksand */
   color: var(--text-color);
+  margin-bottom: 0.5rem;
 }
 .hero-banner-container button {
   border-radius: 15px;
-  padding: 10px 16px;
+  padding: 12px 20px; /* Slightly larger button */
   background-color: var(--primary-color);
-  color: var(--background-light); /* Text on primary button should be light */
+  color: var(--background-light);
   border: none;
   margin-top: 40px;
-  font-size: 18px;
-  font-weight: 500;
+  font-size: 1.1rem; /* Open Sans */
+  font-weight: 600; /* Open Sans */
   cursor: pointer;
   z-index: 10000 !important;
 }
 
-.hero-banner-container h3 {
-  font-size: 4rem;
-  margin-top: 4px;
+.hero-banner-container h3 { /* Smaller text in hero */
+  font-size: 2.5rem; /* Quicksand */
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
   color: var(--text-color);
+  line-height: 1.2;
 }
-.hero-banner-container h1 {
-  color: var(--primary-background-color); /* Was white, make it contrast with secondary background */
-  font-size: 10em;
-  margin-left: -20px;
+.hero-banner-container h1 { /* Large text in hero */
+  color: var(--primary-background-color);
+  font-size: 6em; /* Quicksand */
+  margin-left: -10px;
   text-transform: uppercase;
+  line-height: 1;
 }
 .hero-banner-image {
   position: absolute;
@@ -282,71 +383,78 @@ span.text-red {
   right: 10%;
   bottom: 5%;
   width: 300px;
-  line-height: 1.3;
+  line-height: 1.5; /* Increased line height for desc */
   display: flex;
   flex-direction: column;
-  color: var(--secondary-color); /* Was #324d67 */
+  color: var(--secondary-color);
 }
 .desc p {
-  color: var(--text-color); /* Was #5f5f5f, but should adapt */
-  font-weight: 100;
+  color: var(--text-color);
+  font-weight: 400; /* Regular for Open Sans */
   text-align: end;
+  font-size: 0.95rem; /* Slightly smaller */
 }
 .desc h5 {
   margin-bottom: 12px;
-  font-weight: 700;
-  font-size: 16px;
-  color: var(--text-color); /* Was black (commented out) */
+  font-weight: 700; /* Quicksand */
+  font-size: 1.1rem;
+  color: var(--text-color);
   align-self: flex-end;
 }
 .products-heading {
   text-align: center;
-  margin: 40px 0px;
-  color: var(--secondary-color); /* Was #324d67 */
+  margin: 60px 0px 40px;
+  color: var(--secondary-color);
 }
 .products-heading h2 {
-  font-size: 40px;
-  font-weight: 800;
-  color: var(--text-color); /* Ensure heading text color adapts */
+  color: var(--text-color);
 }
 .products-heading p {
-  font-size: 16px;
-  font-weight: 200;
-  color: var(--text-color); /* Ensure sub-heading text color adapts */
+  font-size: 1.1rem;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--text-color);
+  max-width: 600px;
+  margin: 0 auto 1.5rem auto;
 }
 .footer-banner-container {
   padding: 100px 40px;
-  background-color: var(--primary-color); /* Was #f02d34 */
+  background-color: var(--primary-color);
   border-radius: 15px;
   position: relative;
-  height: 400px;
-  line-height: 1;
-  color: var(--background-light); /* Text on primary color bg should be light */
+  height: auto; /* Auto height based on content */
+  min-height: 350px; /* Minimum height */
+  line-height: 1.3; /* Adjusted line-height for banner */
+  color: var(--background-light);
   width: 100%;
-  margin-top: 120px;
+  margin-top: 100px; /* Adjusted margin */
+  padding: 80px 40px; /* Adjusted padding */
 }
 .banner-desc {
   display: flex;
   justify-content: space-between;
+  align-items: center; /* Align items vertically */
 }
 .banner-desc button {
   border-radius: 15px;
-  padding: 10px 16px;
-  background-color: var(--background-light); /* Was white */
-  color: var(--primary-color); /* Was red */
+  padding: 12px 20px; /* Adjusted padding */
+  background-color: var(--background-light);
+  color: var(--primary-color);
   border: none;
-  margin-top: 40px;
-  font-size: 18px;
-  font-weight: 500;
+  margin-top: 20px; /* Adjusted margin */
+  font-size: 1.1rem; /* Open Sans */
+  font-weight: 600; /* Open Sans */
   cursor: pointer;
 }
-.banner-desc .left h3 {
+.banner-desc .left h3 { /* Large text in footer banner */
   font-weight: 900;
-  font-size: 80px;
   margin-left: 25px;
+  font-size: 3.5rem; /* Quicksand */
 }
 .banner-desc .left p {
-  margin: 18px;
+  margin: 18px 0;
+  font-size: 1.1rem; /* Open Sans */
+  line-height: 1.6;
 }
 .footer-banner-image {
   position: absolute;
@@ -357,17 +465,22 @@ span.text-red {
 }
 .banner-desc .right {
   line-height: 1.4;
+  text-align: right; /* Align text to the right in this section */
 }
-.banner-desc .right h3 {
+.banner-desc .right h3 { /* "Summer Sale" etc. */
   font-weight: 800;
-  font-size: 60px;
+  font-size: 2.5rem; /* Quicksand */
 }
-.banner-desc .right p {
-  font-size: 18px;
+.banner-desc .right p { /* Short description for sale */
+  font-size: 1.1rem; /* Open Sans */
+  line-height: 1.6;
+  margin-top: 0.5rem;
 }
-.banner-desc .right .company-desc {
-  font-size: 14px;
-  font-weight: 300;
+.banner-desc .right .company-desc { /* Smallest text */
+  font-size: 0.9rem; /* Open Sans */
+  font-weight: 400;
+  line-height: 1.5;
+  margin-top: 1rem;
 }
 .cart-wrapper {
   width: 100vw;
@@ -385,72 +498,84 @@ span.text-red {
   float: right;
   padding: 40px 10px;
   position: relative;
-  color: var(--text-color); /* Ensure text inside cart adapts */
+  color: var(--text-color); 
+  padding: 30px 15px; /* Adjusted padding */
 }
 
 .footer-container {
-  color: var(--secondary-color); /* Was #324d67 */
+  color: var(--secondary-color); 
   text-align: center;
-  margin-top: 20px;
-  padding: 30px 10px;
-  font-weight: 700;
+  margin-top: 30px; 
+  padding: 40px 20px; 
+  font-weight: 400; /* Adjusted for Open Sans */
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 15px; /* Increased gap */
   justify-content: center;
 }
 .footer-container .icons {
   font-size: 30px;
   display: flex;
   gap: 10px;
-  color: var(--text-color); /* Ensure icons adapt */
+  color: var(--text-color); 
+}
+.footer-container p {
+  font-size: 0.95rem; /* Smaller text for footer */
 }
 .cart-heading {
   display: flex;
   align-items: center;
-  font-size: 18px;
-  font-weight: 500;
+  font-size: 1.1rem; 
+  font-weight: 600; 
   cursor: pointer;
   gap: 2px;
   margin-left: 10px;
   border: none;
   background-color: transparent;
-  color: var(--text-color); /* Ensure text adapts */
+  color: var(--text-color); 
+  margin-bottom: 1rem; /* Added margin */
 }
 
 .cart-heading .heading {
   margin-left: 10px;
+  font-family: 'Quicksand', sans-serif; 
 }
 .cart-num-items {
   margin-left: 10px;
   color: var(--primary-color);
+  font-size: 0.9rem; 
 }
 .empty-cart {
   margin: 40px;
   text-align: center;
 }
 .empty-cart h3 {
-  font-weight: 600;
-  font-size: 20px;
+  font-family: 'Quicksand', sans-serif; 
+  font-weight: 700;
+  font-size: 1.5rem; 
   color: var(--text-color);
+  margin-bottom: 1rem;
+}
+.empty-cart .btn { /* Style button in empty cart */
+  margin-top: 20px;
 }
 .cancel {
   cursor: pointer;
-  color: var(--primary-color); /* Ensure cancel icon adapts */
+  color: var(--primary-color); 
 }
 .product-container {
   margin-top: 15px;
   overflow: auto;
   max-height: 70vh;
   padding: 20px 10px;
-  background-color: var(--primary-background-color); /* Ensure bg adapts */
+  background-color: var(--primary-background-color); 
 }
 .product {
   display: flex;
   gap: 30px;
-  padding: 20px;
-  background-color: var(--secondary-background-color); /* Add a subtle bg to each product in cart */
+  padding: 20px; 
+  background-color: var(--secondary-background-color); 
   border-radius: 10px;
   margin-bottom: 10px;
 }
@@ -458,31 +583,40 @@ span.text-red {
   width: 180px;
   height: 150px;
   border-radius: 15px;
-  background-color: var(--secondary-background-color); /* Was #ebebeb */
+  background-color: var(--secondary-background-color); 
 }
 .item-desc .flex {
   display: flex;
   justify-content: space-between;
   width: 350px;
-  color: var(--secondary-color); /* Was #324d67 */
+  color: var(--secondary-color); 
+  font-family: 'Quicksand', sans-serif;
 }
 .item-desc .bottom {
-  margin-top: 60px;
+  margin-top: 30px; 
 }
-.flex h5 {
-  font-size: 24px;
+.flex h5 { /* Product name in cart */
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1.2rem; 
+  font-weight: 700;
   color: var(--text-color);
+  line-height: 1.4; /* Added line height */
 }
-.flex h4 {
-  font-size: 20px;
+.flex h4 { /* Product price in cart */
+  font-family: 'Open Sans', sans-serif;
+  font-size: 1.1rem; 
+  font-weight: 600;
   color: var(--text-color);
 }
 .total {
   display: flex;
   justify-content: space-between;
+  margin-top: 1.5rem; 
 }
 .total h3 {
-  font-size: 22px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1.4rem; 
+  font-weight: 700;
   color: var(--text-color);
 }
 .remove-item {
@@ -508,15 +642,16 @@ span.text-red {
 .btn {
   width: 100%;
   max-width: 400px;
-  padding: 10px 12px;
+  padding: 12px 18px; /* Increased padding */
   border-radius: 15px;
   border: none;
-  font-size: 20px;
+  font-size: 1.1rem; /* Adjusted for Open Sans */
+  font-weight: 600; /* Adjusted for Open Sans */
   margin-top: 10px;
   margin-top: 40px;
   text-transform: uppercase;
   background-color: var(--primary-color);
-  color: var(--background-light); /* Text on primary button should be light */
+  color: var(--background-light); 
   cursor: pointer;
   transform: scale(1, 1);
   transition: transform 0.5s ease;
@@ -526,10 +661,11 @@ span.text-red {
 }
 .product-detail-container {
   display: flex;
-  gap: 40px;
-  margin: 40px;
-  margin-top: 60px;
-  color: var(--secondary-color); /* Was #324d67 */
+  gap: 40px; /* Slightly reduced gap */
+  margin: 60px auto; 
+  padding: 20px; /* Added padding around container */
+  max-width: 1200px; 
+  color: var(--secondary-color); 
 }
 
 .product-detail-image {
@@ -565,31 +701,47 @@ span.text-red {
   display: flex;
   gap: 5px;
   align-items: center;
+  font-family: 'Open Sans', sans-serif;
+  margin-bottom: 1rem; /* Added bottom margin */
 }
 
-.product-detail-desc h4 {
-  margin-top: 10px;
+.product-detail-desc h4 { /* "Details:", "Quantity:" labels */
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-top: 10px; /* Reduced margin from 20px */
+  margin-bottom: 0.5rem;
   color: var(--text-color);
 }
-.product-detail-desc p {
+.product-detail-desc p { /* Product description text */
+  font-family: 'Open Sans', sans-serif;
+  line-height: 1.7; 
   margin-top: 10px;
+  margin-bottom: 1.5rem; 
   color: var(--text-color);
+  font-size: 1rem; /* Ensure base size for description */
 }
-.reviews p {
-  color: var(--secondary-color); /* Was #324d67 */
+.reviews p { /* Text next to review stars */
+  color: var(--secondary-color); 
   margin-top: 0px;
+  font-size: 0.9rem;
 }
 .product-detail-desc .price {
+  font-family: 'Quicksand', sans-serif; 
   font-weight: 700;
-  font-size: 26px;
-  margin-top: 30px;
+  font-size: 2rem; 
+  margin-top: 20px; 
+  margin-bottom: 1rem; 
   color: var(--primary-color);
 }
 .price .old-price,
-.product-price .old-price,
-.price .old-price {
-  color: var(--secondary-color); /* Was gray */
+.product-price .old-price, 
+.price .old-price { 
+  color: var(--secondary-color); 
   text-decoration: line-through;
+  font-weight: 400; /* Lighter for old price */
+  font-size: 1.2rem; /* Smaller than current price */
+  margin-left: 0.5rem; /* Space it from new price if they are inline */
 }
 .product-detail-desc .quantity {
   display: flex;
@@ -601,14 +753,15 @@ span.text-red {
 .product-detail-desc .buttons {
   display: flex;
   gap: 30px;
+  margin-top: 1.5rem; /* Added margin top */
 }
 .buttons .add-to-cart {
-  padding: 10px 20px;
+  padding: 12px 20px; /* Adjusted padding */
   border: 1px solid var(--primary-color);
   margin-top: 40px;
-  font-size: 18px;
-  font-weight: 500;
-  background-color: var(--primary-background-color); /* Was white */
+  font-size: 1rem; /* Adjusted for Open Sans */
+  font-weight: 600; /* Adjusted for Open Sans */
+  background-color: var(--primary-background-color); 
   color: var(--primary-color);
   cursor: pointer;
   width: 200px;
@@ -620,13 +773,13 @@ span.text-red {
 }
 .buttons .buy-now {
   width: 200px;
-  padding: 10px 20px;
+  padding: 12px 20px; /* Adjusted padding */
   background-color: var(--primary-color);
-  color: var(--background-light); /* Text on primary button */
+  color: var(--background-light); 
   border: none;
   margin-top: 40px;
-  font-size: 18px;
-  font-weight: 500;
+  font-size: 1rem; /* Adjusted for Open Sans */
+  font-weight: 600; /* Adjusted for Open Sans */
   cursor: pointer;
   transform: scale(1, 1);
   transition: transform 0.5s ease;
@@ -635,41 +788,42 @@ span.text-red {
   transform: scale(1.1, 1.1);
 }
 .quantity-desc {
-  border: 1px solid var(--secondary-color); /* Was gray */
+  border: 1px solid var(--secondary-color); 
   padding: 6px;
   color: var(--text-color);
 }
 .quantity-desc span {
-  font-size: 16px;
+  font-size: 1rem; /* Adjusted for Open Sans */
   padding: 6px 12px;
   cursor: pointer;
 }
 .quantity-desc .minus {
-  border-right: 1px solid var(--secondary-color); /* Was gray */
+  border-right: 1px solid var(--secondary-color); 
   color: var(--primary-color);
 }
 .quantity-desc .num {
-  border-right: 1px solid var(--secondary-color); /* Was gray */
-  font-size: 20px;
+  border-right: 1px solid var(--secondary-color); 
+  font-size: 1.2rem; /* Slightly larger for num */
 }
 .quantity-desc .plus {
-  color: rgb(49, 168, 49); /* Keep green for plus, or use a theme variable */
+  color: rgb(49, 168, 49); 
 }
 
 .maylike-products-wrapper {
-  margin-top: 120px;
+  margin-top: 100px; /* Adjusted margin */
+  padding: 0 20px; /* Add horizontal padding */
 }
 .maylike-products-wrapper h2 {
   text-align: center;
-  margin: 50px;
-  color: var(--secondary-color); /* Was #324d67 */
-  font-size: 28px;
+  margin: 0 auto 40px auto; /* Centered and adjusted margin */
+  color: var(--secondary-color); 
+  /* Uses h2 default styling from above */
 }
 .maylike-products-container {
   display: flex;
   justify-content: center;
-  gap: 15px;
-  margin-top: 20px;
+  gap: 25px; 
+  margin-top: 30px; 
 }
 .max-qty {
   font-weight: 500;
@@ -704,23 +858,29 @@ span.text-red {
   margin-top: 15px 0px;
   font-weight: 900;
   font-size: 40px;
-  color: var(--secondary-color); /* Was #324d67 */
+  color: var(--secondary-color); 
+  /* Uses h2 default from above */
 }
 .success .email-msg {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 1rem; 
+  font-weight: 400; 
   text-align: center;
+  line-height: 1.6;
+  margin-bottom: 1rem;
 }
 .cancel p {
-  font-size: 20px;
+  font-size: 1.2rem; 
   font-weight: 600;
+  line-height: 1.6;
 }
 .success .description {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 1rem; 
+  font-weight: 400; 
   text-align: center;
-  margin: 10px;
-  margin-top: 30px;
+  margin: 10px auto;
+  margin-top: 20px; 
+  max-width: 500px; 
+  line-height: 1.6;
 }
 .success .description .email {
   margin-left: 5px;
@@ -732,120 +892,196 @@ span.text-red {
 }
 
 @media screen and (max-width: 800px) {
+  h1 { font-size: 2rem; } 
+  h2 { font-size: 1.7rem; } 
+  h3 { font-size: 1.4rem; } 
+  h4 { font-size: 1.2rem; }
+  h5 { font-size: 1.1rem; }
+  h6 { font-size: 1rem; }
+
+  .layout {
+    padding: 15px;
+  }
+  .navbar-container {
+    margin: 5px 15px;
+    padding: 5px 0;
+  }
+   .logo {
+    font-size: 20px;
+  }
+
   .hero-banner-container {
-    height: 560px;
+    padding: 60px 20px; /* Adjusted padding for mobile */
+    height: auto; /* Auto height for mobile */
+    min-height: 400px; /* Min height for mobile */
   }
   .hero-banner-image {
     width: 70%;
-    height: 62%;
-    top: 15%;
-    right: -6%;
+    height: auto; /* Auto height for image */
+    max-height: 250px; /* Max height for image */
+    top: 10%; /* Adjust position */
+    right: 5%; /* Adjust position */
   }
   .footer-banner-container {
-    height: 560px;
+    padding: 40px 20px; /* Adjusted padding for mobile */
+    height: auto; /* Auto height for mobile */
+    min-height: 400px; /* Min height for mobile */
     margin-top: 80px;
   }
   .footer-banner-image {
     width: 60%;
-    left: 40%;
-    top: 8%;
-    height: 56%;
-  }
-  .banner-desc .left h3 {
-    font-weight: 900;
-    font-size: 50px;
-    margin-left: 5px;
-  }
-  .banner-desc .left p {
-    margin: 18px;
-  }
-  .banner-desc .right h3 {
-    font-size: 45px;
-  }
-  .banner-desc .right p {
-    font-size: 18px;
-  }
-  .banner-desc .right .company-desc {
-    font-size: 14px;
+    left: 20%; /* Adjust for better centering if needed */
+    top: 5%;
+    height: auto;
+    max-height: 200px;
   }
   .banner-desc {
     flex-wrap: wrap;
     gap: 20px;
+    text-align: center; /* Center text for banner desc on mobile */
+  }
+   .banner-desc .left, .banner-desc .right {
+    text-align: center;
+    width: 100%;
+    margin-left: 0;
+  }
+  .banner-desc .left h3 {
+    font-weight: 900;
+    font-size: 2.5rem; 
+  }
+  .banner-desc .left p {
+    margin: 10px 0; /* Adjusted margin */
+    font-size: 1rem; 
+  }
+  .banner-desc .right h3 {
+    font-size: 2rem; 
+  }
+  .banner-desc .right p {
+    font-size: 1rem; 
+  }
+  .banner-desc .right .company-desc {
+    font-size: 0.8rem; 
   }
   .hero-banner-container {
     line-height: 1.3;
   }
   .hero-banner-container h1 {
-    font-size: 50px;
+    font-size: 2.8rem; 
+    margin-left: 0; /* Remove negative margin */
+    text-align: center; /* Center hero text */
   }
   .hero-banner-container h3 {
-    font-size: 40px;
+    font-size: 1.8rem; 
+    text-align: center; /* Center hero text */
   }
   .hero-banner-container button {
-    margin-top: 90px;
+    margin-top: 30px; /* Adjusted margin */
     z-index: 10000;
+    font-size: 1rem; 
   }
   .desc {
-    bottom: 60px;
+    position: static; /* Static for mobile flow */
+    width: 90%; /* Adjust width for mobile */
+    margin: 20px auto 0 auto; /* Center and add margin */
+    text-align: center; /* Center desc text */
   }
+  .desc p {
+    font-size: 0.9rem;
+    text-align: center;
+  }
+  .desc h5 {
+    font-size: 1rem;
+    align-self: center; /* Center heading in desc */
+  }
+
+  .products-heading {
+    margin: 40px 0px 30px;
+  }
+  .products-heading p {
+    font-size: 1rem;
+  }
+  .product-card {
+    width: calc(50% - 10px); /* Two cards per row */
+    padding: 10px;
+  }
+  .product-name {
+    font-size: 0.9rem; 
+  }
+  .product-price {
+    font-size: 1rem; 
+  }
+
   .product-detail-container {
     flex-wrap: wrap;
+    gap: 20px; /* Adjusted gap for mobile */
+    margin: 20px auto; /* Adjusted margin for mobile */
+    padding: 15px; /* Added padding */
   }
   .product-detail-container .product-detail-image {
-    width: 350px;
-    height: 350px;
+    width: 100%; /* Full width image */
+    height: auto; /* Auto height */
+    max-height: 300px; /* Max height */
   }
+  .product-detail-desc h4 {
+    font-size: 1.1rem;
+  }
+  .product-detail-desc p {
+    font-size: 0.9rem;
+  }
+  .product-detail-desc .price {
+    font-size: 1.5rem;
+  }
+  .product-detail-desc .buttons {
+    flex-direction: column; /* Stack buttons on mobile */
+    gap: 15px;
+  }
+  .buttons .add-to-cart, .buttons .buy-now {
+    width: 100%; /* Full width buttons */
+    margin-top: 15px; /* Adjusted margin */
+    font-size: 0.9rem;
+  }
+
   .cart-container {
-    width: 415px;
-    padding: 4px;
+    width: 100%; /* Full width cart on mobile */
+    padding: 20px 10px; /* Adjusted padding */
   }
   .cart-heading {
-    margin-top: 35px;
+    margin-top: 20px; /* Adjusted margin */
+    font-size: 1rem;
   }
   .product-container {
     margin-top: 10px;
   }
   .product {
-    padding: 20px 5px;
+    padding: 15px 10px; /* Adjusted padding */
+    gap: 15px; /* Adjusted gap for mobile */
+    flex-direction: column; /* Stack cart items */
+    align-items: center; /* Center items */
   }
   .product .cart-product-image {
-    width: 25%;
-    height: 25%;
+    width: 50%; /* Larger image in stacked view */
+    height: auto;
   }
-  .buttons .add-to-cart {
-    width: 150px;
-  }
-  .buttons .buy-now {
-    width: 150px;
-  }
-  .product-detail-container {
-    margin: 20px;
-  }
-
   .item-desc .flex {
-    width: 200px;
-  }
-  .top {
-    flex-wrap: wrap;
-    gap: 10px;
+    width: 100%; /* Full width for item desc */
+    text-align: center; /* Center text */
+    flex-direction: column; /* Stack name/price */
+    gap: 5px;
   }
   .item-desc .bottom {
-    margin-top: 30px;
-  }
-  .flex h5 {
-    font-size: 16px;
-    color: var(--secondary-color); /* Was #324d67 */
-  }
-  .flex h4 {
-    font-size: 16px;
-    color: var(--text-color); /* Was black */
+    margin-top: 15px; /* Adjusted margin */
   }
   .cart-bottom {
-    padding: 30px;
+    position: static; /* Static for mobile flow */
+    padding: 20px; /* Adjusted padding */
+  }
+  .btn-container { /* For cart pay button */
+    width: 100%;
+    padding: 0 10px; /* Add padding to btn container */
   }
 
   .total h3 {
-    font-size: 20px;
+    font-size: 1.2rem; 
   }
   .track {
     animation: marquee 10s linear infinite;
@@ -854,24 +1090,33 @@ span.text-red {
   .success-wrapper,
   .cancel-wrapper {
     min-height: 69vh;
+    padding: 20px; /* Added padding */
   }
   .success,
   .cancel {
-    width: 370px;
-    margin-top: 100px;
+    width: 100%; /* Full width */
+    max-width: 370px; /* Constrain width */
+    margin-top: 60px; /* Adjusted margin */
     padding: 20px;
   }
   .success {
-    height: 350px;
+    height: auto; /* Auto height */
+    min-height: 300px; /* Min height */
   }
   .success h2 {
-    font-size: 17px;
+    font-size: 1.5rem; 
   }
-  .btn-container {
-    width: 300px;
-    margin: auto;
+  .maylike-products-wrapper h2 {
+    font-size: 1.5rem;
+    margin: 30px 20px;
   }
+  .maylike-products-container {
+    flex-direction: column; /* Stack "you may also like" items */
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
   }
+}
 
 .glassmorphism {
   background: var(--glass-background-color);
@@ -880,4 +1125,190 @@ span.text-red {
   border-radius: 10px;
   border: 1px solid var(--glass-border-color);
   box-shadow: 0 8px 32px 0 var(--glass-box-shadow-color);
+}
+
+.added-feedback {
+  background-color: #28a745 !important; /* Green color for success */
+  color: white !important;
+  pointer-events: none; /* Disable clicks while feedback is shown */
+}
+
+/* Review Section Styles */
+.reviews-section {
+  margin-top: 40px;
+  padding: 20px;
+  border-top: 1px solid var(--glass-border-color); /* Separator */
+}
+
+/* StarRating Component */
+.star-rating {
+  display: flex;
+  align-items: center;
+  gap: 2px; /* Small gap between stars */
+}
+.star-icon svg { /* Target SVG within if icons are direct children */
+  color: var(--primary-color); /* Or a specific star color variable */
+}
+
+/* ReviewList Component */
+.review-list-container {
+  margin-bottom: 30px;
+}
+
+.review-list-title, .review-form-title {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1.8rem; /* h3 size */
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--glass-border-color);
+}
+
+.review-item {
+  background-color: var(--secondary-background-color);
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 4px var(--product-card-hover-shadow); /* Use existing variable for subtle shadow */
+}
+
+.review-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.review-user {
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text-color);
+}
+
+.review-date {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 0.85rem;
+  color: var(--secondary-color);
+}
+
+.review-title {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1.2rem; /* h5 size */
+  font-weight: 500;
+  margin-top: 8px;
+  margin-bottom: 5px;
+  color: var(--text-color);
+}
+
+.review-comment {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-color);
+  margin-bottom: 0; /* Remove default p margin if inside review item */
+}
+
+.no-reviews-message {
+  font-family: 'Open Sans', sans-serif;
+  font-style: italic;
+  color: var(--secondary-color);
+  padding: 20px 0;
+  text-align: center;
+}
+
+/* ReviewForm Component */
+.review-form-container {
+  background-color: var(--secondary-background-color);
+  padding: 25px;
+  border-radius: 8px;
+  margin-top: 20px;
+  box-shadow: 0 4px 8px var(--product-card-hover-shadow);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 5px;
+  border: 1px solid var(--glass-border-color);
+  background-color: var(--primary-background-color);
+  color: var(--text-color);
+  font-family: 'Open Sans', sans-serif;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb, 240, 45, 52), 0.3); /* Define --primary-color-rgb or adjust */
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.submission-message {
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 15px;
+  font-family: 'Open Sans', sans-serif;
+  text-align: center;
+}
+
+.error-message {
+  background-color: rgba(240, 45, 52, 0.1); /* Light red */
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+
+.success-message {
+  background-color: rgba(40, 167, 69, 0.1); /* Light green */
+  color: #28a745; /* Green color for success text */
+  border: 1px solid #28a745;
+}
+
+.btn-submit-review {
+  /* Uses .btn styling, but can add specific overrides if needed */
+  margin-top: 10px; /* Remove default large margin from .btn if only used here */
+}
+.btn-submit-review:disabled {
+  background-color: var(--secondary-color);
+  cursor: not-allowed;
+}
+
+.btn-toggle-review-form {
+  /* Uses .btn styling by default */
+  display: block; /* Make it block to center it easily */
+  margin: 20px auto; /* Center the button */
+  min-width: 200px; /* Give it a decent width */
+}
+
+/* Adjustments for .reviews on product detail page */
+.product-detail-desc .reviews {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Gap between stars and text */
+  margin-bottom: 15px; /* More space below reviews summary */
+}
+.product-detail-desc .reviews p {
+  margin-bottom: 0; /* Remove default p margin here */
+  font-size: 0.95rem; /* Consistent size */
 }

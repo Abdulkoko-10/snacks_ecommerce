@@ -17,6 +17,10 @@ slug, price } }) => {
           />
           <p className="product-name">{name}</p>
           <p className="product-price">N{price}</p>
+          <div className="product-card-hover-buttons">
+            <button type="button" className="btn-add-to-cart-hover">Add to Cart</button>
+            <button type="button" className="btn-quick-view-hover">Quick View</button>
+          </div>
         </div>
       </Link>
     </div>
