@@ -1,65 +1,3 @@
-:root {
-  --background-color: #fff;
-  --text-color: #000;
-  --card-bg-color: #ebebeb;
-  --card-text-color: #324d67;
-  --button-bg-color: #f02d34;
-  --button-text-color: #fff;
-  --button-hover-bg-color: #d0242a; /* Darker red for hover */
-  --button-active-bg-color: #b01e22; /* Even darker red for active */
-  --button-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  --button-hover-shadow: 0 3px 6px rgba(0,0,0,0.15);
-  --secondary-text-color: gray;
-  --icon-color: gray;
-  --highlight-color: #f02d34;
-  --banner-bg-color: #dcdcdc;
-  --banner-text-color: #324d67;
-  --footer-banner-bg-color: #f02d34;
-  --footer-banner-text-color: white;
-  --cart-bg-color: white;
-  --cart-text-color: #324d67;
-  --cart-item-bg-color: #ebebeb;
-  --glass-bg: rgba(255, 255, 255, 0.25);
-  --glass-border: rgba(255, 255, 255, 0.2);
-  --glass-blur: 10px;
-  --glass-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --success-bg-color: #dcdcdc;
-  --success-text-color: #324d67;
-  --success-icon-color: green;
-  --link-color: inherit;
-}
-
-[data-theme="dark"] {
-  --background-color: #111;
-  --text-color: #fff;
-  --card-bg-color: #333;
-  --card-text-color: #f0f0f0;
-  --button-bg-color: #f02d34; /* Assuming button color remains same, adjust if needed */
-  --button-text-color: #fff;
-  --button-hover-bg-color: #d0242a; /* Darker red for hover */
-  --button-active-bg-color: #b01e22; /* Even darker red for active */
-  --button-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Same for dark, or adjust if needed */
-  --button-hover-shadow: 0 3px 6px rgba(0,0,0,0.15); /* Same for dark, or adjust if needed */
-  --secondary-text-color: lightgray;
-  --icon-color: lightgray;
-  --highlight-color: #f02d34; /* Assuming highlight color remains same */
-  --banner-bg-color: #222;
-  --banner-text-color: #f0f0f0;
-  --footer-banner-bg-color: #f02d34; /* Assuming footer banner color remains same */
-  --footer-banner-text-color: white;
-  --cart-bg-color: #222;
-  --cart-text-color: #f0f0f0;
-  --cart-item-bg-color: #333;
-  --glass-bg: rgba(50, 50, 50, 0.25);
-  --glass-border: rgba(200, 200, 200, 0.15);
-  --glass-blur: 10px; /* Assuming same blur for dark mode, adjust if needed */
-  --glass-shadow: 0 4px 12px rgba(255, 255, 255, 0.05); /* Softer shadow for dark mode */
-  --success-bg-color: #222;
-  --success-text-color: #f0f0f0;
-  --success-icon-color: lightgreen;
-  --link-color: inherit;
-}
-
 html,
 body,
 * {
@@ -68,15 +6,13 @@ body,
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   box-sizing: border-box;
-  background-color: var(--background-color);
-  color: var(--text-color);
 }
 ::-webkit-scrollbar {
   width: 0px;
 }
 
 a {
-  color: var(--link-color);
+  color: inherit;
   text-decoration: none;
 }
 
@@ -94,18 +30,12 @@ a {
   justify-content: space-between;
   margin: 6px 18px;
   position: relative;
-  background-color: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: blur(var(--glass-blur));
-  box-shadow: var(--glass-shadow);
-  padding: 10px;
-  border-radius: 10px;
 }
 .marquee-text {
   font-size: 29px;
   font-weight: 600;
   margin: 60px 0px;
-  color: var(--highlight-color);
+  color: #f02d34;
 }
 .marquee {
   position: relative;
@@ -133,36 +63,17 @@ a {
   }
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.main-container, .navbar-container, .footer-container {
-  animation: fadeIn 0.5s ease-out forwards;
-}
-
 span.text-red {
-  -webkit-text-stroke: 1px var(--highlight-color);
+  -webkit-text-stroke: 1px #f02d34;
   margin-left: 6px;
 }
 .logo {
-  color: var(--secondary-text-color);
+  color: gray;
   font-size: 18px;
-  transition: color 0.2s ease-in-out;
-}
-.logo:hover {
-  color: var(--highlight-color);
 }
 .cart-icon {
   font-size: 25px;
-  color: var(--icon-color);
+  color: gray;
   cursor: pointer;
   position: relative;
   transition: transform 0.4s ease;
@@ -176,8 +87,8 @@ span.text-red {
   position: absolute;
   right: -8px;
   font-size: 12px;
-  color: #eee; /* This color might need to be a variable if it needs to change with theme */
-  background-color: var(--highlight-color);
+  color: #eee;
+  background-color: #f02d34;
   width: 18px;
   height: 18px;
   border-radius: 50%;
@@ -195,25 +106,17 @@ span.text-red {
 .product-card {
   cursor: pointer;
   transform: scale(1, 1);
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, backdrop-filter 0.3s ease-in-out;
-  color: var(--card-text-color);
-  background-color: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: blur(var(--glass-blur));
-  box-shadow: var(--glass-shadow);
-  padding: 10px; 
-  border-radius: 15px;
+  transition: transform 0.5s ease;
+  color: #324d67;
 }
 .product-card:hover {
-  transform: scale(1.05); /* Slightly reduced hover scale for a more subtle effect with glass */
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15), var(--glass-shadow); /* Enhanced shadow on hover */
+  transform: scale(1.1, 1.1);
 }
 .product-image {
-  border-radius: 15px; /* Keep image corners rounded */
-  background-color: var(--card-bg-color); /* Solid background for the image itself */
+  border-radius: 15px;
+  background-color: #ebebeb;
   transform: scale(1, 1);
   transition: transform 0.5s ease;
-  /* The image itself should not be glassmorphic, so it stands out */
 }
 
 .product-name {
@@ -222,15 +125,12 @@ span.text-red {
 .product-price {
   font-weight: 800;
   margin-top: 6px;
-  color: var(--text-color); /* Or --highlight-color if prices should be highlighted */
+  color: black;
 }
 
 .hero-banner-container {
   padding: 100px 40px;
-  background-color: var(--glass-bg); /* Changed to glass-bg */
-  border: 1px solid var(--glass-border); /* Added border */
-  backdrop-filter: blur(var(--glass-blur)); /* Added blur */
-  box-shadow: var(--glass-shadow); /* Added shadow */
+  background-color: #dcdcdc;
   border-radius: 15px;
   position: relative;
   height: 500px;
@@ -243,8 +143,8 @@ span.text-red {
 .hero-banner-container button {
   border-radius: 15px;
   padding: 10px 16px;
-  background-color: var(--button-bg-color);
-  color: var(--button-text-color);
+  background-color: #f02d34;
+  color: white;
   border: none;
   margin-top: 40px;
   font-size: 18px;
@@ -256,10 +156,9 @@ span.text-red {
 .hero-banner-container h3 {
   font-size: 4rem;
   margin-top: 4px;
-  color: var(--banner-text-color); /* Added */
 }
 .hero-banner-container h1 {
-  color: var(--button-text-color); /* Assuming white text on dark banner too */
+  color: white;
   font-size: 10em;
   margin-left: -20px;
   text-transform: uppercase;
@@ -280,10 +179,10 @@ span.text-red {
   line-height: 1.3;
   display: flex;
   flex-direction: column;
-  color: var(--banner-text-color); /* Changed from #324d67 */
+  color: #324d67;
 }
 .desc p {
-  color: var(--secondary-text-color); /* Changed from #5f5f5f */
+  color: #5f5f5f;
   font-weight: 100;
   text-align: end;
 }
@@ -291,13 +190,13 @@ span.text-red {
   margin-bottom: 12px;
   font-weight: 700;
   font-size: 16px;
+  /* color: black; */
   align-self: flex-end;
-  color: var(--banner-text-color); /* Added */
 }
 .products-heading {
   text-align: center;
   margin: 40px 0px;
-  color: var(--text-color); /* Changed from #324d67 */
+  color: #324d67;
 }
 .products-heading h2 {
   font-size: 40px;
@@ -309,12 +208,12 @@ span.text-red {
 }
 .footer-banner-container {
   padding: 100px 40px;
-  background-color: var(--footer-banner-bg-color);
+  background-color: #f02d34;
   border-radius: 15px;
   position: relative;
   height: 400px;
   line-height: 1;
-  color: var(--footer-banner-text-color);
+  color: white;
   width: 100%;
   margin-top: 120px;
 }
@@ -325,8 +224,8 @@ span.text-red {
 .banner-desc button {
   border-radius: 15px;
   padding: 10px 16px;
-  background-color: white; /* This might need a variable if it changes */
-  color: red; /* This might need a variable */
+  background-color: white;
+  color: red;
   border: none;
   margin-top: 40px;
   font-size: 18px;
@@ -343,6 +242,8 @@ span.text-red {
 }
 .footer-banner-image {
   position: absolute;
+  /* top: -35%;
+  left: 8%; */
   top: -25%;
   left: 30%;
   width: 450px;
@@ -364,41 +265,25 @@ span.text-red {
 }
 .cart-wrapper {
   width: 100vw;
-  background: var(--glass-bg); /* Using glassmorphism variable */
+  background: rgba(0, 0, 0, 0.5);
   position: fixed;
   right: 0;
   top: 0;
   z-index: 100;
+  /* will-change: transform; */
   transition: all 1s ease-in-out;
-  backdrop-filter: blur(5px); /* Added blur for cart wrapper */
 }
 .cart-container {
   height: 100vh;
   width: 600px;
-  background-color: var(--glass-bg); /* Change to glass-bg for full effect */
-  border-left: 1px solid var(--glass-border);
-  backdrop-filter: blur(var(--glass-blur)); /* Add blur */
-  box-shadow: var(--glass-shadow); /* Add shadow */
+  background-color: white;
   float: right;
   padding: 40px 10px;
   position: relative;
 }
 
-/* Ensure cart content has a slightly more opaque background for readability if needed, or ensure text has good contrast */
-.cart-heading, .empty-cart h3, .total h3, .item-desc .flex h5, .item-desc .flex h4 {
-  color: var(--cart-text-color); /* Ensure high contrast text */
-}
-
-.product { /* Individual cart items */
-  background-color: var(--cart-item-bg-color); /* This provides a solid, contrasting background for items */
-  /* If --cart-item-bg-color is too transparent, consider a more opaque version or a different variable */
-  border-radius: 10px;
-  padding: 15px;
-  margin-bottom: 15px;
-}
-
 .footer-container {
-  color: var(--text-color); /* Changed from #324d67 */
+  color: #324d67;
   text-align: center;
   margin-top: 20px;
   padding: 30px 10px;
@@ -408,16 +293,11 @@ span.text-red {
   align-items: center;
   gap: 10px;
   justify-content: center;
-  background-color: var(--glass-bg);
-  border-top: 1px solid var(--glass-border);
-  backdrop-filter: blur(var(--glass-blur));
-  box-shadow: var(--glass-shadow);
 }
 .footer-container .icons {
   font-size: 30px;
   display: flex;
   gap: 10px;
-  color: var(--icon-color); /* Added */
 }
 .cart-heading {
   display: flex;
@@ -429,7 +309,6 @@ span.text-red {
   margin-left: 10px;
   border: none;
   background-color: transparent;
-  color: var(--cart-text-color); /* Added */
 }
 
 .cart-heading .heading {
@@ -437,7 +316,7 @@ span.text-red {
 }
 .cart-num-items {
   margin-left: 10px;
-  color: var(--highlight-color);
+  color: #f02d34;
 }
 .empty-cart {
   margin: 40px;
@@ -446,11 +325,9 @@ span.text-red {
 .empty-cart h3 {
   font-weight: 600;
   font-size: 20px;
-  color: var(--cart-text-color); /* Added */
 }
 .cancel {
   cursor: pointer;
-  color: var(--icon-color); /* Added */
 }
 .product-container {
   margin-top: 15px;
@@ -462,21 +339,18 @@ span.text-red {
   display: flex;
   gap: 30px;
   padding: 20px;
-  background-color: var(--cart-item-bg-color); /* Added */
-  border-radius: 15px; /* Added */
-  margin-bottom: 10px; /* Added */
 }
 .product .cart-product-image {
   width: 180px;
   height: 150px;
   border-radius: 15px;
-  background-color: var(--card-bg-color); /* Consistent with product card image bg */
+  background-color: #ebebeb;
 }
 .item-desc .flex {
   display: flex;
   justify-content: space-between;
   width: 350px;
-  color: var(--cart-text-color);
+  color: #324d67;
 }
 .item-desc .bottom {
   margin-top: 60px;
@@ -493,11 +367,10 @@ span.text-red {
 }
 .total h3 {
   font-size: 22px;
-  color: var(--cart-text-color); /* Added */
 }
 .remove-item {
   font-size: 24px;
-  color: var(--highlight-color);
+  color: #f02d34;
   cursor: pointer;
   background: transparent;
   border: none;
@@ -524,41 +397,34 @@ span.text-red {
   margin-top: 10px;
   margin-top: 40px;
   text-transform: uppercase;
-  background-color: var(--button-bg-color);
-  color: var(--button-text-color);
+  background-color: #f02d34;
+  color: #fff;
   cursor: pointer;
   transform: scale(1, 1);
-  box-shadow: var(--button-shadow);
-  transition: background-color 0.2s ease-out, transform 0.1s ease-in, box-shadow 0.2s ease-out;
+  transition: transform 0.5s ease;
 }
 .btn:hover {
-  background-color: var(--button-hover-bg-color);
-  transform: scale(1.03); /* Subtle scale */
-  box-shadow: var(--button-hover-shadow);
-}
-.btn:active {
-  transform: scale(0.98);
-  background-color: var(--button-active-bg-color);
-  box-shadow: none; /* Flatten shadow on active */
+  transform: scale(1.1, 1.1);
 }
 .product-detail-container {
   display: flex;
   gap: 40px;
   margin: 40px;
   margin-top: 60px;
-  color: var(--text-color); /* Changed from #324d67 */
+  color: #324d67;
 }
 
 .product-detail-image {
   border-radius: 15px;
-  background-color: var(--card-bg-color); /* Consistent with product card image bg */
+  background-color: #ebebeb;
+
   width: 400px;
   height: 400px;
   cursor: pointer;
   transition: 0.3s ease-in-out;
 }
 .product-detail-image:hover {
-  background-color: var(--highlight-color); /* This could be a variable too */
+  background-color: #f02d34;
 }
 .small-images-container {
   display: flex;
@@ -567,17 +433,17 @@ span.text-red {
 }
 .small-image {
   border-radius: 8px;
-  background-color: var(--card-bg-color); /* Consistent with product card image bg */
+  background-color: #ebebeb;
   width: 70px;
   height: 70px;
   cursor: pointer;
 }
 
 .selected-image {
-  background-color: var(--highlight-color); /* This could be a variable too */
+  background-color: #f02d34;
 }
 .reviews {
-  color: var(--highlight-color);
+  color: #f02d34;
   margin-top: 10px;
   display: flex;
   gap: 5px;
@@ -589,22 +455,21 @@ span.text-red {
 }
 .product-detail-desc p {
   margin-top: 10px;
-  color: var(--secondary-text-color); /* Added */
 }
 .reviews p {
-  color: var(--text-color); /* Changed from #324d67 */
+  color: #324d67;
   margin-top: 0px;
 }
 .product-detail-desc .price {
   font-weight: 700;
   font-size: 26px;
   margin-top: 30px;
-  color: var(--highlight-color);
+  color: #f02d34;
 }
 .price .old-price,
 .product-price .old-price,
 .price .old-price {
-  color: var(--secondary-text-color); /* Changed from gray */
+  color: gray;
   text-decoration: line-through;
 }
 .product-detail-desc .quantity {
@@ -619,81 +484,56 @@ span.text-red {
 }
 .buttons .add-to-cart {
   padding: 10px 20px;
-  border: 1px solid var(--highlight-color);
+  border: 1px solid #f02d34;
   margin-top: 40px;
   font-size: 18px;
   font-weight: 500;
-  background-color: var(--background-color); /* Or transparent */
-  color: var(--highlight-color);
+  background-color: white;
+  color: #f02d34;
   cursor: pointer;
   width: 200px;
   transform: scale(1, 1);
-  box-shadow: var(--button-shadow);
-  transition: background-color 0.2s ease-out, transform 0.1s ease-in, box-shadow 0.2s ease-out, color 0.2s ease-out;
+  transition: transform 0.5s ease;
 }
 .buttons .add-to-cart:hover {
-  background-color: var(--highlight-color); /* Invert colors on hover */
-  color: var(--button-text-color); /* Use button text color for contrast */
-  transform: scale(1.03);
-  box-shadow: var(--button-hover-shadow);
+  transform: scale(1.1, 1.1);
 }
-.buttons .add-to-cart:active {
-  transform: scale(0.98);
-  background-color: var(--button-active-bg-color); /* Using main button active color for consistency */
-  color: var(--button-text-color);
-  box-shadow: none;
-}
-.buttons .buy-now { /* This is already styled like a .btn */
+.buttons .buy-now {
   width: 200px;
+
   padding: 10px 20px;
-  background-color: var(--button-bg-color);
-  color: var(--button-text-color);
+  background-color: #f02d34;
+  color: white;
   border: none;
   margin-top: 40px;
   font-size: 18px;
   font-weight: 500;
   cursor: pointer;
   transform: scale(1, 1);
-  box-shadow: var(--button-shadow);
-  transition: background-color 0.2s ease-out, transform 0.1s ease-in, box-shadow 0.2s ease-out;
+  transition: transform 0.5s ease;
 }
 .buttons .buy-now:hover {
-  background-color: var(--button-hover-bg-color);
-  transform: scale(1.03);
-  box-shadow: var(--button-hover-shadow);
-}
-.buttons .buy-now:active {
-  transform: scale(0.98);
-  background-color: var(--button-active-bg-color);
-  box-shadow: none;
+  transform: scale(1.1, 1.1);
 }
 .quantity-desc {
-  border: 1px solid var(--secondary-text-color); /* Changed from gray */
+  border: 1px solid gray;
   padding: 6px;
 }
 .quantity-desc span {
   font-size: 16px;
   padding: 6px 12px;
   cursor: pointer;
-  transition: background-color 0.2s ease-out, color 0.2s ease-out; /* Added transition */
 }
 .quantity-desc .minus {
-  border-right: 1px solid var(--secondary-text-color); 
-  color: var(--highlight-color);
-}
-.quantity-desc .plus {
-  color: rgb(49, 168, 49); 
-}
-.quantity-desc .minus:hover, .quantity-desc .plus:hover {
-  background-color: var(--card-bg-color); /* Subtle background on hover for quantity buttons */
-}
-.quantity-desc .minus:active, .quantity-desc .plus:active {
-  background-color: var(--glass-border); /* Slightly darker/different background for active state */
+  border-right: 1px solid gray;
+  color: #f02d34;
 }
 .quantity-desc .num {
-  border-right: 1px solid var(--secondary-text-color); 
+  border-right: 1px solid gray;
   font-size: 20px;
-  /* Not applying hover/active to num as it's not a button */
+}
+.quantity-desc .plus {
+  color: rgb(49, 168, 49);
 }
 
 .maylike-products-wrapper {
@@ -702,7 +542,8 @@ span.text-red {
 .maylike-products-wrapper h2 {
   text-align: center;
   margin: 50px;
-  color: var(--text-color); /* Changed from #324d67 */
+  color: #324d67;
+
   font-size: 28px;
 }
 .maylike-products-container {
@@ -713,11 +554,11 @@ span.text-red {
 }
 .max-qty {
   font-weight: 500;
-  color: var(--highlight-color);
+  color: #f02d34;
 }
 .success-wrapper,
 .cancel-wrapper {
-  background-color: var(--background-color); /* Changed from white */
+  background-color: white;
   min-height: 60vh;
 }
 .success,
@@ -725,7 +566,7 @@ span.text-red {
   width: 1000px;
   margin: auto;
   margin-top: 160px;
-  background-color: var(--success-bg-color); /* Changed from #dcdcdc */
+  background-color: #dcdcdc;
   padding: 50px;
   border-radius: 15px;
   display: flex;
@@ -735,7 +576,7 @@ span.text-red {
 }
 
 .success .icon {
-  color: var(--success-icon-color); /* Changed from green */
+  color: green;
   font-size: 40px;
 }
 .success h2 {
@@ -743,18 +584,16 @@ span.text-red {
   margin-top: 15px 0px;
   font-weight: 900;
   font-size: 40px;
-  color: var(--success-text-color); /* Changed from #324d67 */
+  color: #324d67;
 }
 .success .email-msg {
   font-size: 16px;
   font-weight: 600;
   text-align: center;
-  color: var(--success-text-color); /* Added */
 }
 .cancel p {
   font-size: 20px;
   font-weight: 600;
-  color: var(--text-color); /* Added */
 }
 .success .description {
   font-size: 16px;
@@ -762,11 +601,10 @@ span.text-red {
   text-align: center;
   margin: 10px;
   margin-top: 30px;
-  color: var(--success-text-color); /* Added */
 }
 .success .description .email {
   margin-left: 5px;
-  color: var(--highlight-color);
+  color: #f02d34;
 }
 .product-max-qty {
   margin-top: 10px;
@@ -875,11 +713,11 @@ span.text-red {
   }
   .flex h5 {
     font-size: 16px;
-    color: var(--cart-text-color); /* Changed from #324d67 */
+    color: #324d67;
   }
   .flex h4 {
     font-size: 16px;
-    color: var(--cart-text-color); /* Changed from black */
+    color: black;
   }
   .cart-bottom {
     padding: 30px;
@@ -912,4 +750,4 @@ span.text-red {
     width: 300px;
     margin: auto;
   }
-}
+  }
