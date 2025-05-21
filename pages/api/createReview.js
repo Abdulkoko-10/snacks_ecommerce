@@ -25,7 +25,7 @@ export default async function handler(req, res) {
           _ref: productId,
         },
         createdAt: new Date().toISOString(),
-        approved: false, // Reviews default to not approved
+        approved: true, // Reviews default to not approved
       };
 
       // Create a new client instance configured for writes
@@ -36,7 +36,7 @@ export default async function handler(req, res) {
       });
 
       await writeClient.create(doc);
-      res.status(200).json({ message: 'Review submitted successfully and is awaiting approval!' });
+      res.status(200).json({ message: 'Review submitted successfully and is now live!' });
     } catch (error) {
       console.error('Error creating review:', error);
       // It's good practice to not expose detailed Sanity client errors to the user
