@@ -62,7 +62,7 @@ const ProductDetails = ({ product, products, reviews: initialReviews }) => {
   const handleReviewSubmitSuccess = async () => {
     setShowReviewForm(false); // Optionally hide form
     // Re-fetch reviews (simple approach)
-    const reviewsQuery = `*[_type == "review" && product._ref == "${product._id}" && approved == true] | order(createdAt desc)`;
+    const reviewsQuery = `*[_type == "review" && product._ref == "${product._id}"] | order(createdAt desc)`;
     const updatedReviews = await client.fetch(reviewsQuery);
     setCurrentReviews(updatedReviews);
     // Could also add a "Thank you for your review, it's awaiting approval" message.
@@ -285,7 +285,7 @@ export const getStaticProps = async ({ params: { slug } }) => {
     // Now fetch reviews using the product's _id
     // The `^._id` in reviewsQuery refers to the _id of the document being joined from, which is product here.
     // To make it work directly, we inject productId.
-    const reviewsDataQuery = `*[_type == "review" && product._ref == "${product._id}" && approved == true] | order(createdAt desc)`;
+    const reviewsDataQuery = `*[_type == "review" && product._ref == "${product._id}"] | order(createdAt desc)`;
     reviews = await client.fetch(reviewsDataQuery);
   }
   

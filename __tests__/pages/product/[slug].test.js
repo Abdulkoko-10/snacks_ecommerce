@@ -16,8 +16,12 @@ jest.mock('../../../components/StarRating', () => jest.fn((props) => ( // Correc
 )));
 jest.mock('../../../components/ReviewList', () => jest.fn(({ reviews }) => ( // Corrected path
   <div data-testid="review-list-mock">
-    {reviews.length} review(s) displayed
-    {reviews.map(r => <p key={r._id}>{r.comment}</p>)}
+    {reviews.map(r => (
+      <div key={r._id || r.comment}>
+        <p>{r.comment}{r.approved === false ? ' (Pending)' : ''}</p>
+      </div>
+    ))}
+    <span>{reviews.length} review(s) displayed</span>
   </div>
 )));
 jest.mock('../../../components/ReviewForm', () => jest.fn(({ productId, onSubmitSuccess }) => ( // Corrected path
@@ -128,41 +132,63 @@ describe('ProductDetails Page - Reviews Section', () => {
     expect(toggleButton).toHaveTextContent(/Write a Review/i);
   });
 
-  test('submitting review form calls onSubmitSuccess and potentially updates reviews (simulated)', async () => {
-    client.fetch.mockResolvedValueOnce(mockReviewsData); // For initial load
-    // For re-fetch after review submission
-    const updatedMockReviews = [
-        ...mockReviewsData, 
-        { _id: 'rev3', user: 'New User', rating: 3, comment: 'New comment', createdAt: new Date().toISOString() }
-    ];
-    client.fetch.mockResolvedValueOnce(updatedMockReviews);
+  test('submitting review form calls onSubmitSuccess and displays pending review', async () => {
+    // Initial reviews are all approved (as per mockReviewsData structure, assuming they are approved)
+    // No initial client.fetch call here as reviews are passed as props in renderProductDetails
+    renderProductDetails(mockProduct, mockProducts, mockReviewsData);
 
+    // Check initial state of ReviewList (all approved)
+    const reviewList = screen.getByTestId('review-list-mock');
+    expect(reviewList).toHaveTextContent(`${mockReviewsData.length} review(s) displayed`);
+    mockReviewsData.forEach(review => {
+      expect(reviewList).toHaveTextContent(review.comment);
+      // Assuming mockReviewsData only contains approved reviews, so no "(Pending)"
+      expect(reviewList).not.toHaveTextContent(`${review.comment} (Pending)`);
+    });
 
-    renderProductDetails();
+    // Open the review form
     const toggleButton = screen.getByRole('button', { name: /Write a Review/i });
-    fireEvent.click(toggleButton); // Show the form
+    fireEvent.click(toggleButton);
 
-    const reviewForm = screen.getByTestId('review-form-mock');
-    // Simulate form submission (mocked ReviewForm calls onSubmitSuccess directly)
-    fireEvent.submit(reviewForm.querySelector('button[type="submit"]'));
+    // Prepare the data that will be returned when handleReviewSubmitSuccess calls client.fetch
+    const newUnapprovedReview = { 
+      _id: 'revNew', 
+      user: 'New Reviewer', 
+      rating: 5, 
+      comment: 'This is my pending review', 
+      approved: false, // Crucial for this test
+      createdAt: new Date().toISOString() 
+    };
+    const reviewsAfterSubmission = [...mockReviewsData, newUnapprovedReview];
     
-    await waitFor(() => {
-        // Check if client.fetch was called for re-fetching reviews
-        // The first call is in getStaticProps (or initial client-side if not using static props for reviews)
-        // The second call is in handleReviewSubmitSuccess
-        expect(client.fetch).toHaveBeenCalledTimes(1); // This count might be tricky depending on initial load vs. client-side effect
-                                                     // If reviews loaded by getStaticProps, this might be the first client.fetch
-                                                     // For this test, we'll assume handleReviewSubmitSuccess triggers a fetch.
-    });
+    // This specific mock call is for the fetch inside handleReviewSubmitSuccess
+    client.fetch.mockResolvedValueOnce(reviewsAfterSubmission);
+
+    // The ReviewForm mock calls onSubmitSuccess directly when submitted
+    // Find the submit button within the mocked form and click it
+    const reviewFormMock = screen.getByTestId('review-form-mock');
+    const submitButtonInMock = reviewFormMock.querySelector('button[type="submit"]');
     
-    // Check if the review list mock is updated (or would be if it re-rendered with new props)
-    // This depends on ReviewList mock correctly reflecting its props.
-    // Our mock shows review count.
+    expect(submitButtonInMock).toBeInTheDocument();
+    fireEvent.submit(submitButtonInMock); // Simulate submitting the mocked form
+
+    // Wait for the UI to update after onSubmitSuccess (which calls client.fetch and updates state)
     await waitFor(() => {
-      // This assertion might fail if the re-render mechanism isn't fully testable with current mocks
-      // It relies on setCurrentReviews updating the prop passed to the mocked ReviewList.
-      // expect(screen.getByTestId('review-list-mock')).toHaveTextContent('3 review(s) displayed');
+      // Assert that the ReviewList mock now displays the new review with pending status
+      const updatedReviewList = screen.getByTestId('review-list-mock');
+      expect(updatedReviewList).toHaveTextContent('This is my pending review (Pending)');
+      expect(updatedReviewList).toHaveTextContent(`${reviewsAfterSubmission.length} review(s) displayed`);
+      // Ensure previous reviews are still there and not marked pending
+      expect(updatedReviewList).toHaveTextContent(mockReviewsData[0].comment);
+      expect(updatedReviewList).not.toHaveTextContent(`${mockReviewsData[0].comment} (Pending)`);
     });
+
+    // Verify that client.fetch was called (by handleReviewSubmitSuccess)
+    // It's called once because initial reviews are passed as props.
+    expect(client.fetch).toHaveBeenCalledTimes(1); 
+    expect(client.fetch).toHaveBeenCalledWith(
+      expect.stringContaining(`*[_type == "review" && product._ref == "${mockProduct._id}"]`) // Check the query
+    );
   });
 
   describe('getStaticProps and getStaticPaths', () => {

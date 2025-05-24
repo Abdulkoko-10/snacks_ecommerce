@@ -19,6 +19,7 @@ const ReviewList = ({ reviews = [] }) => {
         <div key={review._id || review.createdAt} className="review-item">
           <div className="review-item-header">
             <span className="review-user">{review.user || 'Anonymous'}</span>
+            {review.approved === false && <span className="review-status"> (Pending approval)</span>}
             <span className="review-date">{formatDate(review.createdAt)}</span>
           </div>
           <StarRating rating={review.rating} starSize={20} />

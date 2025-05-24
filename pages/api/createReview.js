@@ -38,7 +38,14 @@ export default async function handler(req, res) {
       await writeClient.create(doc);
       res.status(200).json({ message: 'Review submitted successfully and is awaiting approval!' });
     } catch (error) {
-      console.error('Error creating review:', error);
+          console.error('Error creating review:');
+          if (error.message) {
+            console.error('Message:', error.message);
+          }
+          if (error.statusCode) {
+            console.error('Status Code:', error.statusCode);
+          }
+          console.error('Full error object:', error);
       // It's good practice to not expose detailed Sanity client errors to the user
       // but log them server-side for debugging.
       // Also, ensure the token has write access to the dataset in Sanity manage.
