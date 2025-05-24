@@ -26,6 +26,17 @@
   --glass-border-color: var(--glass-border-light);
   --glass-box-shadow-color: var(--glass-box-shadow-light);
   --product-card-hover-shadow: var(--product-card-hover-shadow-light);
+
+  /* RGB mode variables - initially set to light mode values */
+  --text-color-rgb: var(--text-color-light);
+  --primary-background-color-rgb: var(--background-light);
+  --secondary-background-color-rgb: var(--secondary-background-light);
+  --glass-background-color-rgb: var(--glass-background-light);
+  --glass-border-color-rgb: var(--glass-border-light);
+  --glass-box-shadow-color-rgb: var(--glass-box-shadow-light);
+  --product-card-hover-shadow-rgb: var(--product-card-hover-shadow-light);
+  --primary-color-rgb: var(--primary-color); /* For elements like links, buttons that use primary color directly */
+  --secondary-color-rgb: var(--secondary-color); /* For elements that use secondary color directly */
 }
 
 .dark-mode {
@@ -36,6 +47,18 @@
   --glass-border-color: var(--glass-border-dark);
   --glass-box-shadow-color: var(--glass-box-shadow-dark);
   --product-card-hover-shadow: var(--product-card-hover-shadow-dark);
+}
+
+.rgb-mode {
+  --text-color: var(--text-color-rgb);
+  --primary-background-color: var(--primary-background-color-rgb);
+  --secondary-background-color: var(--secondary-background-color-rgb);
+  --glass-background-color: var(--glass-background-color-rgb);
+  --glass-border-color: var(--glass-border-color-rgb);
+  --glass-box-shadow-color: var(--glass-box-shadow-color-rgb);
+  --product-card-hover-shadow: var(--product-card-hover-shadow-rgb);
+  --primary-color: var(--primary-color-rgb); /* Ensure primary color is also themed */
+  --secondary-color: var(--secondary-color-rgb); /* Ensure secondary color is also themed */
 }
 
 /* Apply theme to body by default, can be toggled */
