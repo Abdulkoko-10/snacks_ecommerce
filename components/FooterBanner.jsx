@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+//import Image from 'next/image'; // Import next/image
 
 import { urlFor } from '../lib/client'
 
@@ -25,10 +26,21 @@ smallText, midText, desc, product, buttonText, image
           </Link>
         </div>
 
-        <img 
+        {/* <img 
           src={urlFor(image)}
           className="footer-banner-image"
-        />
+        /> */}
+        <div className="footer-banner-image-container"> {/* Added a container for positioning context if needed */}
+          <img
+            src={urlFor(image).url()}
+            alt={midText || 'Footer banner promotion'}
+            width={450} // From CSS
+            height={450} // From CSS
+            className="footer-banner-image" // This class might need adjustment for next/image
+            // layout="responsive" // Consider this if aspect ratio should be maintained based on parent
+            // objectFit="cover"   // Use with layout="responsive" or "fill"
+          />
+        </div>
       </div>
     </div>
   )
