@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { AiOutlineShopping } from 'react-icons/ai';
+import { FiSun, FiMoon, FiDroplet } from 'react-icons/fi'; // Import Feather icons
 
 import { Cart } from './';
 import { useStateContext } from '../context/StateContext';
@@ -38,19 +39,42 @@ const Navbar = () => {
   const [rgbColor, setRgbColor] = useState('#324d67'); // Default RGB color
   const [rgbInputColor, setRgbInputColor] = useState(rgbColor); // For the color picker input
 
-  const applyRgbTheme = useCallback((baseColor) => {
-    const contrastColor = calculateContrastColor(baseColor);
-    const secondaryBackgroundColor = darkenColor(baseColor, 20); // Darken by 20 units
+  const applyRgbTheme = useCallback((selectedRgbColor) => {
+    const mainContrastColor = calculateContrastColor(selectedRgbColor);
+    const secondaryBackgroundColor = darkenColor(selectedRgbColor, 15); // Slightly less dark than before
 
-    document.documentElement.style.setProperty('--primary-background-color-rgb', baseColor);
-    document.documentElement.style.setProperty('--text-color-rgb', contrastColor);
+    // 1. Main background
+    document.documentElement.style.setProperty('--primary-background-color-rgb', selectedRgbColor);
+    
+    // 2. Main text color (contrast to main background)
+    document.documentElement.style.setProperty('--text-color-rgb', mainContrastColor);
+    
+    // 3. Secondary background (for cards, etc.)
     document.documentElement.style.setProperty('--secondary-background-color-rgb', secondaryBackgroundColor);
-    // Primary and secondary colors for branding elements, links, etc.
-    document.documentElement.style.setProperty('--primary-color-rgb', baseColor); // Or a derivative
-    document.documentElement.style.setProperty('--secondary-color-rgb', contrastColor); // Or a derivative
+    
+    // 4. Primary accent color (links, and importantly, background for some buttons)
+    //    Set to the selectedRgbColor itself. Text on these elements will use --text-on-primary-color,
+    //    which in .rgb-mode is an alias for --text-color-rgb (mainContrastColor), ensuring visibility.
+    document.documentElement.style.setProperty('--primary-color-rgb', selectedRgbColor);
+    
+    // 5. Secondary text color (logo, some subheadings)
+    //    Set to mainContrastColor to ensure it's visible against selectedRgbColor.
+    //    This makes it consistent with the main text color.
+    document.documentElement.style.setProperty('--secondary-color-rgb', mainContrastColor);
 
-    // Potentially update other RGB variables here if needed
-    // For example, glassmorphism colors could be derived too.
+    // Note: --text-on-primary-color is handled by CSS:
+    // In .rgb-mode, it's set to var(--text-color-rgb).
+    // Since --primary-color-rgb is set to selectedRgbColor, and --text-color-rgb is mainContrastColor (contrast of selectedRgbColor),
+    // elements using background:var(--primary-color) and color:var(--text-on-primary-color) will have correct contrast.
+
+    // Status message colors (--plus-color-rgb, --success-icon-color-rgb, etc.) are not changed here.
+    // They will retain their default values defined in the CSS, which is often desired for status indicators.
+
+    // Other RGB variables like glassmorphism or product card shadows can also be updated here
+    // if more granular control is needed beyond their CSS defaults (which are based on light theme).
+    // For example:
+    // document.documentElement.style.setProperty('--glass-background-color-rgb', hexToRgba(selectedRgbColor, 0.25)); // Requires hexToRgba
+    // document.documentElement.style.setProperty('--glass-border-color-rgb', hexToRgba(mainContrastColor, 0.18));
     // document.documentElement.style.setProperty('--glass-background-color-rgb', hexToRgba(baseColor, 0.25));
     // document.documentElement.style.setProperty('--glass-border-color-rgb', hexToRgba(contrastColor, 0.18));
   }, []);
@@ -116,8 +140,19 @@ const Navbar = () => {
   };
   
   // Determine toggle state for the visual switch
-  // Light: unchecked, Dark: checked, RGB: unchecked (or a third state if UI supported)
-  const isToggleChecked = themeMode === 'dark';
+  // Determine which icon to display based on the current themeMode
+  let currentThemeIcon;
+  let themeIconTitle = "Toggle Theme";
+  if (themeMode === 'light') {
+    currentThemeIcon = <FiMoon size={22} />; // Icon to switch to Dark
+    themeIconTitle = "Activate Dark Mode";
+  } else if (themeMode === 'dark') {
+    currentThemeIcon = <FiDroplet size={22} />;  // Icon to switch to RGB
+    themeIconTitle = "Activate RGB Mode";
+  } else { // themeMode === 'rgb'
+    currentThemeIcon = <FiSun size={22} />;  // Icon to switch to Light
+    themeIconTitle = "Activate Light Mode";
+  }
 
   return (
     <div className="navbar-container">
@@ -126,16 +161,15 @@ const Navbar = () => {
       </p>
 
       <div className="nav-items-right">
-        {/* Theme Display (simple text for now) */}
-        <span style={{ marginRight: '10px', fontSize: '0.8rem', color: 'var(--text-color)' }}>
-          Mode: {themeMode.toUpperCase()}
-        </span>
-
-        {/* Theme Toggle Switch */}
-        <label className="theme-switch">
-          <input type="checkbox" checked={isToggleChecked} onChange={toggleTheme} />
-          <span className="slider round"></span>
-        </label>
+        <button 
+          type="button" 
+          className="theme-icon-button" 
+          onClick={toggleTheme}
+          title={themeIconTitle}
+          aria-label={themeIconTitle}
+        >
+          {currentThemeIcon}
+        </button>
 
         {/* RGB Color Picker */}
         {themeMode === 'rgb' && (
@@ -143,14 +177,14 @@ const Navbar = () => {
             type="color"
             value={rgbInputColor}
             onChange={handleRgbColorChange}
-            style={{ marginLeft: '10px', height: '24px', width: '40px', border: 'none', padding: '2px', backgroundColor: 'transparent' }}
+            className="rgb-color-picker"
             title="Select RGB base color"
           />
         )}
 
         <button type="button"
           className="cart-icon" onClick={() => setShowCart(true)}>
-          <AiOutlineShopping />
+          <AiOutlineShopping /> {/* Ensure this icon also has a consistent size if needed, e.g., size={25} */}
           <span className="cart-item-qty">{totalQuantities}</span>
         </button>
       </div>

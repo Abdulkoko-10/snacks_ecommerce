@@ -37,9 +37,21 @@
   --product-card-hover-shadow-rgb: var(--product-card-hover-shadow-light);
   --primary-color-rgb: var(--primary-color); /* For elements like links, buttons that use primary color directly */
   --secondary-color-rgb: var(--secondary-color); /* For elements that use secondary color directly */
+
+  /* New variables for specific hardcoded colors */
+  --plus-color: rgb(49, 168, 49);
+  --plus-color-rgb: var(--plus-color);
+  --success-icon-color: green;
+  --success-icon-color-rgb: var(--success-icon-color);
+  --success-message-color: #28a745; /* Same as --plus-color essentially */
+  --success-message-color-rgb: var(--success-message-color);
+
+  /* Variable for text on primary-colored backgrounds */
+  --text-on-primary-color: var(--background-light);
 }
 
 .dark-mode {
+  --text-on-primary-color: var(--background-light); /* Text on primary color (red) is still light in dark mode */
   --text-color: var(--text-color-dark);
   --primary-background-color: var(--background-dark);
   --secondary-background-color: var(--secondary-background-dark);
@@ -59,6 +71,14 @@
   --product-card-hover-shadow: var(--product-card-hover-shadow-rgb);
   --primary-color: var(--primary-color-rgb); /* Ensure primary color is also themed */
   --secondary-color: var(--secondary-color-rgb); /* Ensure secondary color is also themed */
+
+  /* Mapping for new specific color variables */
+  --plus-color: var(--plus-color-rgb);
+  --success-icon-color: var(--success-icon-color-rgb);
+  --success-message-color: var(--success-message-color-rgb);
+  
+  /* Text on primary-colored backgrounds should use the main text color of RGB theme (which is contrastColor) */
+  --text-on-primary-color: var(--text-color-rgb); 
 }
 
 /* Apply theme to body by default, can be toggled */
@@ -129,6 +149,36 @@ a {
   align-items: center;
   gap: 16px; /* Adjust gap as needed */
 }
+
+/* New Theme Icon Button Styles */
+.theme-icon-button {
+  background: transparent;
+  border: none;
+  color: var(--secondary-color); /* Match cart icon color */
+  cursor: pointer;
+  font-size: 22px; /* Match icon size used in Navbar.jsx */
+  display: flex;
+  align-items: center;
+  padding: 0;
+  transition: transform 0.4s ease;
+}
+
+.theme-icon-button:hover {
+  transform: scale(1.1, 1.1); /* Consistent hover effect */
+}
+
+/* New RGB Color Picker Styles */
+.rgb-color-picker {
+  margin-left: 8px; /* Space from the theme icon button */
+  height: 26px; /* Slightly taller to better show color */
+  width: 35px;
+  border: 1px solid var(--secondary-color); /* Theme-aware border */
+  padding: 2px; /* Small padding to show color swatch clearly */
+  background-color: transparent;
+  cursor: pointer;
+  vertical-align: middle; /* Align with button if needed */
+}
+
 
 /* Basic Theme Toggle Switch Styles */
 .theme-switch {
@@ -240,7 +290,7 @@ span.text-red {
   position: absolute;
   right: -8px;
   font-size: 0.75rem; /* Adjusted for Open Sans */
-  color: var(--background-light);
+  color: var(--text-on-primary-color); /* UPDATED */
   background-color: var(--primary-color);
   width: 18px;
   height: 18px;
@@ -370,7 +420,7 @@ span.text-red {
   border-radius: 15px;
   padding: 12px 20px; /* Slightly larger button */
   background-color: var(--primary-color);
-  color: var(--background-light);
+  color: var(--text-on-primary-color); /* UPDATED */
   border: none;
   margin-top: 40px;
   font-size: 1.1rem; /* Open Sans */
@@ -448,7 +498,7 @@ span.text-red {
   height: auto; /* Auto height based on content */
   min-height: 350px; /* Minimum height */
   line-height: 1.3; /* Adjusted line-height for banner */
-  color: var(--background-light);
+  color: var(--text-on-primary-color); /* UPDATED */
   width: 100%;
   margin-top: 100px; /* Adjusted margin */
   padding: 80px 40px; /* Adjusted padding */
@@ -674,7 +724,7 @@ span.text-red {
   margin-top: 40px;
   text-transform: uppercase;
   background-color: var(--primary-color);
-  color: var(--background-light); 
+  color: var(--text-on-primary-color); /* UPDATED */
   cursor: pointer;
   transform: scale(1, 1);
   transition: transform 0.5s ease;
@@ -829,7 +879,7 @@ span.text-red {
   font-size: 1.2rem; /* Slightly larger for num */
 }
 .quantity-desc .plus {
-  color: rgb(49, 168, 49); 
+  color: var(--plus-color); /* UPDATED */
 }
 
 .maylike-products-wrapper {
@@ -873,7 +923,7 @@ span.text-red {
 }
 
 .success .icon {
-  color: green; /* Keep success icon green */
+  color: var(--success-icon-color); /* UPDATED */
   font-size: 40px;
 }
 .success h2 {
@@ -1298,14 +1348,14 @@ span.text-red {
 
 .error-message {
   background-color: rgba(240, 45, 52, 0.1); /* Light red */
-  color: var(--primary-color);
-  border: 1px solid var(--primary-color);
+  color: var(--primary-color); /* Already uses a themeable variable */
+  border: 1px solid var(--primary-color); /* Already uses a themeable variable */
 }
 
 .success-message {
   background-color: rgba(40, 167, 69, 0.1); /* Light green */
-  color: #28a745; /* Green color for success text */
-  border: 1px solid #28a745;
+  color: var(--success-message-color); /* UPDATED */
+  border: 1px solid var(--success-message-color); /* UPDATED */
 }
 
 .btn-submit-review {
