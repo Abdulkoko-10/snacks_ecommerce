@@ -32,6 +32,21 @@ const darkenColor = (hexColor, amount) => {
   return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
 };
 
+// Helper to convert hex to rgba
+const hexToRgba = (hex, alpha) => {
+  if (!hex || typeof hex !== 'string' || hex.length < 6) { // Basic validation
+    return `rgba(0, 0, 0, ${alpha})`; // Default to black with alpha on error
+  }
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+
+  if (isNaN(r) || isNaN(g) || isNaN(b)) { // Check if parsing failed
+    return `rgba(0, 0, 0, ${alpha})`; // Default to black with alpha on error
+  }
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
+
 
 const Navbar = () => {
   const { showCart, setShowCart, totalQuantities } = useStateContext();
@@ -177,7 +192,7 @@ const Navbar = () => {
   }
 
   return (
-    <div className="navbar-container">
+    <div className="navbar-container glassmorphism">
       <p className="logo">
         <Link href="/">Snacks</Link>
       </p>

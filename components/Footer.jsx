@@ -4,7 +4,7 @@ from 'react-icons/ai'
 
 const Footer = () => {
   return (
-    <div className="footer-container">
+    <div className="footer-container glassmorphism">
       <p>2024 Snacks All rights reserved</p>
       <p className="icons">
         <AiFillInstagram />
