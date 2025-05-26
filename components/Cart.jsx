@@ -47,7 +47,7 @@ const Cart = () => {
 
   return (
     <div className="cart-wrapper" ref={cartRef}>
-      <div className="cart-container glassmorphism">
+      <div className="cart-container"> {/* Removed 'glassmorphism' */}
         <button
           type="button"
           className="cart-heading"
