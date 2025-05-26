@@ -55,6 +55,7 @@
   --text-color: var(--text-color-dark);
   --primary-background-color: var(--background-dark);
   --secondary-background-color: var(--secondary-background-dark);
+  --secondary-color: var(--text-color-dark); /* FIX: Ensure logo is visible in dark mode */
   --glass-background-color: var(--glass-background-dark);
   --glass-border-color: var(--glass-border-dark);
   --glass-box-shadow-color: var(--glass-box-shadow-dark);
@@ -177,6 +178,58 @@ a {
   background-color: transparent;
   cursor: pointer;
   vertical-align: middle; /* Align with button if needed */
+}
+
+/* Theme Menu (Ellipsis) Styles */
+.theme-menu-container {
+  position: relative;
+  display: inline-block; /* Or flex if needed in the parent */
+}
+
+.theme-ellipsis-button {
+  background: transparent;
+  border: none;
+  color: var(--secondary-color);
+  cursor: pointer;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  padding: 0 4px; /* Give a bit more space if needed */
+  transition: transform 0.3s ease;
+}
+
+.theme-ellipsis-button:hover {
+  transform: scale(1.1);
+}
+
+.theme-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 5px); /* Position below the button with a small gap */
+  right: 0;
+  background-color: var(--secondary-background-color);
+  color: var(--text-color); /* Text color will be inherited by li */
+  border: 1px solid var(--glass-border-color);
+  border-radius: 8px;
+  box-shadow: 0 5px 15px var(--product-card-hover-shadow); /* Adjusted shadow */
+  list-style: none;
+  padding: 8px 0;
+  margin: 0;
+  min-width: 160px; /* Slightly wider */
+  z-index: 200; /* Ensure it's above other elements */
+  overflow: hidden; /* Ensures border-radius clips li hover states */
+}
+
+.theme-dropdown-menu li {
+  padding: 10px 20px; /* More padding for easier clicking */
+  cursor: pointer;
+  font-size: 0.9rem; /* Slightly smaller for menu items */
+  transition: background-color 0.2s ease-in-out;
+  white-space: nowrap;
+}
+
+.theme-dropdown-menu li:hover {
+  background-color: var(--primary-color); /* Use primary color for hover */
+  color: var(--text-on-primary-color); /* Ensure text on primary is visible */
 }
 
 
@@ -835,7 +888,7 @@ span.text-red {
   font-size: 1rem; /* Adjusted for Open Sans */
   font-weight: 600; /* Adjusted for Open Sans */
   background-color: var(--primary-background-color); 
-  color: var(--primary-color);
+  color: var(--text-color); /* MODIFIED: Ensure contrast with primary background */
   cursor: pointer;
   width: 200px;
   transform: scale(1, 1);
@@ -848,7 +901,7 @@ span.text-red {
   width: 200px;
   padding: 12px 20px; /* Adjusted padding */
   background-color: var(--primary-color);
-  color: var(--background-light); 
+  color: var(--text-on-primary-color); /* MODIFIED: Ensure contrast with primary-color background */
   border: none;
   margin-top: 40px;
   font-size: 1rem; /* Adjusted for Open Sans */

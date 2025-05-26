@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { AiOutlineShopping } from 'react-icons/ai';
-import { FiSun, FiMoon, FiDroplet } from 'react-icons/fi'; // Import Feather icons
+import { FiSun, FiMoon, FiDroplet, FiMoreHorizontal } from 'react-icons/fi'; // Import Feather icons
 
 import { Cart } from './';
 import { useStateContext } from '../context/StateContext';
@@ -38,6 +38,8 @@ const Navbar = () => {
   const [themeMode, setThemeMode] = useState('light'); // 'light', 'dark', 'rgb'
   const [rgbColor, setRgbColor] = useState('#324d67'); // Default RGB color
   const [rgbInputColor, setRgbInputColor] = useState(rgbColor); // For the color picker input
+  const [showThemeMenu, setShowThemeMenu] = useState(false);
+  const themeMenuRef = useRef(null); // For detecting clicks outside
 
   const applyRgbTheme = useCallback((selectedRgbColor) => {
     const mainContrastColor = calculateContrastColor(selectedRgbColor);
@@ -75,11 +77,11 @@ const Navbar = () => {
     // For example:
     // document.documentElement.style.setProperty('--glass-background-color-rgb', hexToRgba(selectedRgbColor, 0.25)); // Requires hexToRgba
     // document.documentElement.style.setProperty('--glass-border-color-rgb', hexToRgba(mainContrastColor, 0.18));
-    // document.documentElement.style.setProperty('--glass-background-color-rgb', hexToRgba(baseColor, 0.25));
-    // document.documentElement.style.setProperty('--glass-border-color-rgb', hexToRgba(contrastColor, 0.18));
+    // document.documentElement.style.setProperty('--glass-background-color-rgb', hexToRgba(selectedRgbColor, 0.25)); // Requires hexToRgba
+    // document.documentElement.style.setProperty('--glass-border-color-rgb', hexToRgba(mainContrastColor, 0.18));
   }, []);
 
-  // Effect to set initial theme
+  // Effect to set initial theme & handle clicks outside theme menu
   useEffect(() => {
     const savedThemeMode = localStorage.getItem('themeMode');
     const savedRgbColor = localStorage.getItem('rgbColor');
@@ -107,28 +109,48 @@ const Navbar = () => {
       setThemeMode('light'); // Default to light
       localStorage.setItem('themeMode', 'light');
     }
+
+    // Handle clicks outside the theme menu to close it
+    const handleClickOutside = (event) => {
+      if (themeMenuRef.current && !themeMenuRef.current.contains(event.target)) {
+        setShowThemeMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+
   }, [applyRgbTheme]);
 
-  const toggleTheme = () => {
-    let newMode = 'light';
+  const setAndStoreTheme = (newThemeMode, newRgbColor = rgbColor) => {
     document.documentElement.classList.remove('dark-mode', 'rgb-mode');
+    localStorage.setItem('themeMode', newThemeMode);
+    setThemeMode(newThemeMode);
 
-    if (themeMode === 'light') {
-      newMode = 'dark';
+    if (newThemeMode === 'dark') {
       document.documentElement.classList.add('dark-mode');
-      localStorage.setItem('themeMode', 'dark');
-    } else if (themeMode === 'dark') {
-      newMode = 'rgb';
+    } else if (newThemeMode === 'rgb') {
       document.documentElement.classList.add('rgb-mode');
-      applyRgbTheme(rgbColor); // Apply current or default rgbColor
-      localStorage.setItem('themeMode', 'rgb');
-      localStorage.setItem('rgbColor', rgbColor); // Save current RGB color
-    } else if (themeMode === 'rgb') {
-      newMode = 'light';
-      // No class for light, ensure others are removed
-      localStorage.setItem('themeMode', 'light');
+      applyRgbTheme(newRgbColor);
+      setRgbColor(newRgbColor); // Ensure internal state is also up-to-date
+      setRgbInputColor(newRgbColor); // Sync input picker
+      localStorage.setItem('rgbColor', newRgbColor);
     }
-    setThemeMode(newMode);
+    // For 'light' mode, no class is added beyond removing others.
+  };
+
+  const toggleTheme = () => {
+    let newMode;
+    if (themeMode === 'light') newMode = 'dark';
+    else if (themeMode === 'dark') newMode = 'rgb';
+    else newMode = 'light'; // themeMode === 'rgb'
+    setAndStoreTheme(newMode);
+  };
+  
+  const selectTheme = (selectedMode) => {
+    setAndStoreTheme(selectedMode);
+    setShowThemeMenu(false);
   };
 
   const handleRgbColorChange = (event) => {
@@ -184,9 +206,29 @@ const Navbar = () => {
 
         <button type="button"
           className="cart-icon" onClick={() => setShowCart(true)}>
-          <AiOutlineShopping /> {/* Ensure this icon also has a consistent size if needed, e.g., size={25} */}
+          <AiOutlineShopping />
           <span className="cart-item-qty">{totalQuantities}</span>
         </button>
+
+        {/* New Ellipsis Menu Button & Dropdown */}
+        <div className="theme-menu-container" ref={themeMenuRef}>
+          <button
+            type="button"
+            className="theme-ellipsis-button"
+            onClick={() => setShowThemeMenu(!showThemeMenu)}
+            title="More theme options"
+            aria-label="More theme options"
+          >
+            <FiMoreHorizontal size={22} />
+          </button>
+          {showThemeMenu && (
+            <ul className="theme-dropdown-menu">
+              <li onClick={() => selectTheme('light')}>Light Theme</li>
+              <li onClick={() => selectTheme('dark')}>Dark Theme</li>
+              <li onClick={() => selectTheme('rgb')}>RGB Theme</li>
+            </ul>
+          )}
+        </div>
       </div>
 
       {showCart && <Cart />}
