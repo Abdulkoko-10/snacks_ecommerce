@@ -143,6 +143,7 @@ a {
   margin: 10px 25px;
   padding: 10px 0;
   position: relative;
+  z-index: 1000;
 }
 
 .nav-items-right {
@@ -479,7 +480,7 @@ span.text-red {
   font-size: 1.1rem; /* Open Sans */
   font-weight: 600; /* Open Sans */
   cursor: pointer;
-  z-index: 10000 !important;
+  z-index: 1;
 }
 
 .hero-banner-container h3 { /* Smaller text in hero */
@@ -1107,7 +1108,7 @@ span.text-red {
   }
   .hero-banner-container button {
     margin-top: 30px; /* Adjusted margin */
-    z-index: 10000;
+    z-index: 1;
     font-size: 1rem; 
   }
   .desc {
