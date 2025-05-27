@@ -1134,7 +1134,7 @@ span.text-red {
     font-size: 1rem;
   }
   .product-card {
-    width: calc(50% - 10px); /* Two cards per row */
+    width: calc(50% - 12.5px); /* Two cards per row */
     padding: 10px;
   }
   .product-name {
