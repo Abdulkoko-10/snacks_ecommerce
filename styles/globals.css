@@ -118,9 +118,9 @@ p {
   line-height: 1.6; /* Ensure paragraphs also have good line height */
 }
 
-::-webkit-scrollbar {
+/* ::-webkit-scrollbar {
   width: 0px;
-}
+} */
 
 a {
   color: var(--primary-color);
@@ -134,6 +134,7 @@ a {
 }
 .layout {
   padding: 20px;
+  overflow-x: hidden;
 }
 
 .navbar-container {
@@ -436,6 +437,10 @@ span.text-red {
   background-color: var(--secondary-background-color);
   transform: scale(1, 1);
   transition: transform 0.5s ease;
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
 }
 
 .product-name {
@@ -610,11 +615,12 @@ span.text-red {
   margin-top: 1rem;
 }
 .cart-wrapper {
-  width: 100vw;
   background: rgba(0, 0, 0, 0.5); /* This overlay can remain dark */
   position: fixed;
   right: 0;
   top: 0;
+  left: 0;
+  bottom: 0;
   z-index: 10050;
   transition: all 1s ease-in-out;
   display: flex;
@@ -1034,6 +1040,7 @@ span.text-red {
 
   .layout {
     padding: 15px;
+    overflow-x: hidden;
   }
   .navbar-container {
     margin: 5px 15px;
