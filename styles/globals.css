@@ -292,31 +292,6 @@ input:checked + .slider:before {
   margin: 60px 0px;
   color: var(--primary-color);
 }
-.marquee {
-  position: relative;
-  height: 400px;
-  width: 100%;
-  overflow-x: hidden;
-}
-
-.track {
-  position: absolute;
-  white-space: nowrap;
-  will-change: transform;
-  animation: marquee 15s linear infinite;
-  width: 180%;
-}
-.track:hover {
-  animation-play-state: paused;
-}
-@keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
 
 span.text-red {
   -webkit-text-stroke: 1px var(--primary-color);
@@ -446,6 +421,7 @@ span.text-red {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
   line-height: 1.4;
+  overflow-wrap: break-word; /* Ensure text wraps */
 }
 .product-price {
   font-family: 'Open Sans', sans-serif;
@@ -453,6 +429,7 @@ span.text-red {
   font-size: 1.2rem;
   margin-top: 6px;
   color: var(--text-color);
+  overflow-wrap: break-word; /* Ensure text wraps */
 }
 
 .hero-banner-container {
@@ -623,10 +600,9 @@ span.text-red {
   width: 600px;
   background-color: var(--primary-background-color); /* Was white */
   float: right;
-  padding: 40px 10px;
   position: relative;
   color: var(--text-color); 
-  padding: 30px 15px; /* Adjusted padding */
+  padding: 30px 15px; /* Consolidated padding, this was the effective one */
 }
 
 .footer-container {
@@ -1136,11 +1112,45 @@ span.text-red {
     width: calc(50% - 10px); /* Two cards per row */
     padding: 10px;
   }
+  .product-image { /* Specific adjustment for this breakpoint */
+    max-height: 200px;
+  }
   .product-name {
     font-size: 0.9rem; 
   }
   .product-price {
     font-size: 1rem; 
+  }
+
+  /* Further adjustments for very small screens */
+  @media screen and (max-width: 480px) {
+    .products-container {
+      gap: 15px; /* Reduce gap for single column */
+      margin-top: 20px;
+    }
+    .product-card {
+      width: 100%; /* Full width for single card per row */
+      padding: 15px; /* Adjust padding if needed */
+    }
+    .product-image { /* Specific adjustment for this breakpoint */
+      max-height: 180px; 
+    }
+    .product-name {
+      font-size: 0.85rem; /* Slightly smaller for very small screens */
+    }
+    .product-price {
+      font-size: 0.95rem; /* Slightly smaller for very small screens */
+    }
+    .product-card-hover-buttons {
+      padding: 10px; /* Adjust padding for smaller cards */
+    }
+    .product-card-hover-buttons button {
+      font-size: 0.8rem; /* Smaller buttons */
+      padding: 6px 8px;
+    }
+
+    /* Adjustments for "You may also like" track on very small screens */
+    /* Removed min-width for .maylike-products-container .product-card as it's handled by product-card width:100% and general product-card styling */
   }
 
   .product-detail-container {
@@ -1176,6 +1186,7 @@ span.text-red {
   .cart-container {
     width: 100%; /* Full width cart on mobile */
     padding: 20px 10px; /* Adjusted padding */
+    float: none; /* Prevent floating on mobile to fix clipping */
   }
   .cart-heading {
     margin-top: 20px; /* Adjusted margin */
@@ -1214,10 +1225,6 @@ span.text-red {
 
   .total h3 {
     font-size: 1.2rem; 
-  }
-  .track {
-    animation: marquee 10s linear infinite;
-    width: 550%;
   }
   .success-wrapper,
   .cancel-wrapper {
@@ -1443,4 +1450,113 @@ span.text-red {
 .product-detail-desc .reviews p {
   margin-bottom: 0; /* Remove default p margin here */
   font-size: 0.95rem; /* Consistent size */
+}
+
+/* Swiper Carousel Custom Styles for "You may also like" */
+.you-may-also-like-swiper {
+  padding-bottom: 50px; /* Increased space for pagination dots below buttons */
+  position: relative; /* Needed for absolute positioning of nav buttons if not using default Swiper placement */
+}
+
+/* Ensure slides correctly size their content (Product Cards) */
+.you-may-also-like-swiper .swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: stretch; /* Make slides equal height if cards vary */
+  height: auto; /* Allow slide to grow with card content */
+}
+
+.you-may-also-like-swiper .swiper-slide .product-card {
+  width: 100%; /* Make product card take full width of the slide */
+  margin: 0; /* Remove any margin from product card itself if it interferes */
+  height: 100%; /* Make product card take full height of the slide */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+
+/* Navigation Buttons Styling */
+.you-may-also-like-swiper .swiper-button-prev,
+.you-may-also-like-swiper .swiper-button-next {
+  --swiper-navigation-color: var(--primary-color);
+  --swiper-navigation-size: 28px; /* Default is 44px, makes arrows smaller */
+  
+  /* Custom background and shape for buttons */
+  background-color: var(--glass-background-color);
+  border-radius: 50%;
+  width: calc(var(--swiper-navigation-size) + 16px); /* Arrow size + padding */
+  height: calc(var(--swiper-navigation-size) + 16px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.you-may-also-like-swiper .swiper-button-prev:hover,
+.you-may-also-like-swiper .swiper-button-next:hover {
+  background-color: var(--secondary-background-color); /* Slightly more opaque on hover */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Adjust default ::after pseudo-element if custom icons are not used */
+.you-may-also-like-swiper .swiper-button-prev::after,
+.you-may-also-like-swiper .swiper-button-next::after {
+  font-size: var(--swiper-navigation-size);
+  font-weight: bold;
+}
+
+/* Positioning navigation buttons slightly more inwards */
+.you-may-also-like-swiper .swiper-button-prev {
+  left: 10px;
+}
+
+.you-may-also-like-swiper .swiper-button-next {
+  right: 10px;
+}
+
+/* Pagination Dots Styling */
+.you-may-also-like-swiper .swiper-pagination {
+  position: absolute; /* Ensure it's positioned relative to swiper container */
+  bottom: 10px; /* Default Swiper variable --swiper-pagination-bottom might be 0 or negative */
+  left: 0;
+  width: 100%;
+  --swiper-pagination-color: var(--primary-color); /* Active dot color */
+  --swiper-pagination-bullet-inactive-color: var(--secondary-color); /* Inactive dot color */
+  --swiper-pagination-bullet-inactive-opacity: 0.3;
+  --swiper-pagination-bullet-size: 8px;
+  --swiper-pagination-bullet-horizontal-gap: 5px;
+  --swiper-pagination-bullet-vertical-gap: 20px; /* Space from slides */
+}
+
+/* Responsive adjustments for smaller screens */
+@media screen and (max-width: 767px) { /* Target tablets and phones */
+  .you-may-also-like-swiper .swiper-button-prev,
+  .you-may-also-like-swiper .swiper-button-next {
+    --swiper-navigation-size: 22px; /* Even smaller arrows */
+    width: calc(var(--swiper-navigation-size) + 12px);
+    height: calc(var(--swiper-navigation-size) + 12px);
+  }
+  .you-may-also-like-swiper .swiper-button-prev {
+    left: 5px;
+  }
+  .you-may-also-like-swiper .swiper-button-next {
+    right: 5px;
+  }
+  .you-may-also-like-swiper {
+    padding-bottom: 40px; /* Adjust if pagination dots need more/less space */
+  }
+  .you-may-also-like-swiper .swiper-pagination {
+    bottom: 5px; /* Closer to the bottom edge on mobile */
+     --swiper-pagination-bullet-vertical-gap: 15px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  /* On very small screens, hide navigation buttons if they clutter the UI */
+  /* For this project, we'll keep them but ensure they don't overlap too much */
+  .you-may-also-like-swiper .swiper-button-prev {
+    /* left: -5px; /* Example: move further out if needed */
+  }
+  .you-may-also-like-swiper .swiper-button-next {
+    /* right: -5px; /* Example: move further out if needed */
+  }
 }

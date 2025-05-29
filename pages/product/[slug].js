@@ -17,6 +17,16 @@ import StarRating from '../../components/StarRating'; // Import StarRating
 import ReviewList from '../../components/ReviewList';   // Import ReviewList
 import ReviewForm from '../../components/ReviewForm';   // Import ReviewForm
 
+// Swiper imports
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, A11y } from 'swiper/modules';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+
+
 const ProductDetails = ({ product, products, reviews: initialReviews }) => {
   const { _id, image, name, details, price, slug } = product; // Added _id and slug for SKU and URL
   const [index, setIndex] = useState(0);
@@ -232,13 +242,31 @@ const ProductDetails = ({ product, products, reviews: initialReviews }) => {
 
       <div className="maylike-products-wrapper">
         <h2>You may also like</h2>
-        <div className="marquee">
-          <div className="maylike-products-container track">
-            {products.map((item) => (
-              <Product key={item._id} product={item} />
-            ))}
-          </div>
-        </div>
+        <Swiper
+          className="you-may-also-like-swiper"
+          modules={[Navigation, Pagination, A11y]}
+          spaceBetween={10} // Default spaceBetween, overridden by breakpoints
+          slidesPerView={1} // Default slidesPerView, overridden by breakpoints
+          navigation
+          pagination={{ clickable: true }}
+          loop={true}
+          breakpoints={{
+            // when window width is >= 320px
+            320: { slidesPerView: 1, spaceBetween: 10 },
+            // when window width is >= 480px
+            480: { slidesPerView: 2, spaceBetween: 15 },
+            // when window width is >= 768px
+            768: { slidesPerView: 3, spaceBetween: 20 },
+            // when window width is >= 1024px
+            1024: { slidesPerView: 4, spaceBetween: 25 },
+          }}
+        >
+          {products?.map((item) => (
+            <SwiperSlide key={item._id}>
+              <Product product={item} />
+            </SwiperSlide>
+          ))}
+        </Swiper>
       </div>
     </div>
   );

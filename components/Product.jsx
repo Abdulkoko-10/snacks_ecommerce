@@ -13,8 +13,6 @@ slug, price } }) => {
           <img
             src={urlFor(image && image[0]).url()} // Add .url()
             alt={name} // Already using name for alt
-            width={250}
-            height={250}
             className="product-image"
           />
           <p className="product-name">{name}</p>
