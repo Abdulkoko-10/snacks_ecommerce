@@ -348,8 +348,8 @@ span.text-red {
   overflow: hidden; /* To contain hover buttons if they animate from outside */
 
   /* Desktop sizing: use flex properties for better control in flex container */
-  /* flex-grow: 0 (don't grow past basis), flex-shrink: 1 (can shrink), flex-basis: 280px */
-  flex: 0 1 280px; 
+  /* flex-grow: 0 (don't grow past basis), flex-shrink: 1 (can shrink), flex-basis: 250px */
+  flex: 0 1 250px; 
 }
 .product-card:hover {
   transform: scale(1.03); /* Subtler zoom */
