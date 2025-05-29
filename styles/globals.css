@@ -331,8 +331,8 @@ span.text-red {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 25px;
-  margin-top: 30px;
+  gap: 15px; /* Mobile: gap: 15px; */
+  margin-top: 20px; /* Mobile: margin-top: 20px; */
   width: 100%;
 }
 .product-card {
@@ -343,13 +343,14 @@ span.text-red {
   background-color: var(--primary-background-color);
   border: 1px solid var(--glass-border-color);
   border-radius: 15px;
-  padding: 20px; 
+  padding: 15px; /* Mobile: padding: 15px; */
   position: relative; /* For positioning hover buttons */
   overflow: hidden; /* To contain hover buttons if they animate from outside */
 
-  /* Desktop sizing: use flex properties for better control in flex container */
-  /* flex-grow: 0 (don't grow past basis), flex-shrink: 1 (can shrink), flex-basis: 250px */
-  flex: 0 1 250px; 
+  /* Sizing to mimic mobile (full width) */
+  width: 100%; 
+  /* Removed flex: 0 1 250px; */
+  /* No explicit max-width for now, to see full effect of width: 100% */
 }
 .product-card:hover {
   transform: scale(1.03); /* Subtler zoom */
@@ -415,12 +416,18 @@ span.text-red {
   background-color: var(--secondary-background-color);
   transform: scale(1, 1);
   transition: transform 0.5s ease;
+  /* Base properties from original responsive work, still relevant */
+  width: 100%; 
+  height: auto; 
+  object-fit: cover; 
+  /* Set max-height to mobile's value */
+  max-height: 180px; /* Mobile: max-height: 180px; */
 }
 
 .product-name {
   font-family: 'Open Sans', sans-serif;
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 0.85rem; /* Mobile: font-size: 0.85rem; */
   color: var(--text-color);
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
@@ -430,7 +437,7 @@ span.text-red {
 .product-price {
   font-family: 'Open Sans', sans-serif;
   font-weight: 700;
-  font-size: 1.2rem;
+  font-size: 0.95rem; /* Mobile: font-size: 0.95rem; */
   margin-top: 6px;
   color: var(--text-color);
   overflow-wrap: break-word; /* Ensure text wraps */

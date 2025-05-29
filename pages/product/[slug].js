@@ -254,11 +254,11 @@ const ProductDetails = ({ product, products, reviews: initialReviews }) => {
             // when window width is >= 320px
             320: { slidesPerView: 1, spaceBetween: 10 },
             // when window width is >= 480px
-            480: { slidesPerView: 2, spaceBetween: 15 },
+            480: { slidesPerView: 1, spaceBetween: 15 }, // Changed to 1 slide
             // when window width is >= 768px
-            768: { slidesPerView: 3, spaceBetween: 20 },
+            768: { slidesPerView: 1, spaceBetween: 15 }, // Changed to 1 slide
             // when window width is >= 1024px
-            1024: { slidesPerView: 4, spaceBetween: 25 },
+            1024: { slidesPerView: 1, spaceBetween: 15 }, // Changed to 1 slide
           }}
         >
           {products?.map((item) => (
