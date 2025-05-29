@@ -1269,6 +1269,36 @@ span.text-red {
   }
 }
 
+@media screen and (min-width: 801px) {
+  .products-container {
+    gap: 30px;
+    margin-top: 40px;
+  }
+
+  .product-card {
+    flex: 0 1 calc(33.333% - 20px);
+    padding: 20px;
+    width: auto;
+    max-width: none;
+  }
+
+  .product-image {
+    max-height: 280px;
+    width: 100%;
+    object-fit: cover;
+  }
+
+  .product-name {
+    font-size: 1.05rem;
+    margin-top: 0.75rem;
+  }
+
+  .product-price {
+    font-size: 1.15rem;
+    margin-top: 0.5rem;
+  }
+}
+
 .glassmorphism {
   background: var(--glass-background-color);
   backdrop-filter: blur(10px);
