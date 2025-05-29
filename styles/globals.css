@@ -1270,234 +1270,32 @@ span.text-red {
 }
 
 @media screen and (min-width: 801px) {
-  body {
-    font-size: 1.125rem; /* Increases base font size by ~12.5% from a 16px default */
-  }
-  h1 { font-size: 3.5rem; }
-  h2 { font-size: 2.8rem; }
-  h3 { font-size: 2.2rem; }
-  h4 { font-size: 1.8rem; }
-  h5 { font-size: 1.5rem; }
-  h6 { font-size: 1.2rem; }
-
   .products-container {
     gap: 30px;
-    /* Override mobile styles that might conflict */
-    margin-top: 40px; /* Example: ensure consistent top margin */
+    margin-top: 40px;
   }
 
   .product-card {
-    flex: 0 1 calc(33.333% - 20px); /* For 3 cards per row with 30px gap */
+    flex: 0 1 calc(33.333% - 20px);
     padding: 20px;
-    /* Override mobile styles that might conflict */
-    width: auto; /* Reset mobile width if it was 100% or similar */
-    max-width: none; /* Reset mobile max-width if set */
+    width: auto;
+    max-width: none;
   }
 
   .product-image {
     max-height: 280px;
-    width: 100%; /* Ensure it's already set or explicitly set it */
-    object-fit: cover; /* Ensure it's already set or explicitly set it */
+    width: 100%;
+    object-fit: cover;
   }
 
   .product-name {
     font-size: 1.05rem;
     margin-top: 0.75rem;
-    /* Consider line-height or max-lines for consistency if names vary a lot */
   }
 
   .product-price {
     font-size: 1.15rem;
     margin-top: 0.5rem;
-  }
-
-  /* Desktop Hero Banner Adjustments */
-  .hero-banner-container {
-    padding: 120px 60px;
-    min-height: 550px;
-    /* Ensure other properties like line-height are appropriate or reset if needed */
-    line-height: 1.1; /* Example adjustment */
-  }
-
-  .hero-banner-container h1 {
-    font-size: 8em; /* Increased from 6em */
-    margin-left: -20px; /* Adjust if needed with larger font */
-  }
-
-  .hero-banner-container h3 {
-    font-size: 3rem; /* Increased from 2.5rem */
-  }
-
-  .hero-banner-image {
-    width: 500px;
-    height: 500px;
-    right: 15%;
-    top: 0%; /* Maintain or adjust as needed */
-  }
-
-  /* Desktop Footer Banner Adjustments */
-  .footer-banner-container {
-    padding: 100px 60px;
-    margin-top: 120px; /* Example: ensure consistent top margin */
-    /* min-height will be auto based on content and padding, or set explicitly if needed */
-  }
-
-  .banner-desc {
-    /* Ensure flex properties are suitable for desktop if they were changed for mobile */
-    flex-wrap: nowrap; /* Prevent wrapping if it was set for mobile */
-    align-items: center; /* Re-align if changed */
-  }
-  
-  .banner-desc .left h3 {
-    font-size: 4rem; /* Increased from 3.5rem */
-    margin-left: 0; /* Reset mobile margin if any */
-  }
-
-  .banner-desc .right h3 {
-    font-size: 3rem; /* Increased from 2.5rem */
-  }
-
-  .footer-banner-image {
-    width: 500px;
-    height: 500px;
-    left: 25%;
-    top: -20%; /* Adjusted from -25% */
-  }
-
-  /* Adjust .desc for hero banner if it was changed for mobile */
-  .desc {
-    position: absolute; /* Ensure it's absolute for desktop */
-    right: 5%; /* Example: Adjust for desktop layout */
-    bottom: 5%;
-    width: 350px; /* Example: Adjust width */
-    text-align: right; /* Ensure text alignment if changed */
-  }
-  .desc p {
-    text-align: right; /* Ensure text alignment if changed */
-  }
-  .desc h5 {
-    align-self: flex-end; /* Ensure alignment if changed */
-  }
-
-  /* Desktop Navbar Adjustments */
-  .navbar-container {
-    margin: 10px 40px;
-    padding: 15px 0;
-  }
-
-  /* Desktop Product Detail Page Adjustments */
-  .product-detail-container {
-    gap: 60px;
-    padding: 40px;
-    max-width: 1300px;
-    margin: 80px auto; /* Ensure consistent vertical spacing */
-  }
-
-  .product-detail-image {
-    width: 450px;
-    height: 450px;
-  }
-
-  .small-images-container {
-    gap: 15px; /* Increase gap slightly for larger thumbnails */
-  }
-
-  .small-image {
-    width: 80px;
-    height: 80px;
-  }
-
-  .product-detail-desc h4 { /* Labels like "Details:", "Quantity:" */
-    font-size: 1.5rem;
-    margin-top: 15px; /* Adjust spacing */
-  }
-
-  .product-detail-desc p { /* Description text */
-    font-size: 1.1rem;
-    line-height: 1.8; /* Improve readability */
-  }
-
-  .product-detail-desc .price {
-    font-size: 2.5rem;
-  }
-
-  .product-detail-desc .buttons {
-    gap: 40px; /* Increase gap between buttons */
-    margin-top: 2rem;
-  }
-  
-  .buttons .add-to-cart,
-  .buttons .buy-now {
-    width: 220px;
-    padding: 15px 25px;
-    font-size: 1.1rem;
-    margin-top: 20px; /* Consistent margin for buttons */
-  }
-
-  /* Desktop Cart Adjustments */
-  .cart-container {
-    width: 650px; /* Increased from 600px */
-    padding: 40px 20px; /* Adjust padding */
-  }
-
-  .cart-heading {
-    font-size: 1.3rem; /* Slightly larger cart title */
-    margin-bottom: 1.5rem;
-  }
-  
-  .item-desc .flex h5 { /* Product name in cart */
-    font-size: 1.3rem;
-  }
-
-  .total h3 { /* Total price in cart */
-    font-size: 1.6rem;
-  }
-
-  .cart-bottom {
-    padding: 40px 20px; /* Adjust padding for cart bottom */
-  }
-
-  .btn-container { /* For cart "Pay with Stripe" button */
-    width: 100%; /* Allow it to use available space within cart-bottom padding */
-    max-width: 500px; /* Optional: constrain max width */
-  }
-
-  /* Desktop "You May Also Like" Section Adjustments */
-  .maylike-products-wrapper {
-    margin-top: 120px; /* Consistent with footer banner margin */
-    padding: 0 40px; /* Consistent horizontal padding */
-  }
-  
-  .maylike-products-wrapper h2 {
-    font-size: 2.5rem; /* Increased from mobile */
-    margin-bottom: 50px; /* More space below title */
-  }
-
-  .maylike-products-container {
-    gap: 30px; /* Align with main products-container gap */
-    /* Ensure flex properties are suitable for desktop if changed for mobile */
-    flex-direction: row; /* Explicitly set for desktop */
-  }
-
-  /* Swiper adjustments for "You May Also Like" on Desktop */
-  .you-may-also-like-swiper .swiper-button-prev,
-  .you-may-also-like-swiper .swiper-button-next {
-    --swiper-navigation-size: 30px;
-    /* Adjust positioning if necessary with new arrow size */
-  }
-
-  .you-may-also-like-swiper .swiper-button-prev {
-    left: 0px; /* Example: move further out */
-  }
-
-  .you-may-also-like-swiper .swiper-button-next {
-    right: 0px; /* Example: move further out */
-  }
-
-  .you-may-also-like-swiper .swiper-pagination {
-    --swiper-pagination-bullet-size: 10px;
-    --swiper-pagination-bullet-vertical-gap: 25px;
-    bottom: 0px; /* Adjust if needed */
   }
 }
 
