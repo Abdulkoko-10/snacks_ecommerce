@@ -346,6 +346,10 @@ span.text-red {
   padding: 20px; 
   position: relative; /* For positioning hover buttons */
   overflow: hidden; /* To contain hover buttons if they animate from outside */
+
+  /* Desktop sizing: constrain max width, allow shrinking */
+  width: 100%;
+  max-width: 280px; 
 }
 .product-card:hover {
   transform: scale(1.03); /* Subtler zoom */
@@ -1111,6 +1115,7 @@ span.text-red {
   .product-card {
     width: calc(50% - 10px); /* Two cards per row */
     padding: 10px;
+    max-width: none; /* Allow cards to correctly take up 50% width */
   }
   .product-image { /* Specific adjustment for this breakpoint */
     max-height: 200px;
