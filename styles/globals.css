@@ -624,25 +624,20 @@ span.text-red {
 /* New styles for .cart-panel-mobile (the motion.div itself for mobile) */
 .cart-panel-mobile {
   position: fixed;
-  bottom: 0; /* Key for initial position */
+  bottom: 0; /* Ensures it's anchored at the bottom */
   left: 0;
   width: 100%;
-  height: 100vh; /* CHANGED: Panel itself is 100vh when visible */
-  z-index: 1000;
-  background-color: var(--primary-background-color); /* Panel background */
+  height: 100vh; /* Default height when visible and animated to y:0 */
+  /* max-height is removed */
+  z-index: 1000; /* Or higher if needed, e.g., 1001 */
+  background-color: var(--primary-background-color);
   color: var(--text-color);
-  border-top-left-radius: 20px;
+  border-top-left-radius: 20px; /* These can remain for the look when panel is open */
   border-top-right-radius: 20px;
   box-shadow: 0px -5px 15px rgba(0, 0, 0, 0.1);
-  display: flex; /* Allow cart-container-inner-mobile to flex-grow */
-  flex-direction: column; /* Stack children vertically */
-  overflow: hidden; /* Ensure content doesn't spill during animation or overflow */
-  /* Apply glassmorphism directly here if desired, removing it from the inner div */
-  /* background: var(--glass-background-color);
-     backdrop-filter: blur(10px);
-     -webkit-backdrop-filter: blur(10px);
-     border: 1px solid var(--glass-border-color);
-  */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Essential for rounded corners and to prevent internal content from breaking layout if it briefly exceeds 100vh during animation */
 }
 
 /* New styles for desktop modal overlay */
