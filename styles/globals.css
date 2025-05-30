@@ -627,8 +627,7 @@ span.text-red {
   bottom: 0; /* Key for initial position */
   left: 0;
   width: 100%;
-  height: 50vh; /* Panel itself is 50vh */
-  max-height: 90vh; /* Max height can remain larger for when it's dragged up */
+  max-height: 100vh; /* Max height can remain larger for when it's dragged up */
   z-index: 1000;
   background-color: var(--primary-background-color); /* Panel background */
   color: var(--text-color);

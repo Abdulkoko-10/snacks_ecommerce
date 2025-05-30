@@ -79,7 +79,7 @@ const Cart = () => {
   const mobilePanelVariants = {
     hidden: { y: "100%", opacity: 0 }, // Slides down by its own height (from bottom:0)
     visibleMiddle: { y: 0, opacity: 1, height: '50vh' },
-    visibleTop: { y: 0, opacity: 1, height: '90vh' },
+    visibleTop: { y: 0, opacity: 1, height: '100vh' },
     // Spring transition is on the motion.div itself
   };
 
