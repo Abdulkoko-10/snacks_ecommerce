@@ -7,6 +7,7 @@ import {
   AiOutlineShopping,
 } from "react-icons/ai";
 import { TiDeleteOutline } from "react-icons/ti";
+import { FaLock } from 'react-icons/fa';
 import toast from "react-hot-toast";
 //import Image from 'next/image'; // Import next/image
 
@@ -23,9 +24,30 @@ const Cart = () => {
     setShowCart,
     toggleCartItemQuanitity,
     onRemove,
+    setCartItems,
+    setTotalPrice,
+    setTotalQuantities,
   } = useStateContext();
 
+  const handlePreOrder = () => {
+    toast.success('Your pre-order has been placed successfully!');
+
+    setCartItems([]);
+    setTotalPrice(0);
+    setTotalQuantities(0);
+    setShowCart(false);
+  };
+
   const handleCheckout = async () => {
+    // Condition to check if payment is locked
+    const isPaymentLocked = true; // This can be a state or a constant for now
+
+    if (isPaymentLocked) {
+      toast.info("Payment processing is coming soon!"); // Using toast.info for a less alarming message
+      return; // Exit the function, preventing Stripe checkout
+    }
+
+    // Original checkout logic (should not be reached if isPaymentLocked is true)
     const stripe = await getStripe();
 
     const response = await fetch("/api/stripe", {
@@ -139,9 +161,32 @@ const Cart = () => {
               <h3>${totalPrice}</h3>
             </div>
             <div className="btn-container">
-              <button type="button" className="btn" onClick={handleCheckout}>
-                pay with stripe
+              <button type="button" className="btn" onClick={handlePreOrder}>
+                Pre-order Now
               </button>
+              <div className="tooltip-container" style={{ position: 'relative', display: 'inline-block', width: '100%', marginTop: '10px' }}>
+                <button type="button" className="btn btn-locked" onClick={handleCheckout} style={{ width: '100%' }}>
+                  <FaLock style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Pay with Stripe
+                </button>
+                <span className="tooltip-text" style={{
+                  visibility: 'hidden',
+                  width: '120px',
+                  backgroundColor: 'black',
+                  color: '#fff',
+                  textAlign: 'center',
+                  borderRadius: '6px',
+                  padding: '5px 0',
+                  position: 'absolute',
+                  zIndex: 1,
+                  bottom: '125%', // Position above the button
+                  left: '50%',
+                  marginLeft: '-60px', // Center the tooltip
+                  opacity: 0,
+                  transition: 'opacity 0.3s'
+                }}>
+                  Coming Soon
+                </span>
+              </div>
             </div>
           </div>
         )}
