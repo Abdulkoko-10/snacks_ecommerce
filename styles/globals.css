@@ -627,8 +627,8 @@ span.text-red {
   bottom: 0; /* Key for initial position */
   left: 0;
   width: 100%;
-  height: 90vh; /* Panel itself is 90vh */
-  max-height: 90vh;
+  height: 50vh; /* Panel itself is 50vh */
+  max-height: 90vh; /* Max height can remain larger for when it's dragged up */
   z-index: 1000;
   background-color: var(--primary-background-color); /* Panel background */
   color: var(--text-color);
@@ -688,10 +688,10 @@ span.text-red {
 /* Adjust .cart-container for desktop (ensure it's distinct from .cart-container-inner-mobile) */
 .cart-container-desktop {
   /* This class is applied alongside .cart-container for desktop */
-  width: 650px;           /* Increased width */
-  max-width: 90%;         /* Keep for responsiveness on smaller desktop screens */
-  min-height: 450px;      /* Ensure a minimum height */
-  max-height: 75vh;       /* Adjust max viewport height if needed */
+  width: 90vw;            /* Changed width */
+  max-width: 95vw;        /* Changed max-width */
+  min-height: 90vh;       /* Changed min-height */
+  max-height: 95vh;       /* Changed max-height */
   height: auto;           /* Allow content to define height up to max-height */
   border-radius: 12px;    /* Slightly larger radius for a larger modal */
   box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.15); /* Slightly adjusted shadow for new size */

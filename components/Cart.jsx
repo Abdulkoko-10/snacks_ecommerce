@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import {
@@ -19,6 +19,7 @@ import useMediaQuery from '../hooks/useMediaQuery'; // Import the hook
 
 const Cart = () => {
   const isDesktop = useMediaQuery('(min-width: 768px)'); // Call the hook
+  const [cartHeightTarget, setCartHeightTarget] = useState('middle');
   // const cartRef = useRef(); // Potentially remove if showCart state handles visibility
   const {
     totalPrice,
@@ -76,30 +77,49 @@ const Cart = () => {
   };
 
   const mobilePanelVariants = {
-    hidden: { y: "90vh", opacity: 0 }, // Translate by 90% of viewport height
-    visible: { y: 0, opacity: 1 },
-    // Removed transition from here, will rely on default or specify on motion component
+    hidden: { y: "50vh", opacity: 0 }, // Assuming initial CSS height 50vh, slide down by that amount
+    visibleMiddle: { y: 0, opacity: 1, height: '50vh' },
+    visibleTop: { y: 0, opacity: 1, height: '90vh' },
+    // Spring transition is on the motion.div itself
   };
 
   const { showCart } = useStateContext(); // Ensure showCart is destructured
+
+  useEffect(() => {
+    if (showCart) {
+      setCartHeightTarget('middle'); // Always open to middle
+    }
+    // No explicit reset on close needed as 'hidden' variant takes over.
+  }, [showCart, setCartHeightTarget]); // Added setCartHeightTarget to dependency array as per linting best practices
 
   return (
     <motion.div
       className={isDesktop ? "cart-overlay" : "cart-panel-mobile"} // Use new class "cart-panel-mobile"
       initial="hidden"
-      animate={showCart ? "visible" : "hidden"}
+      animate={showCart ? (cartHeightTarget === 'top' ? 'visibleTop' : 'visibleMiddle') : 'hidden'}
       variants={isDesktop ? desktopModalVariants : mobilePanelVariants}
       transition={{ type: "spring", stiffness: 200, damping: 25 }} // Added default transition here
-      // drag={isDesktop ? false : "y"} // Temporarily removed for mobile
-      // dragConstraints={isDesktop ? false : { top: 0 }} // Temporarily removed for mobile
-      // dragElastic={isDesktop ? false : { top: 0.1, bottom: 0.5 }} // Temporarily removed for mobile
-      // onDragEnd={isDesktop ? null : (event, info) => {
-      //   const dragDistance = info.offset.y;
-      //   const dragVelocity = info.velocity.y;
-      //   if (dragDistance > 100 || (dragDistance > 0 && dragVelocity > 200)) {
-      //     setShowCart(false);
-      //   }
-      // }}
+      drag={isDesktop ? false : "y"}
+      dragConstraints={isDesktop ? false : { top: 0 }}
+      dragElastic={isDesktop ? false : { top: 0.1, bottom: 0.5 }}
+      onDragEnd={isDesktop ? null : (event, info) => {
+        const dragDistance = info.offset.y;
+        const dragVelocity = info.velocity.y;
+        // It's good practice to ensure window is defined (for SSR frameworks like Next.js)
+        const screenHeight = typeof window !== 'undefined' ? window.innerHeight : 0;
+
+        if (cartHeightTarget === 'middle') {
+          if (dragDistance > screenHeight * 0.2 || (dragDistance > 0 && dragVelocity > 200)) {
+            setShowCart(false);
+          } else if (dragDistance < -screenHeight * 0.15 || (dragDistance < 0 && dragVelocity < -200)) {
+            setCartHeightTarget('top');
+          }
+        } else if (cartHeightTarget === 'top') {
+          if (dragDistance > screenHeight * 0.2 || (dragDistance > 0 && dragVelocity > 200)) {
+            setCartHeightTarget('middle');
+          }
+        }
+      }}
       onClick={(e) => { // Handle overlay click for desktop
         if (isDesktop && e.target === e.currentTarget) {
           setShowCart(false);
