@@ -77,7 +77,7 @@ const Cart = () => {
   };
 
   const mobilePanelVariants = {
-    hidden: { y: "50vh", opacity: 0 }, // Assuming initial CSS height 50vh, slide down by that amount
+    hidden: { y: "100%", opacity: 0 }, // Slides down by its own height (from bottom:0)
     visibleMiddle: { y: 0, opacity: 1, height: '50vh' },
     visibleTop: { y: 0, opacity: 1, height: '90vh' },
     // Spring transition is on the motion.div itself
@@ -86,36 +86,37 @@ const Cart = () => {
   const { showCart } = useStateContext(); // Ensure showCart is destructured
 
   useEffect(() => {
-    if (showCart) {
-      setCartHeightTarget('middle'); // Always open to middle
+    if (showCart && !isDesktop) {
+      setCartHeightTarget('middle'); // Always open to middle for mobile
     }
     // No explicit reset on close needed as 'hidden' variant takes over.
-  }, [showCart, setCartHeightTarget]); // Added setCartHeightTarget to dependency array as per linting best practices
+  }, [showCart, isDesktop, setCartHeightTarget]);
 
   return (
     <motion.div
       className={isDesktop ? "cart-overlay" : "cart-panel-mobile"} // Use new class "cart-panel-mobile"
       initial="hidden"
-      animate={showCart ? (cartHeightTarget === 'top' ? 'visibleTop' : 'visibleMiddle') : 'hidden'}
+      animate={isDesktop ? (showCart ? "visible" : "hidden") : (showCart ? (cartHeightTarget === 'top' ? 'visibleTop' : 'visibleMiddle') : 'hidden')}
       variants={isDesktop ? desktopModalVariants : mobilePanelVariants}
       transition={{ type: "spring", stiffness: 200, damping: 25 }} // Added default transition here
       drag={isDesktop ? false : "y"}
-      dragConstraints={isDesktop ? false : { top: 0 }}
-      dragElastic={isDesktop ? false : { top: 0.1, bottom: 0.5 }}
+      dragConstraints={isDesktop ? false : { top: -(typeof window !== 'undefined' ? window.innerHeight * 0.4 : 300), bottom: (typeof window !== 'undefined' ? window.innerHeight * 0.4 : 300) }}
+      dragElastic={isDesktop ? false : 0.2}
       onDragEnd={isDesktop ? null : (event, info) => {
+        if (typeof window === 'undefined') return; // SSR Guard
+
         const dragDistance = info.offset.y;
         const dragVelocity = info.velocity.y;
-        // It's good practice to ensure window is defined (for SSR frameworks like Next.js)
-        const screenHeight = typeof window !== 'undefined' ? window.innerHeight : 0;
+        const screenHeight = window.innerHeight;
 
         if (cartHeightTarget === 'middle') {
-          if (dragDistance > screenHeight * 0.2 || (dragDistance > 0 && dragVelocity > 200)) {
+          if (dragDistance > screenHeight * 0.25 || (dragDistance > 0 && dragVelocity > 250)) { // Drag down to dismiss
             setShowCart(false);
-          } else if (dragDistance < -screenHeight * 0.15 || (dragDistance < 0 && dragVelocity < -200)) {
+          } else if (dragDistance < -screenHeight * 0.2 || (dragDistance < 0 && dragVelocity < -250)) { // Drag up to top
             setCartHeightTarget('top');
           }
         } else if (cartHeightTarget === 'top') {
-          if (dragDistance > screenHeight * 0.2 || (dragDistance > 0 && dragVelocity > 200)) {
+          if (dragDistance > screenHeight * 0.2 || (dragDistance > 0 && dragVelocity > 250)) { // Drag down to middle
             setCartHeightTarget('middle');
           }
         }

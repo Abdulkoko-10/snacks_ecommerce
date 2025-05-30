@@ -637,6 +637,7 @@ span.text-red {
   box-shadow: 0px -5px 15px rgba(0, 0, 0, 0.1);
   display: flex; /* Allow cart-container-inner-mobile to flex-grow */
   flex-direction: column; /* Stack children vertically */
+  overflow: hidden; /* Ensure content doesn't spill during animation or overflow */
   /* Apply glassmorphism directly here if desired, removing it from the inner div */
   /* background: var(--glass-background-color);
      backdrop-filter: blur(10px);
