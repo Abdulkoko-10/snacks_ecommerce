@@ -116,15 +116,23 @@ const Cart = () => {
             setCartHeightTarget('top');
           }
         } else if (cartHeightTarget === 'top') {
-          const dismissThresholdFromTop = screenHeight * 0.5; // dragged 50% of screen height down
-          const middleThresholdFromTop = screenHeight * 0.2; // dragged 20% of screen height down
+          const dismissDragDistance = screenHeight * 0.5;
+          const velocityAidedDismissDragDistance = screenHeight * 0.2; // Min distance for velocity-aided dismiss
+          const dismissVelocity = 500;
+
+          const minDragDistanceForStateChange = screenHeight * 0.05; // Min drag down to consider a state change (e.g., 5%)
 
           // Check for dismissal first
-          if (dragDistance > dismissThresholdFromTop || (dragDistance > middleThresholdFromTop && dragVelocity > 500)) {
+          if (dragDistance > dismissDragDistance ||
+              (dragDistance > velocityAidedDismissDragDistance && dragVelocity > dismissVelocity)) {
             setShowCart(false);
-          } else if (dragDistance > middleThresholdFromTop || (dragDistance > 0 && dragVelocity > 250)) { // Then check for moving to middle
+          }
+          // If not dismissing, check for transition to middle for any meaningful downward drag
+          else if (dragDistance > minDragDistanceForStateChange) {
             setCartHeightTarget('middle');
           }
+          // If dragged upwards (dragDistance < 0) or a very tiny downward drag (dragDistance <= minDragDistanceForStateChange),
+          // it will snap back to 'top' as no state change is made.
         }
       }}
       onClick={(e) => { // Handle overlay click for desktop
