@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import {
   AiOutlineMinus,
@@ -14,9 +15,11 @@ import toast from "react-hot-toast";
 import { useStateContext } from "../context/StateContext";
 import { urlFor } from "../lib/client";
 import getStripe from "../lib/getStripe";
+import useMediaQuery from '../hooks/useMediaQuery'; // Import the hook
 
 const Cart = () => {
-  const cartRef = useRef();
+  const isDesktop = useMediaQuery('(min-width: 768px)'); // Call the hook
+  // const cartRef = useRef(); // Potentially remove if showCart state handles visibility
   const {
     totalPrice,
     totalQuantities,
@@ -67,9 +70,45 @@ const Cart = () => {
     stripe.redirectToCheckout({ sessionId: data.id });
   };
 
+  const desktopModalVariants = {
+    hidden: { opacity: 0, scale: 0.8, transition: { duration: 0.2 } },
+    visible: { opacity: 1, scale: 1, transition: { duration: 0.2 } },
+  };
+
+  const mobilePanelVariants = { // Renamed from panelVariants for clarity
+    hidden: { y: "100%", opacity: 0, transition: { type: "spring", stiffness: 300, damping: 30 } },
+    visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 300, damping: 30 } },
+  };
+
+  const { showCart } = useStateContext(); // Ensure showCart is destructured
+
   return (
-    <div className="cart-wrapper" ref={cartRef}>
-      <div className="cart-container glassmorphism"> {/* Added 'glassmorphism' */}
+    <motion.div
+      className={isDesktop ? "cart-overlay" : "cart-wrapper"}
+      initial="hidden"
+      animate={showCart ? "visible" : "hidden"}
+      variants={isDesktop ? desktopModalVariants : mobilePanelVariants}
+      drag={isDesktop ? false : "y"} // Disable drag on desktop
+      dragConstraints={isDesktop ? false : { top: 0, bottom: 0 }}
+      dragElastic={isDesktop ? false : { top: 0, bottom: 0.5 }}
+      onDragEnd={isDesktop ? null : (event, info) => {
+        const dragDistance = info.offset.y;
+        const dragVelocity = info.velocity.y;
+        if (dragDistance > 100 || (dragDistance > 0 && dragVelocity > 200)) {
+          setShowCart(false);
+        }
+      }}
+      onClick={(e) => { // Handle overlay click for desktop
+        if (isDesktop && e.target === e.currentTarget) {
+          setShowCart(false);
+        }
+      }}
+      // ref={cartRef} // Removed as animation handles visibility
+    >
+      {/* Consider adding a visual drag handle if design requires */}
+      {/* <div className="drag-handle"></div> (and style it) */}
+      <div className={`cart-container ${isDesktop ? 'cart-container-desktop' : 'cart-container-mobile'} glassmorphism`}>
+        {/* Keep glassmorphism for now, can be removed or adjusted via CSS if needed for desktop */}
         <button
           type="button"
           className="cart-heading"

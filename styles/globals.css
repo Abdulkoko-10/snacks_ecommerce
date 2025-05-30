@@ -597,23 +597,75 @@ span.text-red {
   line-height: 1.5;
   margin-top: 1rem;
 }
+
+/* Original .cart-wrapper for mobile if not completely replaced by .cart-overlay logic */
+/* This will now primarily be for mobile, as desktop uses .cart-overlay */
 .cart-wrapper {
-  width: 100vw;
-  background: rgba(0, 0, 0, 0.5); /* This overlay can remain dark */
   position: fixed;
-  right: 0;
-  top: 0;
-  z-index: 10050;
-  transition: all 1s ease-in-out;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000; /* Ensure it's above other content */
+  /* The background: rgba(0, 0, 0, 0.5) is removed from here as it's part of cart-overlay now
+     or applied directly if mobile also needs a full screen dim.
+     For a slide-up panel, the wrapper itself usually doesn't have a background overlay unless
+     it's meant to cover the screen even when the panel is not fully up.
+     Given the motion.div now switches between cart-wrapper and cart-overlay,
+     cart-wrapper will only be active on mobile.
+     If mobile needs an overlay for the rest of the screen when cart is partially visible
+     during drag, this might need to be on the cart-wrapper itself.
+     However, the current setup has the overlay on cart-overlay (desktop)
+     and the previous cart-wrapper had it too for mobile.
+     Let's keep the overlay for mobile on cart-wrapper for consistency of dimming.
+  */
+  background: rgba(0, 0, 0, 0.5); /* Retaining overlay for mobile consistency */
 }
+
+/* New styles for desktop modal overlay */
+.cart-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Base .cart-container styles (some might be overridden by desktop/mobile specific) */
 .cart-container {
-  height: 100vh;
-  width: 600px;
-  background-color: var(--primary-background-color); /* Was white */
-  float: right;
-  position: relative;
-  color: var(--text-color); 
-  padding: 30px 15px; /* Consolidated padding, this was the effective one */
+  background-color: var(--primary-background-color);
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+  position: relative; /* Important for absolute positioning of cart-bottom */
+}
+
+/* Styles for .cart-container on mobile */
+.cart-container-mobile {
+  height: 90vh;
+  max-height: 90vh;
+  /* background-color: var(--primary-background-color); */ /* Inherited from .cart-container */
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  box-shadow: 0px -5px 15px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 100%; /* Takes full width of the .cart-wrapper */
+}
+
+/* Adjust .cart-container for desktop */
+.cart-container-desktop {
+  height: auto; /* Or a specific height like 70vh */
+  max-height: 80vh; /* Example max height */
+  width: 500px; /* Example fixed width for modal */
+  max-width: 90%; /* Ensure it's responsive on smaller "desktop" screens */
+  border-radius: 10px; /* Standard modal border radius */
+  box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.2);
+  padding: 20px; /* Keep or adjust padding as needed */
+  /* glassmorphism class is applied conditionally in JSX, so styles here are additive or overriding */
 }
 
 .footer-container {
@@ -680,10 +732,12 @@ span.text-red {
 }
 .product-container {
   margin-top: 15px;
-  overflow: auto;
-  max-height: 70vh;
-  padding: 20px 10px;
+  overflow-y: auto; /* Changed from overflow: auto */
+  flex-grow: 1; /* Allows this section to take available space and scroll */
+  /* max-height: 70vh; */ /* This was for the old .cart-container, ensure .product-container inside .cart-container-mobile or .cart-container-desktop behaves */
+  padding: 10px; /* Adjusted from 20px 10px */
   background-color: var(--primary-background-color); 
+  /* flex-grow: 1; already here and should work for both contexts */
 }
 .product {
   display: flex;
@@ -946,39 +1000,38 @@ span.text-red {
 }
 
 /* Styles for cart sidebar on mobile devices */
-@media screen and (max-width: 600px) {
-  .cart-wrapper {
-    width: 100vw; /* Or 100% */
-    height: 100vh; /* Or 100% */
-    position: fixed; /* Or absolute if preferred and works with parent */
-    top: 0;
-    left: 0;
-    background: rgba(0, 0, 0, 0.75); /* Darker overlay for focus */
-    z-index: 10050; /* Ensure it's above other content, matches existing */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* transition: all 0.5s ease-in-out; /* Optional: refined transition */
-  }
+/* Media query for .cart-wrapper at max-width: 600px can be removed or adjusted
+   as .cart-wrapper is now mobile-first by default.
+   The styles inside were making .cart-wrapper behave like an overlay with centered content,
+   which is now the job of .cart-overlay for desktop.
+   If specific overrides for .cart-wrapper or .cart-container-mobile are needed at <600px,
+   they can be added, but the current setup should be responsive.
+   The old @media (max-width: 600px) .cart-container rules might conflict or be redundant
+   with .cart-container-mobile.
+*/
 
-  .cart-container {
-    width: 90%; /* Or a fixed width like 300px, 320px etc. */
-    max-width: 400px; /* Ensure it doesn't get too wide on larger "mobile" screens */
-    height: auto; /* Adjust height based on content, or a percentage like 80vh */
-    max-height: 90vh; /* Prevent it from taking the entire screen height if content is long */
-    float: none; /* Override existing float */
-    position: relative; /* Ensure it sits correctly within the flex container */
-    /* padding: 20px; /* Adjusted padding, existing mobile padding is 20px 10px */
-    border-radius: 10px; /* Optional: for a more modal-like appearance */
-    /* overflow-y: auto; /* Ensure content scrolls if it exceeds max-height */
-  }
+/* Let's remove the @media screen and (max-width: 600px) for .cart-wrapper and .cart-container
+   as the new classes .cart-container-mobile and .cart-wrapper (mobile first)
+   and .cart-overlay with .cart-container-desktop (desktop) should handle this.
+   The specific .product-container max-height adjustment inside that media query
+   should be considered for .cart-container-mobile .product-container if still needed.
+*/
 
-  /* Ensure cart content like product list scrolls if cart-container has fixed height */
-  .product-container { /* This is .cart-container > .product-container */
-    max-height: calc(90vh - 200px); /* Example: Adjust based on other elements in cart-container */
+/* @media screen and (max-width: 600px) { */
+  /* .cart-wrapper { ... } */ /* Removed as .cart-wrapper is now mobile-first */
+  /* .cart-container { ... } */ /* Removed, handled by .cart-container-mobile and .cart-container-desktop */
+
+  /* This rule might still be relevant for small mobile screens, applied to .product-container
+     when inside .cart-container-mobile */
+  /*
+  .cart-container-mobile .product-container {
+    max-height: calc(90vh - 200px); /* Example: Adjust based on other elements in cart-container-mobile */
     /* The 200px is an estimate for heading, total, button etc. Needs to be adjusted. */
-  }
-}
+  /* }
+  */
+/* } */
+/* The above commented-out section is for consideration. For now, product-container uses flex-grow. */
+
 
 .max-qty {
   font-weight: 500;
@@ -1231,13 +1284,18 @@ span.text-red {
     font-size: 0.9rem;
   }
 
-  .cart-container {
-    width: 100%; /* Full width cart on mobile */
-    padding: 20px 10px; /* Adjusted padding */
-    float: none; /* Prevent floating on mobile to fix clipping */
-  }
+  /* The .cart-container rules inside @media (max-width: 800px) might need review.
+     If these were meant for the cart specifically, they should target
+     .cart-container-mobile or .cart-container-desktop if appropriate.
+     Given it's max-width: 800px, it likely affects mobile and tablet views.
+     The rule `width: 100%` and `padding: 20px 10px` for .cart-container
+     is now covered by .cart-container-mobile's `width: 100%` and `padding: 20px`.
+     The `float: none` is also implicitly handled.
+  */
+  /* .cart-container { ... } */ /* Remove this from general @media (max-width: 800px) */
+
   .cart-heading {
-    margin-top: 20px; /* Adjusted margin */
+    margin-top: 10px; /* Adjusted from 20px - fine-tuning */
     font-size: 1rem;
   }
   .product-container {
