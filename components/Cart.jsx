@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import {
   AiOutlineMinus,
@@ -16,11 +16,19 @@ import { urlFor } from "../lib/client";
 import getStripe from "../lib/getStripe";
 
 const Cart = () => {
-  const cartRef = useRef();
+  const cartWrapperRef = useRef(); // Renamed cartRef to cartWrapperRef for clarity
+  const cartContainerRef = useRef(null); // New ref for the cart container itself
+
+  const [isDragging, setIsDragging] = useState(false);
+  const touchStartY = useRef(0);
+  const panelTranslateY = useRef(0);
+  const [isMobileView, setIsMobileView] = useState(false);
+
   const {
     totalPrice,
     totalQuantities,
     cartItems,
+    showCart, // Added showCart to dependencies of useEffect if needed
     setShowCart,
     toggleCartItemQuanitity,
     onRemove,
@@ -28,6 +36,99 @@ const Cart = () => {
     setTotalPrice,
     setTotalQuantities,
   } = useStateContext();
+
+  useEffect(() => {
+    const checkMobileView = () => {
+      const newIsMobileView = window.innerWidth < 769;
+      setIsMobileView(newIsMobileView);
+      // If transitioning from mobile to desktop, and cart is open, reset transform
+      if (!newIsMobileView && cartContainerRef.current && showCart) {
+        cartContainerRef.current.style.transform = '';
+        cartContainerRef.current.style.transition = ''; // Clear any inline transition
+      }
+    };
+    checkMobileView(); // Initial check
+    window.addEventListener('resize', checkMobileView);
+    return () => window.removeEventListener('resize', checkMobileView);
+  }, [showCart]); // Include showCart to re-evaluate if cart open state matters for cleanup
+
+  // Reset panel position when cart is opened/closed externally or view changes
+  useEffect(() => {
+    if (cartContainerRef.current) {
+      if (!showCart || !isMobileView) {
+        // Reset transform if cart is closed OR if not in mobile view
+        // This ensures that desktop view doesn't have leftover transforms.
+        cartContainerRef.current.style.transform = '';
+        cartContainerRef.current.style.transition = ''; // Clear inline transition
+        panelTranslateY.current = 0;
+        if (isDragging) setIsDragging(false); // Reset dragging state if view changes mid-drag
+      }
+      // No 'else' needed to set to translateY(0) as CSS handles open state for both views
+    }
+  }, [showCart, isMobileView, isDragging]); // Added isDragging to deps
+
+
+  const handleTouchStart = (e) => {
+    // This handler is now conditionally attached, so direct check for isMobileView here is redundant
+    // but good for safety if it were ever called directly.
+    if (!isMobileView) return;
+
+    // Check if the touch is on the scrollable product container and it's scrolled
+    const productContainer = e.target.closest('.product-container');
+    if (productContainer && productContainer.scrollTop > 0) {
+      return; // Don't initiate drag, allow scrolling
+    }
+
+    touchStartY.current = e.touches[0].clientY;
+    panelTranslateY.current = 0;
+    setIsDragging(true);
+    if (cartContainerRef.current) {
+      cartContainerRef.current.style.transition = 'none'; // Disable transition for smooth dragging
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isDragging || !isMobileView) return;
+
+    const currentTouchY = e.touches[0].clientY;
+    let deltaY = currentTouchY - touchStartY.current;
+
+    // Only allow dragging downwards
+    if (deltaY < 0) {
+      // Optional: Apply resistance for upward drag
+      // deltaY /= 3; // Example: Make upward drag 3x harder
+      deltaY = 0; // Or simply disallow upward drag past initial point
+    }
+
+    panelTranslateY.current = deltaY;
+
+    if (cartContainerRef.current) {
+      cartContainerRef.current.style.transform = `translateY(${panelTranslateY.current}px)`;
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (!isDragging || !isMobileView) return;
+    setIsDragging(false);
+
+    if (cartContainerRef.current) {
+      // Re-enable CSS transition for snap-back or dismiss animation
+      cartContainerRef.current.style.transition = 'transform 0.3s ease-out';
+    }
+
+    const dismissThreshold = cartContainerRef.current ? cartContainerRef.current.offsetHeight * 0.4 : 150;
+
+    if (panelTranslateY.current > dismissThreshold) {
+      setShowCart(false);
+      // panelTranslateY.current will be effectively reset by the useEffect listening to [showCart, isMobileView]
+    } else {
+      // Snap back
+      if (cartContainerRef.current) {
+        cartContainerRef.current.style.transform = 'translateY(0px)';
+      }
+      // panelTranslateY.current = 0; // Resetting here is fine, or rely on useEffect
+    }
+  };
 
   const handlePreOrder = () => {
     toast.success('Your pre-order has been placed successfully!');
@@ -68,8 +169,17 @@ const Cart = () => {
   };
 
   return (
-    <div className="cart-wrapper" ref={cartRef}>
-      <div className="cart-container glassmorphism"> {/* Added 'glassmorphism' */}
+    <div className={`cart-wrapper ${showCart ? 'cart-wrapper-open' : ''}`} ref={cartWrapperRef}>
+      <div
+        className="cart-container glassmorphism"
+        ref={cartContainerRef}
+        onTouchStart={isMobileView ? handleTouchStart : undefined}
+        onTouchMove={isMobileView ? handleTouchMove : undefined}
+        onTouchEnd={isMobileView ? handleTouchEnd : undefined}
+        // style={ isMobileView ? { touchAction: 'pan-y' } : {} } // Allow vertical scroll but prevent browser default horizontal page swipe on the panel
+      >
+        {/* Optional: Add a specific drag handle element here if preferred for mobile */}
+        {/* <div className="cart-drag-handle"></div> */}
         <button
           type="button"
           className="cart-heading"
@@ -107,20 +217,18 @@ const Cart = () => {
                 <img
                   src={urlFor(item.image[0]).url()}
                   alt={item.name}
-                  width={180} // from CSS .cart-product-image
-                  height={150} // from CSS .cart-product-image
+                  width={180}
+                  height={150}
                   className="cart-product-image"
-                  // layout="responsive" // This might require parent to have defined aspect ratio or size
-                  // objectFit="cover" // If using layout="responsive" or "fill"
                 />
                 <div className="item-desc">
                   <div className="flex top">
-                    <h5>{item.name}</h5>
-                    <h4>${item.price}</h4>
+                    <h5 style={{touchAction: 'auto'}}>{item.name}</h5> {/* Ensure text selection/scrolling works */}
+                    <h4 style={{touchAction: 'auto'}}>${item.price}</h4> {/* Ensure text selection/scrolling works */}
                   </div>
                   <div className="flex bottom">
                     <div>
-                      <p className="quantity-desc">
+                      <p className="quantity-desc" style={{touchAction: 'auto'}}> {/* Allow interactions */}
                         <span
                           className="minus"
                           onClick={() =>
@@ -129,7 +237,7 @@ const Cart = () => {
                         >
                           <AiOutlineMinus />
                         </span>
-                        <span className="num" onClick="">
+                        <span className="num"> {/* Removed onClick="" */}
                           {item.quantity}
                         </span>
                         <span
@@ -178,9 +286,9 @@ const Cart = () => {
                   padding: '5px 0',
                   position: 'absolute',
                   zIndex: 1,
-                  bottom: '125%', // Position above the button
+                  bottom: '125%',
                   left: '50%',
-                  marginLeft: '-60px', // Center the tooltip
+                  marginLeft: '-60px',
                   opacity: 0,
                   transition: 'opacity 0.3s'
                 }}>

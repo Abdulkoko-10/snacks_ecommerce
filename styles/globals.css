@@ -598,22 +598,111 @@ span.text-red {
   margin-top: 1rem;
 }
 .cart-wrapper {
-  width: 100vw;
-  background: rgba(0, 0, 0, 0.5); /* This overlay can remain dark */
-  position: fixed;
-  right: 0;
-  top: 0;
-  z-index: 10050;
-  transition: all 1s ease-in-out;
-}
-.cart-container {
+  width: 100vw; /* Changed to 100vw, effectively height: 100vh */
   height: 100vh;
-  width: 600px;
-  background-color: var(--primary-background-color); /* Was white */
-  float: right;
-  position: relative;
-  color: var(--text-color); 
-  padding: 30px 15px; /* Consolidated padding, this was the effective one */
+  background: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  left: 0; /* Added */
+  bottom: 0; /* Added */
+  top: 0; /* Keep top:0 to ensure overlay covers screen initially if not transformed */
+  z-index: 10050;
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out; /* Modified */
+  transform: translateY(100%); /* Added */
+  opacity: 0; /* Added */
+  /* pointer-events: none; Initially not interactive */
+}
+
+.cart-wrapper-open { /* New class for open state */
+  transform: translateY(0%);
+  opacity: 1;
+  /* pointer-events: auto; /* Interactive when open */
+}
+
+/* Base cart-container styles (mobile-first panel) */
+.cart-container {
+  height: auto; /* Modified */
+  /* max-height: 90vh; /* Added, adjust as needed */
+  max-height: 85vh; /* Example: slightly less than full screen height */
+  width: 100%; /* Modified */
+  background-color: var(--primary-background-color);
+  /* float: right; Removed */
+  position: absolute; /* Modified */
+  bottom: 0; /* Added */
+  left: 0; /* Added */
+  color: var(--text-color);
+  padding: 20px; /* Adjusted padding */
+  border-top-left-radius: 15px; /* For panel appearance on mobile */
+  border-top-right-radius: 15px; /* For panel appearance on mobile */
+  overflow-y: auto; /* Allow content to scroll if it exceeds max-height */
+}
+
+
+/* Desktop Modal Styles for Cart */
+@media screen and (min-width: 769px) {
+  .cart-wrapper {
+    /* Override mobile animation if different, e.g., for fade-in/scale-up */
+    /* For a simple fade-in, we only need to manage opacity; transform is not for sliding */
+    transform: none; /* Remove mobile's translateY for hidden state */
+    opacity: 0; /* Keep it hidden by default */
+    transition: opacity 0.3s ease-out; /* Simpler transition for fade */
+
+    /* For centering the modal: */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cart-wrapper-open {
+    /* Override mobile's open state transform */
+    transform: none; /* No slide, just appear */
+    opacity: 1;
+    /* If using a scale animation with the wrapper: */
+    /* transform: scale(1); */
+  }
+
+  /* Alternative for cart-wrapper if using scale animation on container instead:
+  .cart-wrapper {
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .cart-wrapper-open {
+    opacity: 1;
+  }
+  */
+
+  .cart-container {
+    position: relative; /* No longer absolute to bottom of screen */
+    width: 600px; /* Or your preferred fixed width */
+    max-width: 90vw; /* Safety for very large screens */
+    /* height: auto; /* Already set, good */
+    /* max-height: 85vh; /* Already set, good */
+
+    bottom: auto; /* Override mobile positioning */
+    left: auto; /* Override mobile positioning */
+
+    padding: 30px; /* Potentially more padding for desktop modal */
+    border-radius: 15px; /* All-around radius for modal look */
+
+    /* If doing a scale animation on the container itself: */
+    /* transform: scale(0.95); */
+    /* transition: transform 0.3s ease-out, opacity 0.3s ease-out; */ /* Add opacity if not on wrapper */
+    /* opacity: 0; */ /* If animating opacity on container */
+  }
+
+  /* If .cart-container itself has entry animation (e.g. scale) when .cart-wrapper-open is active */
+  /* .cart-wrapper-open .cart-container { */
+    /* transform: scale(1); */
+    /* opacity: 1; */ /* If animating opacity on container */
+  /* } */
+
+  .cart-bottom {
+    /* Ensure cart-bottom is not absolutely positioned to viewport bottom */
+    position: relative; /* Or static, depending on desired layout within cart-container */
+    padding: 20px 30px; /* Adjust padding if needed for desktop */
+  }
 }
 
 .footer-container {
@@ -946,37 +1035,40 @@ span.text-red {
 }
 
 /* Styles for cart sidebar on mobile devices */
+/* The new .cart-wrapper and .cart-container styles are largely mobile-first.
+   The media query below (max-width: 600px) was previously for making the cart
+   a modal on mobile. With the slide-up panel, these specific overrides might
+   no longer be needed or might need adjustment if the desktop view (which will
+   be a modal later) requires different base styles. For now, we'll assume
+   the new styles work well on mobile and review if specific overrides are needed. */
+
 @media screen and (max-width: 600px) {
+  /* .cart-wrapper will inherit the new base styles.
+     Ensure display:flex and align/justify-items are appropriate if we want to keep
+     the cart-container centered *within* the cart-wrapper when it's not full height.
+     However, for a bottom panel, cart-container is positioned absolutely at the bottom.
+     So, display:flex on cart-wrapper is not strictly necessary for positioning cart-container.
+     It was useful for the old modal style.
+  */
   .cart-wrapper {
-    width: 100vw; /* Or 100% */
-    height: 100vh; /* Or 100% */
-    position: fixed; /* Or absolute if preferred and works with parent */
-    top: 0;
-    left: 0;
-    background: rgba(0, 0, 0, 0.75); /* Darker overlay for focus */
-    z-index: 10050; /* Ensure it's above other content, matches existing */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* transition: all 0.5s ease-in-out; /* Optional: refined transition */
+    /* display: flex; /* Kept for now, might not be needed */
+    /* align-items: flex-end; /* Align container to the bottom if wrapper is flex */
+    /* justify-content: center; /* Center container if it's not 100% width */
   }
 
   .cart-container {
-    width: 90%; /* Or a fixed width like 300px, 320px etc. */
-    max-width: 400px; /* Ensure it doesn't get too wide on larger "mobile" screens */
-    height: auto; /* Adjust height based on content, or a percentage like 80vh */
-    max-height: 90vh; /* Prevent it from taking the entire screen height if content is long */
-    float: none; /* Override existing float */
-    position: relative; /* Ensure it sits correctly within the flex container */
-    /* padding: 20px; /* Adjusted padding, existing mobile padding is 20px 10px */
-    border-radius: 10px; /* Optional: for a more modal-like appearance */
-    /* overflow-y: auto; /* Ensure content scrolls if it exceeds max-height */
+    /* The new .cart-container styles (width: 100%, max-height, absolute positioning)
+       should work well for a bottom panel on mobile. We might not need many overrides. */
+    width: 100%; /* Ensure it's full width */
+    max-width: 100%; /* Override any previous max-width like 400px */
+    border-radius: 15px 15px 0 0; /* Rounded corners only at the top */
+    /* max-height: 85vh; /* Already set, confirm it's good for mobile */
+    /* padding: 15px; /* Slightly less padding for smaller screens */
   }
 
-  /* Ensure cart content like product list scrolls if cart-container has fixed height */
   .product-container { /* This is .cart-container > .product-container */
-    max-height: calc(90vh - 200px); /* Example: Adjust based on other elements in cart-container */
-    /* The 200px is an estimate for heading, total, button etc. Needs to be adjusted. */
+    /* max-height: calc(85vh - 180px); /* Example: Adjust based on other elements in cart-container */
+    /* This calculation needs to be responsive to the actual height of header/footer in the cart panel */
   }
 }
 
@@ -1233,8 +1325,9 @@ span.text-red {
 
   .cart-container {
     width: 100%; /* Full width cart on mobile */
-    padding: 20px 10px; /* Adjusted padding */
-    float: none; /* Prevent floating on mobile to fix clipping */
+    padding: 15px; /* Adjusted padding for mobile consistency */
+    /* float: none; /* Not needed due to absolute positioning */
+    border-radius: 15px 15px 0 0; /* Ensure top radius for panel on mobile */
   }
   .cart-heading {
     margin-top: 20px; /* Adjusted margin */
@@ -1242,6 +1335,9 @@ span.text-red {
   }
   .product-container {
     margin-top: 10px;
+    /* Consider adjusting max-height for .product-container specifically for mobile if needed here,
+       but the general max-height on .cart-container might be sufficient.
+       Example: max-height: calc(85vh - 160px); /* if cart header/footer are smaller on mobile */
   }
   .product {
     padding: 15px 10px; /* Adjusted padding */
@@ -1263,8 +1359,12 @@ span.text-red {
     margin-top: 15px; /* Adjusted margin */
   }
   .cart-bottom {
-    position: static; /* Static for mobile flow */
+    position: relative; /* Changed from static to relative for better layout control if needed */
+    /* bottom: 0; /* Remove if causing issues with absolute parent */
+    /* right: 0; /* Remove if causing issues */
+    width: 100%; /* Ensure it takes full width of cart-container */
     padding: 20px; /* Adjusted padding */
+    /* background-color: var(--primary-background-color); /* Already set */
   }
   .btn-container { /* For cart pay button */
     width: 100%;
