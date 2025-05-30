@@ -99,10 +99,10 @@ const Cart = () => {
       animate={isDesktop ? (showCart ? "visible" : "hidden") : (showCart ? (cartHeightTarget === 'top' ? 'visibleTop' : 'visibleMiddle') : 'hidden')}
       variants={isDesktop ? desktopModalVariants : mobilePanelVariants}
       transition={{ type: "spring", stiffness: 200, damping: 25 }} // Added default transition here
-      drag={isDesktop ? false : "y"}
-      dragConstraints={isDesktop ? false : { top: -(typeof window !== 'undefined' ? window.innerHeight * 0.4 : 300), bottom: (typeof window !== 'undefined' ? window.innerHeight * 0.4 : 300) }}
-      dragElastic={isDesktop ? false : 0.2}
-      onDragEnd={isDesktop ? null : (event, info) => {
+      drag={isDesktop ? false : undefined}
+      dragConstraints={isDesktop ? false : undefined}
+      dragElastic={isDesktop ? false : undefined}
+      onDragEnd={isDesktop ? undefined : (event, info) => {
         if (typeof window === 'undefined') return; // SSR Guard
 
         const dragDistance = info.offset.y;
