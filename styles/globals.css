@@ -944,6 +944,42 @@ span.text-red {
   gap: 25px; 
   margin-top: 30px; 
 }
+
+/* Styles for cart sidebar on mobile devices */
+@media screen and (max-width: 600px) {
+  .cart-wrapper {
+    width: 100vw; /* Or 100% */
+    height: 100vh; /* Or 100% */
+    position: fixed; /* Or absolute if preferred and works with parent */
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.75); /* Darker overlay for focus */
+    z-index: 10050; /* Ensure it's above other content, matches existing */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* transition: all 0.5s ease-in-out; /* Optional: refined transition */
+  }
+
+  .cart-container {
+    width: 90%; /* Or a fixed width like 300px, 320px etc. */
+    max-width: 400px; /* Ensure it doesn't get too wide on larger "mobile" screens */
+    height: auto; /* Adjust height based on content, or a percentage like 80vh */
+    max-height: 90vh; /* Prevent it from taking the entire screen height if content is long */
+    float: none; /* Override existing float */
+    position: relative; /* Ensure it sits correctly within the flex container */
+    /* padding: 20px; /* Adjusted padding, existing mobile padding is 20px 10px */
+    border-radius: 10px; /* Optional: for a more modal-like appearance */
+    /* overflow-y: auto; /* Ensure content scrolls if it exceeds max-height */
+  }
+
+  /* Ensure cart content like product list scrolls if cart-container has fixed height */
+  .product-container { /* This is .cart-container > .product-container */
+    max-height: calc(90vh - 200px); /* Example: Adjust based on other elements in cart-container */
+    /* The 200px is an estimate for heading, total, button etc. Needs to be adjusted. */
+  }
+}
+
 .max-qty {
   font-weight: 500;
   color: var(--primary-color);
@@ -1558,7 +1594,7 @@ span.text-red {
 /* Pagination Dots Styling */
 .you-may-also-like-swiper .swiper-pagination {
   position: absolute; /* Ensure it's positioned relative to swiper container */
-  bottom: 10px; /* Default Swiper variable --swiper-pagination-bottom might be 0 or negative */
+  /* bottom: 10px; */ /* Default Swiper variable --swiper-pagination-bottom might be 0 or negative - adjusted by vertical-gap */
   left: 0;
   width: 100%;
   --swiper-pagination-color: var(--primary-color); /* Active dot color */
@@ -1601,4 +1637,10 @@ span.text-red {
   .you-may-also-like-swiper .swiper-button-next {
     /* right: -5px; /* Example: move further out if needed */
   }
+}
+
+/* Tooltip styles */
+.tooltip-container:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
 }

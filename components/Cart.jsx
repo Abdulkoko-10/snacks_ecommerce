@@ -23,7 +23,19 @@ const Cart = () => {
     setShowCart,
     toggleCartItemQuanitity,
     onRemove,
+    setCartItems,
+    setTotalPrice,
+    setTotalQuantities,
   } = useStateContext();
+
+  const handlePreOrder = () => {
+    toast.success('Your pre-order has been placed successfully!');
+
+    setCartItems([]);
+    setTotalPrice(0);
+    setTotalQuantities(0);
+    setShowCart(false);
+  };
 
   const handleCheckout = async () => {
     const stripe = await getStripe();
@@ -139,9 +151,32 @@ const Cart = () => {
               <h3>${totalPrice}</h3>
             </div>
             <div className="btn-container">
-              <button type="button" className="btn" onClick={handleCheckout}>
-                pay with stripe
+              <button type="button" className="btn" onClick={handlePreOrder}>
+                Pre-order Now
               </button>
+              <div className="tooltip-container" style={{ position: 'relative', display: 'inline-block', width: '100%', marginTop: '10px' }}>
+                <button type="button" className="btn" onClick={handleCheckout} disabled style={{ width: '100%' }}>
+                  Pay with Stripe
+                </button>
+                <span className="tooltip-text" style={{
+                  visibility: 'hidden',
+                  width: '120px',
+                  backgroundColor: 'black',
+                  color: '#fff',
+                  textAlign: 'center',
+                  borderRadius: '6px',
+                  padding: '5px 0',
+                  position: 'absolute',
+                  zIndex: 1,
+                  bottom: '125%', // Position above the button
+                  left: '50%',
+                  marginLeft: '-60px', // Center the tooltip
+                  opacity: 0,
+                  transition: 'opacity 0.3s'
+                }}>
+                  Coming Soon
+                </span>
+              </div>
             </div>
           </div>
         )}
