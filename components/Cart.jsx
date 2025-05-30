@@ -19,7 +19,6 @@ import useMediaQuery from '../hooks/useMediaQuery'; // Import the hook
 
 const Cart = () => {
   const isDesktop = useMediaQuery('(min-width: 768px)'); // Call the hook
-  const [cartHeightTarget, setCartHeightTarget] = useState('middle');
   // const cartRef = useRef(); // Potentially remove if showCart state handles visibility
   const {
     totalPrice,
@@ -78,25 +77,18 @@ const Cart = () => {
 
   const mobilePanelVariants = {
     hidden: { y: "100%", opacity: 0 }, // Slides down by its own height (from bottom:0)
-    visibleMiddle: { y: 0, opacity: 1, height: '50vh' },
-    visibleTop: { y: 0, opacity: 1, height: '90vh' },
+  visibleMiddle: { y: 0, opacity: 1, height: '100vh' },
+  visibleTop: { y: 0, opacity: 1, height: '100vh' },
     // Spring transition is on the motion.div itself
   };
 
   const { showCart } = useStateContext(); // Ensure showCart is destructured
 
-  useEffect(() => {
-    if (showCart && !isDesktop) {
-      setCartHeightTarget('middle'); // Always open to middle for mobile
-    }
-    // No explicit reset on close needed as 'hidden' variant takes over.
-  }, [showCart, isDesktop, setCartHeightTarget]);
-
   return (
     <motion.div
       className={isDesktop ? "cart-overlay" : "cart-panel-mobile"} // Use new class "cart-panel-mobile"
       initial="hidden"
-      animate={isDesktop ? (showCart ? "visible" : "hidden") : (showCart ? (cartHeightTarget === 'top' ? 'visibleTop' : 'visibleMiddle') : 'hidden')}
+    animate={isDesktop ? (showCart ? "visible" : "hidden") : (showCart ? "visibleMiddle" : "hidden")}
       variants={isDesktop ? desktopModalVariants : mobilePanelVariants}
       transition={{ type: "spring", stiffness: 200, damping: 25 }} // Added default transition here
       drag={isDesktop ? false : undefined}
@@ -109,17 +101,11 @@ const Cart = () => {
         const dragVelocity = info.velocity.y;
         const screenHeight = window.innerHeight;
 
-        if (cartHeightTarget === 'middle') {
-          if (dragDistance > screenHeight * 0.25 || (dragDistance > 0 && dragVelocity > 250)) { // Drag down to dismiss
-            setShowCart(false);
-          } else if (dragDistance < -screenHeight * 0.2 || (dragDistance < 0 && dragVelocity < -250)) { // Drag up to top
-            setCartHeightTarget('top');
-          }
-        } else if (cartHeightTarget === 'top') {
-          if (dragDistance > screenHeight * 0.2 || (dragDistance > 0 && dragVelocity > 250)) { // Drag down to middle
-            setCartHeightTarget('middle');
-          }
+      // If dragged down by more than 25% of screen height or with enough velocity, close the cart.
+      if (dragDistance > screenHeight * 0.25 || (dragDistance > 0 && dragVelocity > 250)) {
+        setShowCart(false);
         }
+      // No more logic to transition between 'middle' and 'top' heights.
       }}
       onClick={(e) => { // Handle overlay click for desktop
         if (isDesktop && e.target === e.currentTarget) {
