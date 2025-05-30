@@ -76,8 +76,9 @@ const Cart = () => {
   };
 
   const mobilePanelVariants = {
-    hidden: { y: "100%", opacity: 0.8, transition: { type: "spring", stiffness: 200, damping: 25 } }, // Start fully below
-    visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 200, damping: 25 } }, // Settle at its CSS position
+    hidden: { y: "90vh", opacity: 0 }, // Translate by 90% of viewport height
+    visible: { y: 0, opacity: 1 },
+    // Removed transition from here, will rely on default or specify on motion component
   };
 
   const { showCart } = useStateContext(); // Ensure showCart is destructured
@@ -88,20 +89,25 @@ const Cart = () => {
       initial="hidden"
       animate={showCart ? "visible" : "hidden"}
       variants={isDesktop ? desktopModalVariants : mobilePanelVariants}
-      drag={isDesktop ? false : "y"} // Disable drag on desktop
-      dragConstraints={isDesktop ? false : { top: 0 }} // Updated for mobile
-      dragElastic={isDesktop ? false : { top: 0.1, bottom: 0.5 }} // Updated for mobile
-      onDragEnd={isDesktop ? null : (event, info) => {
-        const dragDistance = info.offset.y;
-        const dragVelocity = info.velocity.y;
-        if (dragDistance > 100 || (dragDistance > 0 && dragVelocity > 200)) {
-          setShowCart(false);
-        }
-      }}
+      transition={{ type: "spring", stiffness: 200, damping: 25 }} // Added default transition here
+      // drag={isDesktop ? false : "y"} // Temporarily removed for mobile
+      // dragConstraints={isDesktop ? false : { top: 0 }} // Temporarily removed for mobile
+      // dragElastic={isDesktop ? false : { top: 0.1, bottom: 0.5 }} // Temporarily removed for mobile
+      // onDragEnd={isDesktop ? null : (event, info) => {
+      //   const dragDistance = info.offset.y;
+      //   const dragVelocity = info.velocity.y;
+      //   if (dragDistance > 100 || (dragDistance > 0 && dragVelocity > 200)) {
+      //     setShowCart(false);
+      //   }
+      // }}
       onClick={(e) => { // Handle overlay click for desktop
         if (isDesktop && e.target === e.currentTarget) {
           setShowCart(false);
         }
+        // Potentially add for mobile if clicking outside visible panel (on an overlay part of cart-panel-mobile if it existed)
+        // else if (!isDesktop && e.target === e.currentTarget) {
+        //   setShowCart(false);
+        // }
       }}
       // ref={cartRef} // Removed as animation handles visibility
     >
