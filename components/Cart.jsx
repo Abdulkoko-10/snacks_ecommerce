@@ -99,9 +99,9 @@ const Cart = () => {
       animate={isDesktop ? (showCart ? "visible" : "hidden") : (showCart ? (cartHeightTarget === 'top' ? 'visibleTop' : 'visibleMiddle') : 'hidden')}
       variants={isDesktop ? desktopModalVariants : mobilePanelVariants}
       transition={{ type: "spring", stiffness: 200, damping: 25 }} // Added default transition here
-      drag={isDesktop ? false : undefined}
-      dragConstraints={isDesktop ? false : undefined}
-      dragElastic={isDesktop ? false : undefined}
+      drag={isDesktop ? false : "y"}
+      dragConstraints={isDesktop ? false : { top: 0 }}
+      dragElastic={isDesktop ? false : 0.2}
       onDragEnd={isDesktop ? undefined : (event, info) => {
         if (typeof window === 'undefined') return; // SSR Guard
 
@@ -116,7 +116,13 @@ const Cart = () => {
             setCartHeightTarget('top');
           }
         } else if (cartHeightTarget === 'top') {
-          if (dragDistance > screenHeight * 0.2 || (dragDistance > 0 && dragVelocity > 250)) { // Drag down to middle
+          const dismissThresholdFromTop = screenHeight * 0.5; // dragged 50% of screen height down
+          const middleThresholdFromTop = screenHeight * 0.2; // dragged 20% of screen height down
+
+          // Check for dismissal first
+          if (dragDistance > dismissThresholdFromTop || (dragDistance > middleThresholdFromTop && dragVelocity > 500)) {
+            setShowCart(false);
+          } else if (dragDistance > middleThresholdFromTop || (dragDistance > 0 && dragVelocity > 250)) { // Then check for moving to middle
             setCartHeightTarget('middle');
           }
         }

@@ -600,12 +600,13 @@ span.text-red {
 
 /* Original .cart-wrapper for mobile if not completely replaced by .cart-overlay logic */
 /* This will now primarily be for mobile, as desktop uses .cart-overlay */
+/*
 .cart-wrapper {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
-  z-index: 1000; /* Ensure it's above other content */
+  z-index: 1000; */ /* Ensure it's above other content */
   /* The background: rgba(0, 0, 0, 0.5) is removed from here as it's part of cart-overlay now
      or applied directly if mobile also needs a full screen dim.
      For a slide-up panel, the wrapper itself usually doesn't have a background overlay unless
@@ -619,7 +620,8 @@ span.text-red {
      Let's keep the overlay for mobile on cart-wrapper for consistency of dimming.
   */
   /* background: rgba(0, 0, 0, 0.5); */ /* Overlay removed, cart-panel-mobile will handle its own background */
-}
+/* }
+*/
 
 /* New styles for .cart-panel-mobile (the motion.div itself for mobile) */
 .cart-panel-mobile {
