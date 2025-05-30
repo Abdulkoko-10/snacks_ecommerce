@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
   AiOutlineMinus,
@@ -9,7 +9,7 @@ import {
 import { TiDeleteOutline } from "react-icons/ti";
 import { FaLock } from 'react-icons/fa';
 import toast from "react-hot-toast";
-//import Image from 'next/image'; // Import next/image
+import Image from 'next/image';
 import { useSpring, animated } from '@react-spring/web';
 import { useDrag } from '@use-gesture/react';
 
@@ -52,57 +52,52 @@ const Cart = () => {
     config: { tension: 250, friction: 30 },
   }));
 
-  const updateCartHeight = () => {
+  const updateCartHeight = useCallback(() => {
     if (contentRef.current) {
       const newHeight = contentRef.current.offsetHeight;
+      // peekHeight is a constant, setCartHeight is stable from useState
       setCartHeight(Math.max(newHeight, peekHeight + 50));
     }
-  };
+  }, [peekHeight, setCartHeight]); // contentRef is stable
 
   // Call updateCartHeight when cartItems change or on initial mount
   useEffect(() => {
     updateCartHeight();
-  }, [cartItems, totalQuantities, currentWindowHeight]); // Dependencies include currentWindowHeight
+  }, [cartItems, totalQuantities, currentWindowHeight, updateCartHeight]);
 
-  const open = () => {
+  const open = useCallback(() => {
     updateCartHeight();
     api.start({ y: Math.max(0, currentWindowHeight - cartHeight), immediate: false });
-  };
+  }, [updateCartHeight, api, currentWindowHeight, cartHeight]);
 
-  const close = (velocity = 0) => {
+  const close = useCallback((velocity = 0) => {
     api.start({ y: currentWindowHeight - peekHeight, immediate: false });
-  };
+  }, [api, currentWindowHeight, peekHeight]);
 
-  const dismiss = () => {
+  const dismiss = useCallback(() => {
     api.start({ y: currentWindowHeight, immediate: false, onRest: () => setShowCart(false) });
-  };
+  }, [api, currentWindowHeight, setShowCart]);
 
   const bind = useDrag(
     ({ last, velocity: [, vy], movement: [, my], cancel, canceled, down }) => {
       const currentY = y.get();
       if (last) {
-        // If dragged down significantly (more than 50% of cart height or with high velocity)
         if (my > cartHeight * 0.5 || vy > 0.8) {
-          // If dragged below the peeking state, dismiss fully
-          if (currentY + my > currentWindowHeight - peekHeight + (peekHeight / 2) ) {
+          if (currentY + my > currentWindowHeight - peekHeight + (peekHeight / 2)) {
             dismiss();
           } else {
             close(vy);
           }
-        }
-        // If dragged up significantly (more than 30% of cart height or with high velocity)
-        else if (my < -cartHeight * 0.3 || vy < -0.5) {
+        } else if (my < -cartHeight * 0.3 || vy < -0.5) {
           open();
-        }
-        // Snap based on current position if not a strong flick
-        else {
-          if (currentY < currentWindowHeight - cartHeight / 2) { // Closer to open state
+        } else {
+          if (currentY < currentWindowHeight - cartHeight / 2) {
             open();
-          } else { // Closer to closed/peeking state
+          } else {
             close();
           }
         }
-      } else { // While dragging
+      } else {
         api.start({ y: currentY + my, immediate: true });
       }
     },
@@ -121,21 +116,21 @@ const Cart = () => {
 
   // Effect to open/close cart based on totalQuantities or if cart becomes empty
   useEffect(() => {
-    updateCartHeight(); // Ensure height is up-to-date
+    updateCartHeight();
     if (totalQuantities > 0 && cartItems.length > 0) {
-      // If it was previously fully dismissed (y = currentWindowHeight), bring to peek
-      if (y.get() >= currentWindowHeight -10 ) { // give some tolerance
-         api.start({ y: currentWindowHeight - peekHeight, immediate: true, onRest: open });
+      if (y.get() >= currentWindowHeight - 10) {
+        api.start({ y: currentWindowHeight - peekHeight, immediate: true, onRest: open });
       } else {
         open();
       }
     } else if (cartItems.length === 0 && totalQuantities === 0) {
-      // If cart is empty, slide to peek or dismiss
-      if (y.get() < currentWindowHeight - peekHeight) { // if it's open or partially open
-        close(); // Go to peek state
+      if (y.get() < currentWindowHeight - peekHeight) {
+        close();
       }
     }
-  }, [totalQuantities, cartItems.length, cartHeight, currentWindowHeight, open, close, y, api]);
+    // ESLint exhaustive-deps: y and api are from useSpring, they are stable.
+    // open, close, updateCartHeight are now memoized with useCallback.
+  }, [totalQuantities, cartItems.length, cartHeight, currentWindowHeight, open, close, y, api, updateCartHeight]);
 
 
   const handlePreOrder = () => {
@@ -210,7 +205,7 @@ const Cart = () => {
           type="button"
           className="cart-heading"
           onClick={() => {
-            if (y.get() < windowHeight - peekHeight - 20) { // If fully or partially open
+            if (y.get() < currentWindowHeight - peekHeight - 20) { // If fully or partially open
               close();
             } else { // If peeking, then try to open it (or could be dismiss)
               open();
@@ -246,15 +241,17 @@ const Cart = () => {
                   src={urlFor(item.image[0])}
                   className="cart-product-image"
                 /> */}
-                <img
-                  src={urlFor(item.image[0]).url()}
-                  alt={item.name}
-                  width={180} // from CSS .cart-product-image
-                  height={150} // from CSS .cart-product-image
-                  className="cart-product-image"
-                  // layout="responsive" // This might require parent to have defined aspect ratio or size
-                  // objectFit="cover" // If using layout="responsive" or "fill"
-                />
+                {item.image && item.image[0] && (
+                  <Image
+                    src={urlFor(item.image[0]).url()}
+                    alt={item.name}
+                    width={180} // from CSS .cart-product-image
+                    height={150} // from CSS .cart-product-image
+                    className="cart-product-image"
+                    layout="intrinsic"
+                    objectFit="cover"
+                  />
+                )}
                 <div className="item-desc">
                   <div className="flex top">
                     <h5>{item.name}</h5>
@@ -332,8 +329,8 @@ const Cart = () => {
             </div>
           </div>
         )}
-      </div>
-    </div>
+      </div> {/* This closes div.cart-container */}
+    </animated.div>
   );
 };
 

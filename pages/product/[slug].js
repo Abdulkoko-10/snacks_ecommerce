@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Head from 'next/head'; // Import Head
 import { useRouter } from 'next/router'; // To get current path for URL
+import Image from 'next/image';
 
 import {
   AiOutlineMinus,
@@ -146,20 +147,22 @@ const ProductDetails = ({ product, products, reviews: initialReviews }) => {
         <div>
           <div className="image-container">
             {image && image[index] && ( // Check if image and image[index] exist
-              <img
+              <Image
                 src={urlFor(image[index]).url()}
                 alt={name}
                 width={400} // From CSS .product-detail-image
                 height={400} // From CSS .product-detail-image
                 className="product-detail-image"
                 priority // Main product image, likely LCP
+                layout="intrinsic"
+                objectFit="cover"
               />
             )}
           </div>
           <div className="small-images-container">
             {image?.map((item, i) => (
               item && ( // Ensure item exists before rendering Image
-                <img
+                <Image
                   key={i}
                   src={urlFor(item).url()}
                   alt={`${name} - view ${i + 1}`}
@@ -169,6 +172,8 @@ const ProductDetails = ({ product, products, reviews: initialReviews }) => {
                     i === index ? "small-image selected-image" : "small-image"
                   }
                   onMouseEnter={() => setIndex(i)}
+                  layout="intrinsic"
+                  objectFit="cover"
                 />
               )
             ))}

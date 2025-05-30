@@ -10,6 +10,7 @@
     "test": "jest --watch"
   },
   "dependencies": {
+    "@react-spring/web": "^10.0.1",
     "@sanity/client": "^2.23.2",
     "@sanity/image-url": "^1.0.1",
     "@stripe/stripe-js": "^1.25.0",

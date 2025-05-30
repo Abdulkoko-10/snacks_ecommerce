@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-// import Image from 'next/image'; // Import next/image
+import Image from 'next/image';
 
 import { urlFor } from '../lib/client';
 
@@ -10,11 +10,17 @@ slug, price } }) => {
     <div>
       <Link href={`/product/${slug.current}`}>
         <div className="product-card">
-          <img
-            src={urlFor(image && image[0]).url()} // Add .url()
-            alt={name} // Already using name for alt
-            className="product-image"
-          />
+          {image && image[0] && (
+            <Image
+              src={urlFor(image[0]).url()}
+              alt={name}
+              width={280} // Base width, CSS will make it responsive
+              height={280} // Base height, CSS will make it responsive
+              className="product-image"
+              layout="responsive" // Will adapt to parent width, constrained by CSS max-height
+              objectFit="cover" // Ensures the image covers the area, might crop
+            />
+          )}
           <p className="product-name">{name}</p>
           <p className="product-price">N{price}</p>
           <div className="product-card-hover-buttons">
