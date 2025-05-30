@@ -75,22 +75,22 @@ const Cart = () => {
     visible: { opacity: 1, scale: 1, transition: { duration: 0.2 } },
   };
 
-  const mobilePanelVariants = { // Renamed from panelVariants for clarity
-    hidden: { y: "100%", opacity: 0, transition: { type: "spring", stiffness: 300, damping: 30 } },
-    visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 300, damping: 30 } },
+  const mobilePanelVariants = {
+    hidden: { y: "100%", opacity: 0.8, transition: { type: "spring", stiffness: 200, damping: 25 } }, // Start fully below
+    visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 200, damping: 25 } }, // Settle at its CSS position
   };
 
   const { showCart } = useStateContext(); // Ensure showCart is destructured
 
   return (
     <motion.div
-      className={isDesktop ? "cart-overlay" : "cart-wrapper"}
+      className={isDesktop ? "cart-overlay" : "cart-panel-mobile"} // Use new class "cart-panel-mobile"
       initial="hidden"
       animate={showCart ? "visible" : "hidden"}
       variants={isDesktop ? desktopModalVariants : mobilePanelVariants}
       drag={isDesktop ? false : "y"} // Disable drag on desktop
-      dragConstraints={isDesktop ? false : { top: 0, bottom: 0 }}
-      dragElastic={isDesktop ? false : { top: 0, bottom: 0.5 }}
+      dragConstraints={isDesktop ? false : { top: 0 }} // Updated for mobile
+      dragElastic={isDesktop ? false : { top: 0.1, bottom: 0.5 }} // Updated for mobile
       onDragEnd={isDesktop ? null : (event, info) => {
         const dragDistance = info.offset.y;
         const dragVelocity = info.velocity.y;
@@ -107,8 +107,8 @@ const Cart = () => {
     >
       {/* Consider adding a visual drag handle if design requires */}
       {/* <div className="drag-handle"></div> (and style it) */}
-      <div className={`cart-container ${isDesktop ? 'cart-container-desktop' : 'cart-container-mobile'} glassmorphism`}>
-        {/* Keep glassmorphism for now, can be removed or adjusted via CSS if needed for desktop */}
+      <div className={`cart-container ${isDesktop ? 'cart-container-desktop' : 'cart-container-inner-mobile'} glassmorphism`}>
+        {/* Keep glassmorphism for now, can be removed or adjusted via CSS if needed for desktop / or applied to cart-panel-mobile */}
         <button
           type="button"
           className="cart-heading"
