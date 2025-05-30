@@ -7,6 +7,7 @@ import {
   AiOutlineShopping,
 } from "react-icons/ai";
 import { TiDeleteOutline } from "react-icons/ti";
+import { FaLock } from 'react-icons/fa';
 import toast from "react-hot-toast";
 //import Image from 'next/image'; // Import next/image
 
@@ -38,6 +39,15 @@ const Cart = () => {
   };
 
   const handleCheckout = async () => {
+    // Condition to check if payment is locked
+    const isPaymentLocked = true; // This can be a state or a constant for now
+
+    if (isPaymentLocked) {
+      toast.info("Payment processing is coming soon!"); // Using toast.info for a less alarming message
+      return; // Exit the function, preventing Stripe checkout
+    }
+
+    // Original checkout logic (should not be reached if isPaymentLocked is true)
     const stripe = await getStripe();
 
     const response = await fetch("/api/stripe", {
@@ -155,8 +165,8 @@ const Cart = () => {
                 Pre-order Now
               </button>
               <div className="tooltip-container" style={{ position: 'relative', display: 'inline-block', width: '100%', marginTop: '10px' }}>
-                <button type="button" className="btn" onClick={handleCheckout} disabled style={{ width: '100%' }}>
-                  Pay with Stripe
+                <button type="button" className="btn btn-locked" onClick={handleCheckout} style={{ width: '100%' }}>
+                  <FaLock style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Pay with Stripe
                 </button>
                 <span className="tooltip-text" style={{
                   visibility: 'hidden',
