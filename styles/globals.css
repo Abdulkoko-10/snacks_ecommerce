@@ -674,7 +674,7 @@ span.text-red {
 
 /* Styles for .cart-container-inner-mobile (replaces .cart-container-mobile) */
 .cart-container-inner-mobile {
-  padding: 20px; /* Inner padding */
+  /* padding: 20px; */ /* Padding moved to children: product-scroll-area and cart-checkout-area */
   display: flex;
   flex-direction: column;
   height: 100%; /* Fill the parent cart-panel-mobile */
@@ -687,6 +687,33 @@ span.text-red {
   /* If glassmorphism is applied to cart-panel-mobile, these might not be needed or adjusted */
   /* background: transparent; */ /* Example if parent has glassmorphism */
 /* } */
+
+/* New structure for mobile cart content */
+.cart-container-inner-mobile .product-scroll-area {
+  flex-grow: 1;
+  overflow-y: auto;
+  min-height: 0; /* Crucial for scroll within flex child */
+  padding: 0 20px; /* Horizontal padding for scrollable content */
+}
+
+.cart-container-inner-mobile .cart-checkout-area {
+  flex-shrink: 0;
+  padding: 20px; /* Padding for the checkout area */
+  /* Potentially add a top border: border-top: 1px solid var(--glass-border-color); */
+}
+
+/* Adjust .product-container when inside the new mobile structure */
+/* The old rule `.cart-container-inner-mobile .product-container` needs to be removed or its content changed */
+/* For now, we assume global .product-container styles are mostly fine, but overflow and flex-grow are handled by parent */
+.cart-container-inner-mobile .product-scroll-area .product-container {
+  /* Specific overrides if global .product-container styles conflict */
+  /* For example, remove margin-top if it's not needed due to parent padding */
+  margin-top: 0;
+  padding-top: 10px; /* Add some space at the top of the product list */
+  padding-bottom: 10px; /* Add some space at the bottom of the product list */
+   /* overflow-y and flex-grow are handled by .product-scroll-area */
+}
+
 
 /* Adjust .cart-container for desktop (ensure it's distinct from .cart-container-inner-mobile) */
 .cart-container-desktop {
@@ -709,12 +736,9 @@ span.text-red {
 }
 
 /* Product container adjustments for new structure */
-.cart-container-inner-mobile .product-container {
-  overflow-y: auto;
-  flex-grow: 1; /* Take remaining space */
-  padding-right: 5px; /* Avoid scrollbar overlap if any */
-  /* margin-top and background-color are inherited from .product-container global styles or can be overridden here */
-}
+/* REMOVE/MODIFY old .cart-container-inner-mobile .product-container rule */
+/* This rule is now replaced by .cart-container-inner-mobile .product-scroll-area handling scroll */
+/* And .cart-container-inner-mobile .product-scroll-area .product-container for item list styling */
 
 .cart-container-desktop .product-container {
   overflow-y: auto; /* Ensure desktop modal also scrolls long content */
@@ -855,13 +879,22 @@ span.text-red {
   border: none;
 }
 .cart-bottom {
-  position: absolute;
-  bottom: 12px;
-  right: 5px;
-  width: 100%;
-  padding: 30px 65px;
+  /* position: absolute; */ /* This is removed for the new mobile sticky layout */
+  /* bottom: 12px; */
+  /* right: 5px; */
+  /* width: 100%; */ /* Will now be controlled by flex parent .cart-checkout-area */
+  /* padding: 30px 65px; */ /* Padding will be adjusted or handled by parent */
   background-color: var(--primary-background-color); /* Ensure cart bottom bg adapts */
 }
+
+/* Specific adjustments for .cart-bottom within the new mobile structure */
+.cart-container-inner-mobile .cart-checkout-area .cart-bottom {
+  position: static; /* Override absolute positioning */
+  width: auto; /* Let flexbox handle width */
+  padding: 10px 0 0 0; /* Adjust padding as needed, e.g., top padding only if parent handles horizontal/bottom */
+  /* background-color: transparent; */ /* Optional: if .cart-checkout-area has its own bg */
+}
+
 
 .btn-container {
   width: 400px;
