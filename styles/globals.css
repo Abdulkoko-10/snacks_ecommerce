@@ -597,24 +597,73 @@ span.text-red {
   line-height: 1.5;
   margin-top: 1rem;
 }
+
+/* === Cart Panel Styles Start === */
 .cart-wrapper {
-  width: 100vw;
-  background: rgba(0, 0, 0, 0.5); /* This overlay can remain dark */
-  position: fixed;
-  right: 0;
-  top: 0;
+  /* This div is primarily controlled by react-spring for position (y transform) */
+  /* It's fixed to the bottom, full width, and handles drag gestures. */
+  /* z-index is set inline in Cart.jsx, but can be a fallback here */
   z-index: 10050;
-  transition: all 1s ease-in-out;
+  /* position: fixed; bottom: 0; left: 0; right: 0; are set by inline styles */
+  /* No background color here; the .cart-container handles appearance */
+  /* transition: none; react-spring handles transitions */
+  overscroll-behavior: contain; /* Prevent body scroll when dragging panel */
 }
+
 .cart-container {
-  height: 100vh;
-  width: 600px;
-  background-color: var(--primary-background-color); /* Was white */
-  float: right;
-  position: relative;
-  color: var(--text-color); 
-  padding: 30px 15px; /* Consolidated padding, this was the effective one */
+  /* This is the visible part of the cart panel, styled with glassmorphism */
+  width: 100%;
+  /* height is dynamic based on content, max-height can be set for open state */
+  /* max-height: 90vh; /* Example: Panel doesn't take full screen height when open */
+  background-color: var(--primary-background-color); /* Fallback if glassmorphism isn't fully supported/effective */
+  color: var(--text-color);
+  padding: 0; /* Remove old padding, handle spacing with inner elements */
+
+  /* Top rounded corners for panel appearance */
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+
+  /* Shadow for separation from content behind it */
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+
+  /* Glassmorphism is applied via class in JSX, ensure it's effective */
+  /* Styles from .glassmorphism class:
+    background: var(--glass-background-color);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 10px; (will be overridden by specific top radius here)
+    border: 1px solid var(--glass-border-color);
+    box-shadow: 0 8px 32px 0 var(--glass-box-shadow-color); (will be combined with above shadow)
+  */
+  border-bottom-left-radius: 0; /* Ensure bottom corners are not rounded from glassmorphism */
+  border-bottom-right-radius: 0;
+
+  /* Ensure content scrolling is handled, set inline in Cart.jsx style={{ overflowY: 'auto' }} */
+  /* overflow-y: auto; /* This is set inline in Cart.jsx */
+  /* max-height for the content area is also managed inline in Cart.jsx */
+  display: flex;
+  flex-direction: column;
 }
+
+.cart-drag-handle {
+  /* Styles for the drag handle area at the top of the cart panel */
+  padding: 15px 10px 10px 10px; /* Top padding larger for easier grabbing */
+  cursor: grab;
+  text-align: center;
+  border-bottom: 1px solid var(--glass-border-color); /* Subtle separator */
+  flex-shrink: 0; /* Prevent shrinking if cart content is small */
+}
+
+.cart-drag-handle div {
+  /* The small visual bar indicator */
+  width: 50px;
+  height: 5px;
+  background-color: var(--secondary-color); /* Use a theme color */
+  opacity: 0.5;
+  margin: auto;
+  border-radius: 3px;
+}
+/* === Cart Panel Styles End === */
 
 .footer-container {
   color: var(--secondary-color); 
@@ -637,32 +686,41 @@ span.text-red {
 .footer-container p {
   font-size: 0.95rem; /* Smaller text for footer */
 }
+
+/* cart-heading is the top bar inside cart-container (after drag handle) */
 .cart-heading {
   display: flex;
   align-items: center;
   font-size: 1.1rem; 
   font-weight: 600; 
-  cursor: pointer;
-  gap: 2px;
-  margin-left: 10px;
+  cursor: pointer; /* Still clickable to toggle open/close */
+  gap: 8px; /* Increased gap */
+  padding: 15px 20px; /* Consistent padding */
   border: none;
-  background-color: transparent;
+  background-color: transparent; /* Inherits from cart-container */
   color: var(--text-color); 
-  margin-bottom: 1rem; /* Added margin */
+  border-bottom: 1px solid var(--glass-border-color); /* Separator if needed, or remove if drag handle is enough */
+  flex-shrink: 0;
 }
 
 .cart-heading .heading {
-  margin-left: 10px;
+  margin-left: 0; /* Removed specific margin, rely on gap */
   font-family: 'Quicksand', sans-serif; 
 }
 .cart-num-items {
-  margin-left: 10px;
+  margin-left: auto; /* Push to the right */
+  padding-right: 10px; /* Space from edge */
   color: var(--primary-color);
   font-size: 0.9rem; 
 }
 .empty-cart {
-  margin: 40px;
+  padding: 40px 20px; /* Use padding instead of margin for better control within flex */
   text-align: center;
+  flex-grow: 1; /* Allows it to take available space if cart is empty */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 .empty-cart h3 {
   font-family: 'Quicksand', sans-serif; 
@@ -671,19 +729,22 @@ span.text-red {
   color: var(--text-color);
   margin-bottom: 1rem;
 }
-.empty-cart .btn { /* Style button in empty cart */
+.empty-cart .btn {
   margin-top: 20px;
 }
-.cancel {
+.cancel { /* This class seems to be from success/cancel pages, not cart */
   cursor: pointer;
   color: var(--primary-color); 
 }
+
+/* This is the main scrollable area for cart items */
 .product-container {
-  margin-top: 15px;
-  overflow: auto;
-  max-height: 70vh;
-  padding: 20px 10px;
-  background-color: var(--primary-background-color); 
+  /* overflow: auto; /* This is handled by cart-container's inline style */
+  /* max-height is also handled by cart-container's logic */
+  padding: 15px; /* Padding around the list of products */
+  background-color: transparent; /* Let cart-container background show */
+  flex-grow: 1; /* Takes up available vertical space */
+  /* min-height: 100px; /* Ensure it has some height even if empty, before .empty-cart shows */
 }
 .product {
   display: flex;
@@ -702,20 +763,20 @@ span.text-red {
 .item-desc .flex {
   display: flex;
   justify-content: space-between;
-  width: 350px;
-  color: var(--secondary-color); 
+  width: 100%; /* Adjusted from 350px to be responsive within panel */
+  color: var(--text-color); /* Ensure text color theming */
   font-family: 'Quicksand', sans-serif;
-  overflow: hidden;
+  /* overflow: hidden; /* Can cause issues if content needs to wrap unexpectedly */
 }
 .item-desc .bottom {
-  margin-top: 30px; 
+  margin-top: 20px; /* Reduced margin */
 }
 .flex h5 { /* Product name in cart */
   font-family: 'Quicksand', sans-serif;
   font-size: 1.2rem; 
   font-weight: 700;
   color: var(--text-color);
-  line-height: 1.4; /* Added line height */
+  line-height: 1.4;
   word-break: break-word;
   overflow-wrap: break-word;
 }
@@ -730,7 +791,8 @@ span.text-red {
 .total {
   display: flex;
   justify-content: space-between;
-  margin-top: 1.5rem; 
+  padding: 15px 0; /* Add padding for spacing */
+  border-top: 1px solid var(--glass-border-color); /* Separator line */
 }
 .total h3 {
   font-family: 'Quicksand', sans-serif;
@@ -745,18 +807,24 @@ span.text-red {
   background: transparent;
   border: none;
 }
+
+/* Styles for the bottom section of the cart (total, checkout button) */
 .cart-bottom {
-  position: absolute;
-  bottom: 12px;
-  right: 5px;
+  /* position: static; /* Removed absolute positioning */
   width: 100%;
-  padding: 30px 65px;
-  background-color: var(--primary-background-color); /* Ensure cart bottom bg adapts */
+  padding: 15px 20px 20px 20px; /* Adjusted padding */
+  background-color: var(--glass-background-color); /* Consistent glassmorphism or theme background */
+  border-top: 1px solid var(--glass-border-color); /* Separator from product list */
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.05); /* Subtle shadow upwards */
+  flex-shrink: 0; /* Prevent shrinking */
+  border-bottom-left-radius: inherit; /* Inherit from cart-container if it had bottom radius */
+  border-bottom-right-radius: inherit;
 }
 
 .btn-container {
-  width: 400px;
-  margin: auto;
+  width: 100%; /* Full width for button container */
+  max-width: 400px; /* Max width for the button itself */
+  margin: 0 auto; /* Center the button container */
 }
 .btn {
   width: 100%;
@@ -773,10 +841,10 @@ span.text-red {
   color: var(--text-on-primary-color); /* UPDATED */
   cursor: pointer;
   transform: scale(1, 1);
-  transition: transform 0.5s ease;
+  transition: transform 0.5s ease, background-color 0.3s ease, color 0.3s ease;
 }
 .btn:hover {
-  transform: scale(1.1, 1.1);
+  transform: scale(1.05); /* Subtler hover scale for panel buttons */
 }
 .product-detail-container {
   display: flex;
@@ -945,38 +1013,61 @@ span.text-red {
   margin-top: 30px; 
 }
 
-/* Styles for cart sidebar on mobile devices */
+/* Media Queries for Cart Panel */
 @media screen and (max-width: 600px) {
-  .cart-wrapper {
-    width: 100vw; /* Or 100% */
-    height: 100vh; /* Or 100% */
-    position: fixed; /* Or absolute if preferred and works with parent */
-    top: 0;
-    left: 0;
-    background: rgba(0, 0, 0, 0.75); /* Darker overlay for focus */
-    z-index: 10050; /* Ensure it's above other content, matches existing */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* transition: all 0.5s ease-in-out; /* Optional: refined transition */
-  }
-
+  /* On mobile, the panel might take up more vertical space when open */
   .cart-container {
-    width: 90%; /* Or a fixed width like 300px, 320px etc. */
-    max-width: 400px; /* Ensure it doesn't get too wide on larger "mobile" screens */
-    height: auto; /* Adjust height based on content, or a percentage like 80vh */
-    max-height: 90vh; /* Prevent it from taking the entire screen height if content is long */
-    float: none; /* Override existing float */
-    position: relative; /* Ensure it sits correctly within the flex container */
-    /* padding: 20px; /* Adjusted padding, existing mobile padding is 20px 10px */
-    border-radius: 10px; /* Optional: for a more modal-like appearance */
-    /* overflow-y: auto; /* Ensure content scrolls if it exceeds max-height */
+    /* max-height: 95vh; /* Example: Allow it to be taller on mobile */
+    border-top-left-radius: 15px; /* Slightly smaller radius for mobile */
+    border-top-right-radius: 15px;
   }
 
-  /* Ensure cart content like product list scrolls if cart-container has fixed height */
-  .product-container { /* This is .cart-container > .product-container */
-    max-height: calc(90vh - 200px); /* Example: Adjust based on other elements in cart-container */
-    /* The 200px is an estimate for heading, total, button etc. Needs to be adjusted. */
+  .cart-heading {
+    padding: 12px 15px;
+    font-size: 1rem;
+  }
+  .cart-heading .heading {
+    font-size: 1rem; /* Match parent */
+  }
+  .cart-num-items {
+    font-size: 0.85rem;
+  }
+
+  .product-container {
+    padding: 10px;
+  }
+  .product {
+    gap: 15px;
+    padding: 10px;
+  }
+  .product .cart-product-image {
+    width: 100px; /* Smaller image on mobile cart */
+    height: 100px;
+  }
+  .item-desc .flex {
+    /* width: auto; /* Allow flex to determine width */
+  }
+   .item-desc .bottom {
+    margin-top: 10px;
+  }
+  .flex h5 { /* Product name in cart */
+    font-size: 1rem;
+  }
+  .flex h4 { /* Product price in cart */
+    font-size: 1rem;
+  }
+  .total h3 {
+    font-size: 1.2rem;
+  }
+  .cart-bottom {
+    padding: 10px 15px 15px 15px;
+  }
+  .btn-container {
+    /* max-width: none; /* Allow button to be full width within padding */
+  }
+   .btn { /* General button adjustments for smaller screens if needed */
+    font-size: 1rem;
+    padding: 10px 15px;
   }
 }
 
@@ -1047,6 +1138,8 @@ span.text-red {
 }
 
 @media screen and (max-width: 800px) {
+  /* These are general responsive styles, review if they conflict with new panel styles */
+  /* The cart-specific styles are mostly handled by max-width: 600px query for the panel itself */
   h1 { font-size: 2rem; } 
   h2 { font-size: 1.7rem; } 
   h3 { font-size: 1.4rem; } 
@@ -1231,49 +1324,50 @@ span.text-red {
     font-size: 0.9rem;
   }
 
-  .cart-container {
-    width: 100%; /* Full width cart on mobile */
-    padding: 20px 10px; /* Adjusted padding */
-    float: none; /* Prevent floating on mobile to fix clipping */
-  }
-  .cart-heading {
-    margin-top: 20px; /* Adjusted margin */
-    font-size: 1rem;
-  }
-  .product-container {
-    margin-top: 10px;
-  }
-  .product {
-    padding: 15px 10px; /* Adjusted padding */
-    gap: 15px; /* Adjusted gap for mobile */
-    flex-direction: column; /* Stack cart items */
-    align-items: center; /* Center items */
-  }
-  .product .cart-product-image {
-    width: 50%; /* Larger image in stacked view */
-    height: auto;
-  }
-  .item-desc .flex {
-    width: 100%; /* Full width for item desc */
-    text-align: center; /* Center text */
-    flex-direction: column; /* Stack name/price */
-    gap: 5px;
-  }
-  .item-desc .bottom {
-    margin-top: 15px; /* Adjusted margin */
-  }
-  .cart-bottom {
-    position: static; /* Static for mobile flow */
-    padding: 20px; /* Adjusted padding */
-  }
-  .btn-container { /* For cart pay button */
+  /* Original cart adjustments for smaller screens, check if still needed or handled by new panel structure */
+  /* .cart-container {
     width: 100%;
-    padding: 0 10px; /* Add padding to btn container */
-  }
+    padding: 20px 10px;
+    float: none;
+  } */
+  /* .cart-heading {
+    margin-top: 20px;
+    font-size: 1rem;
+  } */
+  /* .product-container {
+    margin-top: 10px;
+  } */
+  /* .product {
+    padding: 15px 10px;
+    gap: 15px;
+    flex-direction: column;
+    align-items: center;
+  } */
+  /* .product .cart-product-image {
+    width: 50%;
+    height: auto;
+  } */
+  /* .item-desc .flex {
+    width: 100%;
+    text-align: center;
+    flex-direction: column;
+    gap: 5px;
+  } */
+  /* .item-desc .bottom {
+    margin-top: 15px;
+  } */
+  /* .cart-bottom {
+    position: static;
+    padding: 20px;
+  } */
+  /* .btn-container {
+    width: 100%;
+    padding: 0 10px;
+  } */
 
-  .total h3 {
+  /* .total h3 {
     font-size: 1.2rem; 
-  }
+  } */
   .success-wrapper,
   .cancel-wrapper {
     min-height: 69vh;
