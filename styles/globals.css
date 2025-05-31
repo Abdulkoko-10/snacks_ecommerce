@@ -730,6 +730,7 @@ span.text-red {
   /* These are inherited from .cart-container, but can be explicit if .cart-container base changes */
   display: flex;
   flex-direction: column;
+  overflow-y: auto; /* ADDED */
   /* glassmorphism class is applied in JSX, so styles here are additive or overriding.
      If glassmorphism is intended for desktop modal content, ensure its styles are compatible.
   */
@@ -744,9 +745,9 @@ span.text-red {
 }
 
 .cart-container-desktop .product-container {
-  overflow-y: auto; /* Ensure desktop modal also scrolls long content */
-  /* flex-grow: 1; */ /* REMOVED or commented out */
-  height: calc(95vh - 337px); /* ADDED explicit height calculation */
+  /* overflow-y: auto; */ /* CHANGED to visible or REMOVED */
+  flex-grow: 1; /* ENSURED active */
+  /* height: calc(95vh - 337px); */ /* REMOVED or commented out */
   /* Existing padding on .product-container (e.g. padding: 10px in .product-container global rule) should be fine */
 }
 
