@@ -1806,3 +1806,8 @@ span.text-red {
   box-shadow: none !important; /* Example: remove shadow if .btn has one */
   transform: scale(1, 1) !important; /* Prevent hover scale effect from .btn:hover */
 }
+
+/* Class to prevent body scroll when cart is open */
+.no-scroll-while-cart-open {
+  overflow: hidden !important;
+}
