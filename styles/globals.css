@@ -681,12 +681,12 @@ span.text-red {
   left: 0;
   width: 100%;
   height: 100%;
-  overflow-y: hidden; /* Explicitly set to hidden to prevent any scrollbar on overlay */
+  overflow: hidden; /* Ensuring this covers all overflow, not just y */
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
-  align-items: center; /* Changed back to center */
-  z-index: 10100; /* Kept from previous step */
+  align-items: center;
+  z-index: 10100;
 }
 
 /* Base .cart-container styles (some might be overridden by desktop/mobile specific) */
