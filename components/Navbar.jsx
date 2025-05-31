@@ -94,8 +94,10 @@ const Navbar = () => {
     // document.documentElement.style.setProperty('--glass-background-color-rgb', hexToRgba(selectedRgbColor, 0.25)); // Requires hexToRgba
     // document.documentElement.style.setProperty('--glass-border-color-rgb', hexToRgba(mainContrastColor, 0.18));
 
-    // Set the scrolled navbar background for RGB mode
-    document.documentElement.style.setProperty('--scrolled-navbar-bg-rgb', hexToRgba(selectedRgbColor, 0.85));
+    // Set the scrolled navbar background for RGB mode, considering mobile viewport
+    const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 800px)').matches;
+    const scrolledRgbAlpha = isMobile ? 0.7 : 0.85;
+    document.documentElement.style.setProperty('--scrolled-navbar-bg-rgb', hexToRgba(selectedRgbColor, scrolledRgbAlpha));
   }, []);
 
   // Effect to set initial theme & handle clicks outside theme menu

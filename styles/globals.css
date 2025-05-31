@@ -1075,6 +1075,13 @@ span.text-red {
 }
 
 @media screen and (max-width: 800px) {
+  :root {
+    --navbar-height: 60px; /* Override navbar height for mobile */
+    --scrolled-navbar-bg-light: rgba(255, 255, 255, 0.7); /* More transparent for mobile */
+    --scrolled-navbar-bg-dark: rgba(26, 26, 26, 0.7);   /* More transparent for mobile */
+    --scrolled-navbar-bg-rgb: rgba(50, 77, 103, 0.7); /* More transparent fallback for mobile */
+  }
+
   h1 { font-size: 2rem; } 
   h2 { font-size: 1.7rem; } 
   h3 { font-size: 1.4rem; } 
@@ -1086,7 +1093,7 @@ span.text-red {
     padding: 15px;
   }
   .navbar-container {
-    padding: 10px 15px; /* Reduced horizontal padding for mobile */
+    padding: 8px 15px; /* Reduced vertical and horizontal padding for mobile */
     margin: 0; /* Ensure margin is 0 for fixed navbar */
   }
    .logo {
