@@ -55,6 +55,7 @@ const Navbar = () => {
   const [rgbInputColor, setRgbInputColor] = useState(rgbColor); // For the color picker input
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const themeMenuRef = useRef(null); // For detecting clicks outside
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const applyRgbTheme = useCallback((selectedRgbColor) => {
     const mainContrastColor = calculateContrastColor(selectedRgbColor);
@@ -92,12 +93,28 @@ const Navbar = () => {
     // For example:
     // document.documentElement.style.setProperty('--glass-background-color-rgb', hexToRgba(selectedRgbColor, 0.25)); // Requires hexToRgba
     // document.documentElement.style.setProperty('--glass-border-color-rgb', hexToRgba(mainContrastColor, 0.18));
-    // document.documentElement.style.setProperty('--glass-background-color-rgb', hexToRgba(selectedRgbColor, 0.25)); // Requires hexToRgba
-    // document.documentElement.style.setProperty('--glass-border-color-rgb', hexToRgba(mainContrastColor, 0.18));
+
+    // Set the scrolled navbar background for RGB mode, considering mobile viewport
+    const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 800px)').matches;
+    const scrolledRgbAlpha = isMobile ? 0.7 : 0.85;
+    document.documentElement.style.setProperty('--scrolled-navbar-bg-rgb', hexToRgba(selectedRgbColor, scrolledRgbAlpha));
   }, []);
 
   // Effect to set initial theme & handle clicks outside theme menu
   useEffect(() => {
+    // Scroll handler
+    const handleScroll = () => {
+      if (window.scrollY > 0) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    // Call handler once on mount to check initial scroll position
+    handleScroll();
+
     const savedThemeMode = localStorage.getItem('themeMode');
     const savedRgbColor = localStorage.getItem('rgbColor');
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -134,9 +151,10 @@ const Navbar = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('scroll', handleScroll); // Cleanup scroll listener
     };
 
-  }, [applyRgbTheme]);
+  }, [applyRgbTheme]); // applyRgbTheme is a dependency, keep it if it's stable or memoized correctly
 
   const setAndStoreTheme = (newThemeMode, newRgbColor = rgbColor) => {
     document.documentElement.classList.remove('dark-mode', 'rgb-mode');
@@ -192,7 +210,7 @@ const Navbar = () => {
   }
 
   return (
-    <div className="navbar-container glassmorphism">
+    <div className={`navbar-container glassmorphism ${isScrolled ? 'scrolled-navbar' : ''}`}>
       <p className="logo">
         <Link href="/">Snacks</Link>
       </p>
