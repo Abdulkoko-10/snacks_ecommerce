@@ -685,7 +685,7 @@ span.text-red {
   background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
   display: flex;
   justify-content: center;
-  align-items: flex-end; /* Changed from align-items: center */
+  align-items: center; /* Changed back to center */
   z-index: 1000;
 }
 
