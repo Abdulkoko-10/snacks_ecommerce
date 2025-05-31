@@ -129,26 +129,36 @@ a {
 
 .main-container {
   max-width: 1400px;
-  margin: auto;
+  margin: auto; /* This is 'margin-left: auto; margin-right: auto;' effectively */
   width: 100%;
+  padding-top: 70px; /* <<< ADDED to prevent overlap with fixed navbar */
 }
 .layout {
-  padding: 20px;
+  padding: 20px; /* This padding is inside .main-container, so it's fine */
+}
+
+/* Minimal explicit styling for header as a precaution for sticky compatibility */
+header {
+  display: block; /* Default, but explicit */
+  /* Avoid setting a specific height here unless necessary */
 }
 
 .navbar-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 10px 25px;
-  padding: 10px 0;
-  position: sticky; /* <<< Added */
-  top: 0; /* <<< Added */
-  z-index: 1001; /* <<< Increased from 1000 to be above cart overlay */
-  /* Ensure background is applied for sticky to work as expected, especially if it was transparent */
-  /* The glassmorphism class already provides a background, so this should be fine. */
-  /* We might need to adjust padding or margin if the layout shifts undesirably. */
-  transition: background 0.3s ease-in-out; /* Add this for smooth transparency change */
+  margin: 0; /* Remove horizontal margin for full width */
+  padding: 10px 25px; /* Keep vertical padding, adjust horizontal if needed */
+  position: fixed;   /* CHANGED */
+  top: 0;
+  left: 0; /* Added for explicit positioning */
+  right: 0; /* Added for explicit positioning */
+  width: 100%; /* CHANGED */
+  z-index: 1001;
+  /* background: #FF00FF; */ /* REMOVED/COMMENTED OUT */
+  box-sizing: border-box; /* Ensure padding is included in width */
+  transition: background 0.3s ease-in-out; /* RESTORED */
+  /* The actual background will come from the .glassmorphism class and themes */
 }
 
 /* Styles for scrolled navbar */
