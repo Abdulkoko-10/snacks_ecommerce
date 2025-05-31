@@ -724,20 +724,18 @@ span.text-red {
 /* Adjust .cart-container for desktop (ensure it's distinct from .cart-container-inner-mobile) */
 .cart-container-desktop {
   /* This class is applied alongside .cart-container for desktop */
-  width: 90vw;            /* Changed width */
-  max-width: 95vw;        /* Changed max-width */
-  min-height: 90vh;       /* Reverted */
-  max-height: 95vh;       /* Reverted */
+  width: 90vw;
+  max-width: 95vw;
+  min-height: 500px; /* Restored from 90vh */
+  max-height: calc(95vh - 70px); /* Restored calculated max-height */
   height: auto;           /* Allow content to define height up to max-height */
   border-radius: 12px;    /* Slightly larger radius for a larger modal */
   box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.15); /* Slightly adjusted shadow for new size */
   padding: 25px;          /* Slightly increased padding */
-  /* Ensure display:flex and flex-direction:column are present for product-container scrolling */
-  /* These are inherited from .cart-container, but can be explicit if .cart-container base changes */
   display: flex;
   flex-direction: column;
   margin: 0; /* Ensure no external margins, centering is by cart-overlay */
-  overflow-y: auto; /* Added for overall cart scrolling */
+  overflow-y: auto; /* Ensure this is present for overall cart scrolling */
   /* glassmorphism class is applied in JSX, so styles here are additive or overriding.
      If glassmorphism is intended for desktop modal content, ensure its styles are compatible.
   */
@@ -752,7 +750,7 @@ span.text-red {
 }
 
 .cart-container-desktop .product-container {
-  /* overflow-y: auto; /* Ensure desktop modal also scrolls long content */ /* This is being removed/changed by general .product-container rule below */
+  /* overflow-y: auto; */ /* This was the previous state, effectively handled by general rule now */
   flex-grow: 1;
   /* Potentially adjust max-height if needed, e.g., calc(80vh - header_height - footer_height) */
 }
@@ -822,7 +820,7 @@ span.text-red {
 }
 .product-container {
   margin-top: 15px;
-  overflow-y: visible; /* CHANGED from auto */
+  overflow-y: visible; /* Ensure it does not have its own scrollbar */
   flex-grow: 1; /* Allows this section to take available space and scroll */
   /* max-height: 70vh; */ /* This was for the old .cart-container, ensure .product-container inside .cart-container-mobile or .cart-container-desktop behaves */
   padding: 10px; /* Adjusted from 20px 10px */
