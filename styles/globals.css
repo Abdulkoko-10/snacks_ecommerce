@@ -140,10 +140,40 @@ a {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 10px 25px;
-  padding: 10px 0;
-  position: relative;
+  margin: 0; /* Changed from 10px 25px */
+  padding: 10px 25px; /* Changed from 10px 0 */
+  position: sticky; /* Changed from relative */
+  top: 0; /* Added */
+  width: 100%; /* Added */
   z-index: 1000;
+  transition: background 0.3s ease-in-out; /* Changed from opacity to background */
+}
+
+/* Remove old opacity-based rule */
+/* .navbar-container.navbar-scrolled {
+  opacity: 0.9;
+} */
+
+/* Default (Light Mode) Scrolled Background */
+/* This also serves as the base for .navbar-container.navbar-scrolled */
+.navbar-container.navbar-scrolled {
+  /* background is set by more specific rules below, but transition is good here if not on base */
+  /* transition: background 0.3s ease-in-out; */ /* Already on .navbar-container */
+}
+
+/* For light mode explicitly */
+:root:not(.dark-mode):not(.rgb-mode) .navbar-container.navbar-scrolled {
+  background: rgba(255, 255, 255, 0.1) !important; /* Alpha: 0.1 */
+}
+
+/* Dark Mode Scrolled Background */
+.dark-mode .navbar-container.navbar-scrolled {
+  background: rgba(26, 26, 26, 0.15) !important; /* Alpha: 0.15 for dark mode (based on #1a1a1a from --background-dark) */
+}
+
+/* RGB Mode Scrolled Background (uses a variable set by JS) */
+.rgb-mode .navbar-container.navbar-scrolled {
+  background: var(--glass-background-color-rgb-scrolled) !important;
 }
 
 .nav-items-right {

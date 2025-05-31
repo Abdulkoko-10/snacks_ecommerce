@@ -55,6 +55,7 @@ const Navbar = () => {
   const [rgbInputColor, setRgbInputColor] = useState(rgbColor); // For the color picker input
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const themeMenuRef = useRef(null); // For detecting clicks outside
+  const [isScrolled, setIsScrolled] = useState(false); // Added for scroll effect
 
   const applyRgbTheme = useCallback((selectedRgbColor) => {
     const mainContrastColor = calculateContrastColor(selectedRgbColor);
@@ -90,10 +91,12 @@ const Navbar = () => {
     // Other RGB variables like glassmorphism or product card shadows can also be updated here
     // if more granular control is needed beyond their CSS defaults (which are based on light theme).
     // For example:
-    // document.documentElement.style.setProperty('--glass-background-color-rgb', hexToRgba(selectedRgbColor, 0.25)); // Requires hexToRgba
+    document.documentElement.style.setProperty('--glass-background-color-rgb', hexToRgba(selectedRgbColor, 0.25)); // Standard glass background
+    document.documentElement.style.setProperty('--glass-background-color-rgb-scrolled', hexToRgba(selectedRgbColor, 0.1)); // Scrolled, more transparent
     // document.documentElement.style.setProperty('--glass-border-color-rgb', hexToRgba(mainContrastColor, 0.18));
-    // document.documentElement.style.setProperty('--glass-background-color-rgb', hexToRgba(selectedRgbColor, 0.25)); // Requires hexToRgba
-    // document.documentElement.style.setProperty('--glass-border-color-rgb', hexToRgba(mainContrastColor, 0.18));
+    // document.documentElement.style.setProperty('--glass-box-shadow-color-rgb', hexToRgba(mainContrastColor === '#000000' ? '#000000' : '#FFFFFF', 0.37)); // Example shadow
+
+    // The original example lines were duplicated, I've kept one set and added the scrolled variable.
   }, []);
 
   // Effect to set initial theme & handle clicks outside theme menu
@@ -137,6 +140,25 @@ const Navbar = () => {
     };
 
   }, [applyRgbTheme]);
+
+  // Effect for scroll handling
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 0) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    // Call it once initially in case the page loads scrolled
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   const setAndStoreTheme = (newThemeMode, newRgbColor = rgbColor) => {
     document.documentElement.classList.remove('dark-mode', 'rgb-mode');
@@ -192,7 +214,7 @@ const Navbar = () => {
   }
 
   return (
-    <div className="navbar-container glassmorphism">
+    <div className={`navbar-container glassmorphism ${isScrolled ? 'navbar-scrolled' : ''}`}>
       <p className="logo">
         <Link href="/">Snacks</Link>
       </p>
