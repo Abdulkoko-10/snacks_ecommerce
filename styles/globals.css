@@ -684,11 +684,9 @@ span.text-red {
   background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
   z-index: 1000;
   overflow-y: auto;
-  padding-top: 5vh;
-  padding-bottom: 5vh;
 }
 
 /* Base .cart-container styles (some might be overridden by desktop/mobile specific) */
@@ -723,6 +721,7 @@ span.text-red {
   width: 90vw;            /* Changed width */
   max-width: 95vw;        /* Changed max-width */
   min-height: 90vh;       /* Changed min-height */
+  /* max-height is intentionally removed */
   height: auto;           /* Allow content to define height up to max-height */
   border-radius: 12px;    /* Slightly larger radius for a larger modal */
   box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.15); /* Slightly adjusted shadow for new size */
@@ -745,9 +744,9 @@ span.text-red {
 }
 
 .cart-container-desktop .product-container {
-  overflow-y: auto; /* Ensure desktop modal also scrolls long content */
+  overflow-y: visible; /* Ensure desktop modal also scrolls long content */
   flex-grow: 1;
-  /* Potentially adjust max-height if needed, e.g., calc(80vh - header_height - footer_height) */
+  /* max-height is intentionally removed */
 }
 
 
