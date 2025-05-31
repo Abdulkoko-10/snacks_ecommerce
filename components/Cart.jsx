@@ -86,6 +86,21 @@ const Cart = () => {
   const { showCart } = useStateContext(); // Ensure showCart is destructured
 
   useEffect(() => {
+    // Effect for body scroll lock
+    const originalOverflow = document.body.style.overflow;
+    if (showCart) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = originalOverflow || 'auto';
+    }
+
+    // Cleanup function to restore scroll on component unmount or when showCart changes to false
+    return () => {
+      document.body.style.overflow = originalOverflow || 'auto';
+    };
+  }, [showCart]); // Dependency array includes showCart
+
+  useEffect(() => {
     if (showCart && !isDesktop) {
       setCartHeightTarget('middle'); // Always open to middle for mobile
     }
