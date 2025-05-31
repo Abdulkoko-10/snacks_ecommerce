@@ -732,6 +732,7 @@ span.text-red {
   /* glassmorphism class is applied in JSX, so styles here are additive or overriding.
      If glassmorphism is intended for desktop modal content, ensure its styles are compatible.
   */
+  overflow: hidden; /* Prevents container from exceeding max-height; internal scrolling by product-container */
 }
 
 /* Product container adjustments for new structure */
@@ -881,12 +882,12 @@ span.text-red {
   border: none;
 }
 .cart-bottom {
-  position: absolute;
-  bottom: 12px;
-  right: 5px;
+  /* Removed absolute positioning to fix scroll issue */
   width: 100%;
   padding: 30px 65px;
   background-color: var(--primary-background-color); /* Ensure cart bottom bg adapts */
+  margin-top: auto;
+  box-sizing: border-box; /* Ensures padding is included in width */
 }
 
 .btn-container {
