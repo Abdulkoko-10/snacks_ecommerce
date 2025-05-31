@@ -651,7 +651,7 @@ span.text-red {
 
 /* New styles for .cart-panel-mobile (the motion.div itself for mobile) */
 .cart-panel-mobile {
-  position: fixed;
+  position: sticky; /* Changed from fixed */
   bottom: 0; /* Key for initial position */
   left: 0;
   width: 100%;
@@ -676,15 +676,16 @@ span.text-red {
 
 /* New styles for desktop modal overlay */
 .cart-overlay {
-  position: fixed;
-  top: 0;
+  position: sticky; /* Changed from fixed */
+  bottom: 0; /* Added */
   left: 0;
   width: 100%;
-  height: 100%;
+  /* top: 0; removed */
+  /* height: 100%; removed */
   background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  /* display: flex; removed */
+  /* justify-content: center; removed */
+  /* align-items: center; removed */
   z-index: 1000;
 }
 
@@ -1805,9 +1806,4 @@ span.text-red {
   /* Add any other properties that need to be overridden from the default .btn styles */
   box-shadow: none !important; /* Example: remove shadow if .btn has one */
   transform: scale(1, 1) !important; /* Prevent hover scale effect from .btn:hover */
-}
-
-/* Class to prevent body scroll when cart is open */
-.no-scroll-while-cart-open {
-  overflow: hidden !important;
 }
