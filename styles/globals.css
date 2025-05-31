@@ -1085,8 +1085,8 @@ span.text-red {
     padding: 15px;
   }
   .navbar-container {
-    margin: 5px 15px;
-    padding: 5px 0;
+    padding: 10px 15px; /* Reduced horizontal padding for mobile */
+    margin: 0; /* Ensure margin is 0 for fixed navbar */
   }
    .logo {
     font-size: 20px;
