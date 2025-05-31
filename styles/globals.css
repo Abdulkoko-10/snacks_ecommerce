@@ -644,8 +644,11 @@ span.text-red {
      -webkit-backdrop-filter: blur(10px);
      border: 1px solid var(--glass-border-color);
   */
+  top: auto !important;
+  bottom: 0 !important;
 }
 
+/* New styles for desktop modal overlay */
 /* New styles for desktop modal overlay */
 .cart-overlay {
   position: fixed;

@@ -18,9 +18,6 @@ import getStripe from "../lib/getStripe";
 import useMediaQuery from '../hooks/useMediaQuery'; // Import the hook
 
 const Cart = () => {
-  const isDesktop = useMediaQuery('(min-width: 768px)'); // Call the hook
-  const [cartHeightTarget, setCartHeightTarget] = useState('middle');
-  // const cartRef = useRef(); // Potentially remove if showCart state handles visibility
   const {
     totalPrice,
     totalQuantities,
@@ -31,46 +28,37 @@ const Cart = () => {
     setCartItems,
     setTotalPrice,
     setTotalQuantities,
+    showCart // Ensure showCart is destructured
   } = useStateContext();
 
-  const handlePreOrder = () => {
-    toast.success('Your pre-order has been placed successfully!');
+  const isDesktopQueryValue = useMediaQuery('(min-width: 768px)');
+  const [isClientReady, setIsClientReady] = useState(false);
+  const [cartHeightTarget, setCartHeightTarget] = useState('middle');
+  // const cartRef = useRef(); // Potentially remove if showCart state handles visibility (original comment)
 
-    setCartItems([]);
-    setTotalPrice(0);
-    setTotalQuantities(0);
-    setShowCart(false);
-  };
+  useEffect(() => {
+    setIsClientReady(true);
+  }, []); // Empty dependency array makes it run once on client mount
 
-  const handleCheckout = async () => {
-    // Condition to check if payment is locked
-    const isPaymentLocked = true; // This can be a state or a constant for now
+  // Determine isDesktop based on client readiness and query value
+  // Defaults to false (mobile-first) on SSR and initial client render
+  const isDesktop = isClientReady ? isDesktopQueryValue : false;
 
-    if (isPaymentLocked) {
-      toast.info("Payment processing is coming soon!"); // Using toast.info for a less alarming message
-      return; // Exit the function, preventing Stripe checkout
+  useEffect(() => {
+    if (isClientReady) { // Only proceed if client is ready
+      if (showCart && !isDesktop) { // 'isDesktop' is the client-aware version
+        setCartHeightTarget('middle'); // Always open to middle for mobile
+      }
     }
+    // No explicit reset on close needed as 'hidden' variant takes over. (original comment)
+  }, [showCart, isDesktop, isClientReady, setCartHeightTarget]); // Added isClientReady and setCartHeightTarget to deps
 
-    // Original checkout logic (should not be reached if isPaymentLocked is true)
-    const stripe = await getStripe();
+  if (!isClientReady) {
+    return null; // Don't render anything on the server or before client is ready
+  }
 
-    const response = await fetch("/api/stripe", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(cartItems),
-    });
-
-    if (response.statusCode === 500) return;
-
-    const data = await response.json();
-
-    toast.loading("Redirecting...");
-
-    stripe.redirectToCheckout({ sessionId: data.id });
-  };
-
+  // Define variants and handlers inside the component or ensure they are in scope
+  // These were previously defined outside the early return, so they are fine here.
   const desktopModalVariants = {
     hidden: { opacity: 0, scale: 0.8, transition: { duration: 0.2 } },
     visible: { opacity: 1, scale: 1, transition: { duration: 0.2 } },
@@ -80,62 +68,73 @@ const Cart = () => {
     hidden: { y: "100%", opacity: 0 }, // Slides down by its own height (from bottom:0)
     visibleMiddle: { y: 0, opacity: 1, height: '50vh' },
     visibleTop: { y: 0, opacity: 1, height: '90vh' },
-    // Spring transition is on the motion.div itself
+    // Spring transition is on the motion.div itself (original comment)
   };
 
-  const { showCart } = useStateContext(); // Ensure showCart is destructured
+  const handlePreOrder = () => {
+    toast.success('Your pre-order has been placed successfully!');
+    setCartItems([]);
+    setTotalPrice(0);
+    setTotalQuantities(0);
+    setShowCart(false);
+  };
 
-  useEffect(() => {
-    if (showCart && !isDesktop) {
-      setCartHeightTarget('middle'); // Always open to middle for mobile
+  const handleCheckout = async () => {
+    const isPaymentLocked = true;
+    if (isPaymentLocked) {
+      toast.info("Payment processing is coming soon!");
+      return;
     }
-    // No explicit reset on close needed as 'hidden' variant takes over.
-  }, [showCart, isDesktop, setCartHeightTarget]);
+    const stripe = await getStripe();
+    const response = await fetch("/api/stripe", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(cartItems),
+    });
+    if (response.statusCode === 500) return;
+    const data = await response.json();
+    toast.loading("Redirecting...");
+    stripe.redirectToCheckout({ sessionId: data.id });
+  };
 
   return (
     <motion.div
-      className={isDesktop ? "cart-overlay" : "cart-panel-mobile"} // Use new class "cart-panel-mobile"
+      className={isDesktop ? "cart-overlay" : "cart-panel-mobile"}
       initial="hidden"
       animate={isDesktop ? (showCart ? "visible" : "hidden") : (showCart ? (cartHeightTarget === 'top' ? 'visibleTop' : 'visibleMiddle') : 'hidden')}
       variants={isDesktop ? desktopModalVariants : mobilePanelVariants}
-      transition={{ type: "spring", stiffness: 200, damping: 25 }} // Added default transition here
-      drag={isDesktop ? false : undefined}
-      dragConstraints={isDesktop ? false : undefined}
-      dragElastic={isDesktop ? false : undefined}
+      transition={{ type: "spring", stiffness: 200, damping: 25 }}
+      drag={isDesktop ? false : "y"} // Corrected: drag should be "y" for mobile
+      dragConstraints={{ top: 0, bottom: 0 }} // Corrected: define constraints for mobile
+      dragElastic={0.2} // Corrected: provide a value for dragElastic for mobile
       onDragEnd={isDesktop ? undefined : (event, info) => {
-        if (typeof window === 'undefined') return; // SSR Guard
+        if (typeof window === 'undefined') return;
 
         const dragDistance = info.offset.y;
         const dragVelocity = info.velocity.y;
         const screenHeight = window.innerHeight;
 
         if (cartHeightTarget === 'middle') {
-          if (dragDistance > screenHeight * 0.25 || (dragDistance > 0 && dragVelocity > 250)) { // Drag down to dismiss
+          if (dragDistance > screenHeight * 0.25 || (dragDistance > 0 && dragVelocity > 250)) {
             setShowCart(false);
-          } else if (dragDistance < -screenHeight * 0.2 || (dragDistance < 0 && dragVelocity < -250)) { // Drag up to top
+          } else if (dragDistance < -screenHeight * 0.2 || (dragDistance < 0 && dragVelocity < -250)) {
             setCartHeightTarget('top');
           }
         } else if (cartHeightTarget === 'top') {
-          if (dragDistance > screenHeight * 0.2 || (dragDistance > 0 && dragVelocity > 250)) { // Drag down to middle
+          if (dragDistance > screenHeight * 0.2 || (dragDistance > 0 && dragVelocity > 250)) {
             setCartHeightTarget('middle');
           }
         }
       }}
-      onClick={(e) => { // Handle overlay click for desktop
+      onClick={(e) => {
         if (isDesktop && e.target === e.currentTarget) {
           setShowCart(false);
         }
-        // Potentially add for mobile if clicking outside visible panel (on an overlay part of cart-panel-mobile if it existed)
-        // else if (!isDesktop && e.target === e.currentTarget) {
-        //   setShowCart(false);
-        // }
       }}
-      // ref={cartRef} // Removed as animation handles visibility
     >
-      {/* Consider adding a visual drag handle if design requires */}
-      {/* <div className="drag-handle"></div> (and style it) */}
       <div className={`cart-container ${isDesktop ? 'cart-container-desktop' : 'cart-container-inner-mobile'} glassmorphism`}>
-        {/* Keep glassmorphism for now, can be removed or adjusted via CSS if needed for desktop / or applied to cart-panel-mobile */}
         <button
           type="button"
           className="cart-heading"
@@ -166,18 +165,12 @@ const Cart = () => {
           {cartItems.length >= 1 &&
             cartItems.map((item) => (
               <div className="product" key={item._id}>
-                {/* <img
-                  src={urlFor(item.image[0])}
-                  className="cart-product-image"
-                /> */}
                 <img
                   src={urlFor(item.image[0]).url()}
                   alt={item.name}
-                  width={180} // from CSS .cart-product-image
-                  height={150} // from CSS .cart-product-image
+                  width={180}
+                  height={150}
                   className="cart-product-image"
-                  // layout="responsive" // This might require parent to have defined aspect ratio or size
-                  // objectFit="cover" // If using layout="responsive" or "fill"
                 />
                 <div className="item-desc">
                   <div className="flex top">
@@ -195,7 +188,7 @@ const Cart = () => {
                         >
                           <AiOutlineMinus />
                         </span>
-                        <span className="num" onClick="">
+                        <span className="num"> {/* Removed onClick="" */}
                           {item.quantity}
                         </span>
                         <span
@@ -244,9 +237,9 @@ const Cart = () => {
                   padding: '5px 0',
                   position: 'absolute',
                   zIndex: 1,
-                  bottom: '125%', // Position above the button
+                  bottom: '125%',
                   left: '50%',
-                  marginLeft: '-60px', // Center the tooltip
+                  marginLeft: '-60px',
                   opacity: 0,
                   transition: 'opacity 0.3s'
                 }}>
