@@ -681,11 +681,15 @@ span.text-red {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+  height: 100%; /* Covers the viewport */
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; /* CHANGED from center */
+  overflow-y: auto;     /* ADDED */
+  padding-top: 5vh;     /* ADDED for spacing */
+  padding-bottom: 5vh;  /* ADDED for spacing */
+  /* box-sizing: border-box; Ensure padding is included - already global */
   z-index: 1000;
 }
 
@@ -718,19 +722,19 @@ span.text-red {
 /* Adjust .cart-container for desktop (ensure it's distinct from .cart-container-inner-mobile) */
 .cart-container-desktop {
   /* This class is applied alongside .cart-container for desktop */
-  width: 90vw;            /* Changed width */
-  max-width: 95vw;        /* Changed max-width */
-  min-height: 90vh;       /* Changed min-height */
-  max-height: 95vh;       /* Changed max-height */
-  height: auto;           /* Allow content to define height up to max-height */
-  border-radius: 12px;    /* Slightly larger radius for a larger modal */
-  box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.15); /* Slightly adjusted shadow for new size */
-  padding: 25px;          /* Slightly increased padding */
+  width: 90vw;
+  max-width: 95vw;
+  /* min-height: 90vh; */ /* REMOVED */
+  /* max-height: 95vh; */ /* REMOVED */
+  height: auto; /* Ensures it sizes to content or shrinks if content is small */
+  border-radius: 12px;
+  box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.15);
+  padding: 25px;
   /* Ensure display:flex and flex-direction:column are present for product-container scrolling */
   /* These are inherited from .cart-container, but can be explicit if .cart-container base changes */
   display: flex;
   flex-direction: column;
-  overflow-y: auto; /* ADDED */
+  /* overflow-y: auto; */ /* REMOVED */
   /* glassmorphism class is applied in JSX, so styles here are additive or overriding.
      If glassmorphism is intended for desktop modal content, ensure its styles are compatible.
   */
@@ -745,9 +749,9 @@ span.text-red {
 }
 
 .cart-container-desktop .product-container {
-  /* overflow-y: auto; */ /* CHANGED to visible or REMOVED */
-  flex-grow: 1; /* ENSURED active */
-  /* height: calc(95vh - 337px); */ /* REMOVED or commented out */
+  /* overflow-y: auto; */ /* This was already commented out, keep as is */
+  flex-grow: 1; /* This was already active, keep as is */
+  /* height: calc(95vh - 337px); */ /* This was already commented out, keep as is */
   /* Existing padding on .product-container (e.g. padding: 10px in .product-container global rule) should be fine */
 }
 
