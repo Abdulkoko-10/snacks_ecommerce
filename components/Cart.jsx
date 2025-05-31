@@ -38,27 +38,26 @@ const Cart = () => {
 
   useEffect(() => {
     setIsClientReady(true);
-  }, []); // Empty dependency array makes it run once on client mount
-
-  // Determine isDesktop based on client readiness and query value
-  // Defaults to false (mobile-first) on SSR and initial client render
-  const isDesktop = isClientReady ? isDesktopQueryValue : false;
+  }, []); // Runs once on client mount
 
   useEffect(() => {
-    if (isClientReady) { // Only proceed if client is ready
-      if (showCart && !isDesktop) { // 'isDesktop' is the client-aware version
-        setCartHeightTarget('middle'); // Always open to middle for mobile
+    if (isClientReady) {
+      const currentIsDesktop = isDesktopQueryValue; // At this point, isDesktopQueryValue is client-updated
+      if (showCart && !currentIsDesktop) {
+        setCartHeightTarget('middle');
       }
     }
-    // No explicit reset on close needed as 'hidden' variant takes over. (original comment)
-  }, [showCart, isDesktop, isClientReady, setCartHeightTarget]); // Added isClientReady and setCartHeightTarget to deps
+  }, [showCart, isDesktopQueryValue, isClientReady]); // setCartHeightTarget removed from deps as per self-correction
+
 
   if (!isClientReady) {
     return null; // Don't render anything on the server or before client is ready
   }
 
+  // isDesktop for render path, now that we're client-ready
+  const isDesktop = isDesktopQueryValue;
+
   // Define variants and handlers inside the component or ensure they are in scope
-  // These were previously defined outside the early return, so they are fine here.
   const desktopModalVariants = {
     hidden: { opacity: 0, scale: 0.8, transition: { duration: 0.2 } },
     visible: { opacity: 1, scale: 1, transition: { duration: 0.2 } },
@@ -106,9 +105,9 @@ const Cart = () => {
       animate={isDesktop ? (showCart ? "visible" : "hidden") : (showCart ? (cartHeightTarget === 'top' ? 'visibleTop' : 'visibleMiddle') : 'hidden')}
       variants={isDesktop ? desktopModalVariants : mobilePanelVariants}
       transition={{ type: "spring", stiffness: 200, damping: 25 }}
-      drag={isDesktop ? false : "y"} // Corrected: drag should be "y" for mobile
-      dragConstraints={{ top: 0, bottom: 0 }} // Corrected: define constraints for mobile
-      dragElastic={0.2} // Corrected: provide a value for dragElastic for mobile
+      drag={isDesktop ? false : "y"}
+      dragConstraints={{ top: 0, bottom: 0 }}
+      dragElastic={0.2}
       onDragEnd={isDesktop ? undefined : (event, info) => {
         if (typeof window === 'undefined') return;
 
@@ -188,7 +187,7 @@ const Cart = () => {
                         >
                           <AiOutlineMinus />
                         </span>
-                        <span className="num"> {/* Removed onClick="" */}
+                        <span className="num">
                           {item.quantity}
                         </span>
                         <span

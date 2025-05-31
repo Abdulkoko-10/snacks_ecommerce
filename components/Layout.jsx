@@ -9,7 +9,7 @@ const Layout = ( { children } ) => {
       <Head>
         <title>Snacks</title>
       </Head>
-      <header>
+      <header className="sticky-header">
         <Navbar />
       </header>
       <main className="main-container">

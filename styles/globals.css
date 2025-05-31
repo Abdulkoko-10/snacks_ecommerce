@@ -136,6 +136,17 @@ a {
   padding: 20px;
 }
 
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 100; /* Ensure this is appropriate relative to other z-indexed elements like modals/cart */
+  /* It's important that the sticky container has a background color */
+  /* to prevent content from showing through when scrolling. */
+  background-color: var(--primary-background-color);
+  /* Add a subtle shadow for visual separation from content below */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
 .navbar-container {
   display: flex;
   justify-content: space-between;
@@ -644,8 +655,6 @@ span.text-red {
      -webkit-backdrop-filter: blur(10px);
      border: 1px solid var(--glass-border-color);
   */
-  top: auto !important;
-  bottom: 0 !important;
 }
 
 /* New styles for desktop modal overlay */
