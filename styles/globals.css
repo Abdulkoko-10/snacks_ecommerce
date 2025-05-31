@@ -687,6 +687,9 @@ span.text-red {
   align-items: center;
   z-index: 1000;
   overflow-y: auto;
+  padding-top: 2vh;
+  padding-bottom: 2vh;
+  box-sizing: border-box;
 }
 
 /* Base .cart-container styles (some might be overridden by desktop/mobile specific) */
@@ -721,7 +724,7 @@ span.text-red {
   width: 90vw;            /* Changed width */
   max-width: 95vw;        /* Changed max-width */
   min-height: 90vh;       /* Changed min-height */
-  /* max-height is intentionally removed */
+  /* max-height: 95vh; */       /* Changed max-height */
   height: auto;           /* Allow content to define height up to max-height */
   border-radius: 12px;    /* Slightly larger radius for a larger modal */
   box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.15); /* Slightly adjusted shadow for new size */
@@ -744,9 +747,9 @@ span.text-red {
 }
 
 .cart-container-desktop .product-container {
-  overflow-y: visible; /* Ensure desktop modal also scrolls long content */
+  overflow-y: visible;
   flex-grow: 1;
-  /* max-height is intentionally removed */
+  /* Potentially adjust max-height if needed, e.g., calc(80vh - header_height - footer_height) */
 }
 
 
