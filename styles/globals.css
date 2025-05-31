@@ -692,6 +692,8 @@ span.text-red {
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  padding-top: 70px; /* Added to account for fixed navbar */
+  /* box-sizing: border-box; is globally set, so it applies here */
 }
 
 /* Base .cart-container styles (some might be overridden by desktop/mobile specific) */
