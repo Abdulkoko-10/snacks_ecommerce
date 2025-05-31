@@ -1,6 +1,7 @@
 import product from "../koko/schemaTypes/product";
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
+import { useMediaQuery } from "../hooks/useMediaQuery";
 
 const Context = createContext();
 
@@ -10,6 +11,22 @@ export const StateContext = ({ children }) => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalQuantities, setTotalQuantities] = useState(0);
   const [qty, setQty] = useState(1);
+
+  const isDesktop = useMediaQuery('(min-width: 768px)');
+
+  // Effect to control body scroll when cart is shown on desktop
+  useEffect(() => {
+    if (showCart && isDesktop) {
+      document.body.classList.add('body-no-scroll');
+    } else {
+      document.body.classList.remove('body-no-scroll');
+    }
+    // Cleanup function to ensure the class is removed when the component unmounts
+    // or before the effect runs again if dependencies change unexpectedly.
+    return () => {
+      document.body.classList.remove('body-no-scroll');
+    };
+  }, [showCart, isDesktop]);
 
   let foundProduct;
   let index;

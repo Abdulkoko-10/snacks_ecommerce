@@ -98,6 +98,11 @@ body {
   line-height: 1.6;
 }
 
+/* Prevents body scrolling when a modal or overlay is active */
+.body-no-scroll {
+  overflow: hidden !important;
+}
+
 html,
 body,
 * {
