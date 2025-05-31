@@ -156,6 +156,7 @@ a {
   margin: 0; /* Removed previous margins */
   z-index: 10051; /* Above cart-wrapper */
   /* glassmorphism class is applied in JSX, handling background and related properties */
+  transition: background 0.3s ease-in-out;
 }
 
 .scrolled-navbar {
