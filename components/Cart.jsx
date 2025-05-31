@@ -92,6 +92,22 @@ const Cart = () => {
     // No explicit reset on close needed as 'hidden' variant takes over.
   }, [showCart, isDesktop, setCartHeightTarget]);
 
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    if (showCart && isDesktop) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      // Restore to original or 'auto' if not specifically set before
+      // For simplicity, 'auto' is used here if originalOverflow was empty (e.g. not set via inline style)
+      document.body.style.overflow = originalOverflow || 'auto';
+    }
+
+    // Cleanup function
+    return () => {
+      document.body.style.overflow = originalOverflow || 'auto';
+    };
+  }, [showCart, isDesktop]); // Dependencies
+
   return (
     <motion.div
       className={isDesktop ? "cart-overlay" : "cart-panel-mobile"} // Use new class "cart-panel-mobile"
