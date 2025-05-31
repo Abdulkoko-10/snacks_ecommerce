@@ -881,12 +881,10 @@ span.text-red {
   border: none;
 }
 .cart-bottom {
-  position: absolute;
-  bottom: 12px;
-  right: 5px;
   width: 100%;
   padding: 30px 65px;
   background-color: var(--primary-background-color); /* Ensure cart bottom bg adapts */
+  /* position: absolute, bottom, and right removed to make it an in-flow block */
 }
 
 .btn-container {
