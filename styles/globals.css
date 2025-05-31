@@ -48,6 +48,14 @@
 
   /* Variable for text on primary-colored backgrounds */
   --text-on-primary-color: var(--background-light);
+
+  /* Scrolled Navbar Backgrounds */
+  --scrolled-navbar-bg-light: rgba(255, 255, 255, 0.85); /* Light theme scrolled background */
+  --scrolled-navbar-bg-dark: rgba(26, 26, 26, 0.85);   /* Dark theme scrolled background (using #1a1a1a) */
+  --scrolled-navbar-bg-rgb: rgba(50, 77, 103, 0.85); /* Fallback for RGB (using #324d67), will be updated by JS */
+
+  /* Navbar Height */
+  --navbar-height: 70px;
 }
 
 .dark-mode {
@@ -133,17 +141,36 @@ a {
   width: 100%;
 }
 .layout {
-  padding: 20px;
+  padding: calc(var(--navbar-height) + 20px) 20px 20px 20px;
 }
 
 .navbar-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 10px 25px;
-  padding: 10px 0;
-  position: relative;
-  z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 10px 25px; /* Adjusted padding to maintain horizontal spacing for content */
+  margin: 0; /* Removed previous margins */
+  z-index: 10051; /* Above cart-wrapper */
+  /* glassmorphism class is applied in JSX, handling background and related properties */
+}
+
+.scrolled-navbar {
+  background: var(--scrolled-navbar-bg-light) !important;
+  /* Other glassmorphism properties like backdrop-filter, border, box-shadow are preserved
+     as they are applied by the .glassmorphism class already on the element.
+     This class specifically overrides the background for the scrolled state. */
+}
+
+.dark-mode .scrolled-navbar {
+  background: var(--scrolled-navbar-bg-dark) !important;
+}
+
+.rgb-mode .scrolled-navbar {
+  background: var(--scrolled-navbar-bg-rgb) !important;
 }
 
 .nav-items-right {
