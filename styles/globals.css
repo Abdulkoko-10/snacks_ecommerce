@@ -725,8 +725,8 @@ span.text-red {
   /* This class is applied alongside .cart-container for desktop */
   width: 90vw;            /* Changed width */
   max-width: 95vw;        /* Changed max-width */
-  min-height: 90vh;       /* Changed min-height */
-  max-height: 95vh;       /* Changed max-height */
+  min-height: 500px;       /* Changed from 90vh to a more reasonable fixed min-height */
+  max-height: calc(95vh - 70px);       /* Adjusted for fixed navbar height */
   height: auto;           /* Allow content to define height up to max-height */
   border-radius: 12px;    /* Slightly larger radius for a larger modal */
   box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.15); /* Slightly adjusted shadow for new size */
