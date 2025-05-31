@@ -680,13 +680,12 @@ span.text-red {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%; /* Added back */
-  /* min-height: 100vh; */ /* Removed */
-  /* overflow-y: auto; */   /* Removed */
+  height: 100%;
+  overflow-y: auto; /* Added */
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: center; /* Keeps it horizontally centered */
+  align-items: flex-start; /* Changed to align tall content to the top */
   z-index: 10100; /* Kept from previous step */
 }
 
@@ -721,15 +720,16 @@ span.text-red {
   /* This class is applied alongside .cart-container for desktop */
   width: 90vw;
   max-width: 95vw;
-  min-height: 90vh; /* Restoring original */
-  max-height: 95vh; /* Restoring original, this will be the effective height for a full cart */
+  /* min-height: 90vh; */ /* Removed */
+  /* max-height: 95vh; */ /* Removed */
   height: auto;
   border-radius: 12px;
   box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.15);
   padding: 25px;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* Added */
+  /* overflow: hidden; */ /* Removed, defaulting to visible */
+  margin: 20px 0; /* Added for spacing within scrolling overlay */
   /* glassmorphism class is applied in JSX, so styles here are additive or overriding.
      If glassmorphism is intended for desktop modal content, ensure its styles are compatible.
   */
@@ -744,8 +744,8 @@ span.text-red {
 }
 
 .cart-container-desktop .product-container {
-  overflow-y: auto; /* Ensure desktop modal also scrolls long content */
-  flex-grow: 1;
+  overflow-y: visible;
+  /* flex-grow: 1; */ /* Removed */
   /* Potentially adjust max-height if needed, e.g., calc(80vh - header_height - footer_height) */
   /* Ensure no height or max-height property is uncommented or added here that conflicts with flex-grow */
 }
