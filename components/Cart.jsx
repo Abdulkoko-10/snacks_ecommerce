@@ -92,6 +92,24 @@ const Cart = () => {
     // No explicit reset on close needed as 'hidden' variant takes over.
   }, [showCart, isDesktop, setCartHeightTarget]);
 
+  useEffect(() => {
+    if (isDesktop) {
+      if (showCart) {
+        document.body.classList.add('cart-open-no-scroll');
+      } else {
+        document.body.classList.remove('cart-open-no-scroll');
+      }
+    } else {
+      // Ensure class is removed if not on desktop or cart is closed
+      document.body.classList.remove('cart-open-no-scroll');
+    }
+
+    // Cleanup function
+    return () => {
+      document.body.classList.remove('cart-open-no-scroll');
+    };
+  }, [showCart, isDesktop]);
+
   return (
     <motion.div
       className={isDesktop ? "cart-overlay" : "cart-panel-mobile"} // Use new class "cart-panel-mobile"
