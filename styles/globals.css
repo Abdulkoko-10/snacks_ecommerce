@@ -651,7 +651,7 @@ span.text-red {
 
 /* New styles for .cart-panel-mobile (the motion.div itself for mobile) */
 .cart-panel-mobile {
-  position: sticky; /* Changed from fixed */
+  position: fixed; /* Reverted to fixed */
   bottom: 0; /* Key for initial position */
   left: 0;
   width: 100%;
@@ -676,17 +676,14 @@ span.text-red {
 
 /* New styles for desktop modal overlay */
 .cart-overlay {
-  position: sticky; /* Changed from fixed */
-  bottom: 0; /* Added */
+  position: fixed;
+  bottom: 0; /* Changed from top: 0 */
   left: 0;
   width: 100%;
-  /* top: 0; removed */
-  /* height: 100%; removed */
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
-  /* display: flex; removed */
-  /* justify-content: center; removed */
-  /* align-items: center; removed */
-  z-index: 1000;
+  height: 70vh; /* New height, changed from height: 100% */
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay - Kept */
+  /* display: flex, justify-content, align-items: center - Removed */
+  z-index: 1000; /* Kept */
 }
 
 /* Base .cart-container styles (some might be overridden by desktop/mobile specific) */
@@ -718,20 +715,23 @@ span.text-red {
 /* Adjust .cart-container for desktop (ensure it's distinct from .cart-container-inner-mobile) */
 .cart-container-desktop {
   /* This class is applied alongside .cart-container for desktop */
-  width: 90vw;            /* Changed width */
-  max-width: 95vw;        /* Changed max-width */
-  min-height: 90vh;       /* Changed min-height */
-  max-height: 95vh;       /* Changed max-height */
-  height: auto;           /* Allow content to define height up to max-height */
-  border-radius: 12px;    /* Slightly larger radius for a larger modal */
-  box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.15); /* Slightly adjusted shadow for new size */
-  padding: 25px;          /* Slightly increased padding */
+  width: 90vw;            /* Kept */
+  max-width: 95vw;        /* Kept */
+  height: 100%;           /* Changed from auto, to fill parent .cart-overlay's 70vh */
+  /* min-height: 90vh; removed */
+  /* max-height: 95vh; removed */
+  margin-left: auto;      /* Added for centering */
+  margin-right: auto;     /* Added for centering */
+  border-radius: 12px;    /* Kept */
+  box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.15); /* Kept */
+  padding: 25px;          /* Kept */
   /* Ensure display:flex and flex-direction:column are present for product-container scrolling */
   /* These are inherited from .cart-container, but can be explicit if .cart-container base changes */
-  display: flex;
-  flex-direction: column;
+  display: flex;          /* Kept */
+  flex-direction: column; /* Kept */
   /* glassmorphism class is applied in JSX, so styles here are additive or overriding.
      If glassmorphism is intended for desktop modal content, ensure its styles are compatible.
+     Background color is inherited from .cart-container
   */
 }
 
