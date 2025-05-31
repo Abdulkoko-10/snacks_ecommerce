@@ -680,11 +680,12 @@ span.text-red {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  max-height: 100vh; /* Changed from height: 100% */
+  overflow-y: auto; /* Added */
   background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-end; /* Changed from align-items: center */
   z-index: 1000;
 }
 
@@ -719,8 +720,6 @@ span.text-red {
   /* This class is applied alongside .cart-container for desktop */
   width: 90vw;            /* Changed width */
   max-width: 95vw;        /* Changed max-width */
-  min-height: 90vh;       /* Changed min-height */
-  max-height: 95vh;       /* Changed max-height */
   height: auto;           /* Allow content to define height up to max-height */
   border-radius: 12px;    /* Slightly larger radius for a larger modal */
   box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.15); /* Slightly adjusted shadow for new size */
@@ -1807,4 +1806,8 @@ span.text-red {
   /* Add any other properties that need to be overridden from the default .btn styles */
   box-shadow: none !important; /* Example: remove shadow if .btn has one */
   transform: scale(1, 1) !important; /* Prevent hover scale effect from .btn:hover */
+}
+
+body.cart-open {
+  overflow: hidden;
 }
