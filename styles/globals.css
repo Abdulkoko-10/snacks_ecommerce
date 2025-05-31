@@ -676,17 +676,18 @@ span.text-red {
 
 /* New styles for desktop modal overlay */
 .cart-overlay {
-  position: absolute; /* Changed from fixed */
+  position: fixed; /* Changed back */
   top: 0;
   left: 0;
   width: 100%;
-  min-height: 100vh; /* Changed from height: 100% and ensures it covers viewport */
-  overflow-y: auto; /* Added to allow scrolling of the overlay itself */
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay, ensures page behind is dimmed */
+  height: 100%; /* Added back */
+  /* min-height: 100vh; */ /* Removed */
+  /* overflow-y: auto; */   /* Removed */
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10100; /* Changed to be higher than navbar */
+  z-index: 10100; /* Kept from previous step */
 }
 
 /* Base .cart-container styles (some might be overridden by desktop/mobile specific) */
@@ -718,18 +719,17 @@ span.text-red {
 /* Adjust .cart-container for desktop (ensure it's distinct from .cart-container-inner-mobile) */
 .cart-container-desktop {
   /* This class is applied alongside .cart-container for desktop */
-  width: 90vw;            /* Changed width */
-  max-width: 95vw;        /* Changed max-width */
-  min-height: 90vh;       /* Changed min-height */
-  /* max-height: 95vh; */  /* Removed this line */
-  height: auto;           /* Allow content to define height */
-  border-radius: 12px;    /* Slightly larger radius for a larger modal */
-  box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.15); /* Slightly adjusted shadow for new size */
-  padding: 25px;          /* Slightly increased padding */
-  /* Ensure display:flex and flex-direction:column are present for product-container scrolling */
-  /* These are inherited from .cart-container, but can be explicit if .cart-container base changes */
+  width: 90vw;
+  max-width: 95vw;
+  min-height: 90vh; /* Restoring original */
+  max-height: 95vh; /* Restoring original, this will be the effective height for a full cart */
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.15);
+  padding: 25px;
   display: flex;
   flex-direction: column;
+  overflow: hidden; /* Added */
   /* glassmorphism class is applied in JSX, so styles here are additive or overriding.
      If glassmorphism is intended for desktop modal content, ensure its styles are compatible.
   */
@@ -747,6 +747,7 @@ span.text-red {
   overflow-y: auto; /* Ensure desktop modal also scrolls long content */
   flex-grow: 1;
   /* Potentially adjust max-height if needed, e.g., calc(80vh - header_height - footer_height) */
+  /* Ensure no height or max-height property is uncommented or added here that conflicts with flex-grow */
 }
 
 
