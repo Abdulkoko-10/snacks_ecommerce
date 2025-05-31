@@ -55,6 +55,7 @@ const Navbar = () => {
   const [rgbInputColor, setRgbInputColor] = useState(rgbColor); // For the color picker input
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const themeMenuRef = useRef(null); // For detecting clicks outside
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const applyRgbTheme = useCallback((selectedRgbColor) => {
     const mainContrastColor = calculateContrastColor(selectedRgbColor);
@@ -90,10 +91,9 @@ const Navbar = () => {
     // Other RGB variables like glassmorphism or product card shadows can also be updated here
     // if more granular control is needed beyond their CSS defaults (which are based on light theme).
     // For example:
-    // document.documentElement.style.setProperty('--glass-background-color-rgb', hexToRgba(selectedRgbColor, 0.25)); // Requires hexToRgba
-    // document.documentElement.style.setProperty('--glass-border-color-rgb', hexToRgba(mainContrastColor, 0.18));
-    // document.documentElement.style.setProperty('--glass-background-color-rgb', hexToRgba(selectedRgbColor, 0.25)); // Requires hexToRgba
-    // document.documentElement.style.setProperty('--glass-border-color-rgb', hexToRgba(mainContrastColor, 0.18));
+    document.documentElement.style.setProperty('--glass-background-color-rgb', hexToRgba(selectedRgbColor, 0.30));
+    document.documentElement.style.setProperty('--glass-border-color-rgb', hexToRgba(mainContrastColor, 0.20));
+    // document.documentElement.style.setProperty('--glass-box-shadow-color-rgb', hexToRgba(mainContrastColor, 0.1)); // Optional: if shadow should also adapt
   }, []);
 
   // Effect to set initial theme & handle clicks outside theme menu
@@ -132,8 +132,20 @@ const Navbar = () => {
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
+
+    // Handle scroll event for navbar transparency
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('scroll', handleScroll);
     };
 
   }, [applyRgbTheme]);
@@ -192,7 +204,7 @@ const Navbar = () => {
   }
 
   return (
-    <div className="navbar-container glassmorphism">
+    <div className={`navbar-container ${isScrolled ? 'navbar-scrolled' : ''}`}>
       <p className="logo">
         <Link href="/">Snacks</Link>
       </p>

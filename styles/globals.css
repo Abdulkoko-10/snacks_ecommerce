@@ -142,8 +142,20 @@ a {
   align-items: center;
   margin: 10px 25px;
   padding: 10px 0;
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 1000;
+  background-color: var(--primary-background-color); /* Default solid background */
+  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  border-bottom: 1px solid transparent; /* Start with a transparent border */
+}
+
+.navbar-container.navbar-scrolled {
+  background: var(--glass-background-color);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); /* For Safari */
+  border-bottom: 1px solid var(--glass-border-color);
+  box-shadow: 0 4px 12px 0 var(--glass-box-shadow-color); /* Adjusted shadow for scrolled state */
 }
 
 .nav-items-right {
@@ -605,7 +617,7 @@ span.text-red {
   bottom: 0;
   left: 0;
   width: 100%;
-  z-index: 1000; /* Ensure it's above other content */
+  z-index: 1005; /* Ensure it's above other content but below the cart panel itself */
   /* The background: rgba(0, 0, 0, 0.5) is removed from here as it's part of cart-overlay now
      or applied directly if mobile also needs a full screen dim.
      For a slide-up panel, the wrapper itself usually doesn't have a background overlay unless
@@ -629,7 +641,7 @@ span.text-red {
   width: 100%;
   height: 50vh; /* Panel itself is 50vh */
   max-height: 90vh; /* Max height can remain larger for when it's dragged up */
-  z-index: 1000;
+  z-index: 1010; /* Higher than navbar and cart-wrapper */
   background-color: var(--primary-background-color); /* Panel background */
   color: var(--text-color);
   border-top-left-radius: 20px;
@@ -657,7 +669,7 @@ span.text-red {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 1010; /* Higher than navbar */
 }
 
 /* Base .cart-container styles (some might be overridden by desktop/mobile specific) */
@@ -1450,8 +1462,8 @@ span.text-red {
   background: var(--glass-background-color);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px); /* For Safari */
-  border-radius: 10px;
-  border: 1px solid var(--glass-border-color);
+  /* border-radius: 10px; Removed for navbar */
+  border: 1px solid var(--glass-border-color); /* Keep for other components if needed */
   box-shadow: 0 8px 32px 0 var(--glass-box-shadow-color);
 }
 
