@@ -92,9 +92,30 @@ const Navbar = () => {
     // For example:
     // document.documentElement.style.setProperty('--glass-background-color-rgb', hexToRgba(selectedRgbColor, 0.25)); // Requires hexToRgba
     // document.documentElement.style.setProperty('--glass-border-color-rgb', hexToRgba(mainContrastColor, 0.18));
-    // document.documentElement.style.setProperty('--glass-background-color-rgb', hexToRgba(selectedRgbColor, 0.25)); // Requires hexToRgba
-    // document.documentElement.style.setProperty('--glass-border-color-rgb', hexToRgba(mainContrastColor, 0.18));
+    document.documentElement.style.setProperty('--glass-background-color-rgb', hexToRgba(selectedRgbColor, 0.25));
+    document.documentElement.style.setProperty('--scrolled-glass-background-color-rgb', hexToRgba(selectedRgbColor, 0.10)); // More transparent for scrolled
+    document.documentElement.style.setProperty('--glass-border-color-rgb', hexToRgba(mainContrastColor, 0.18));
   }, []);
+
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    // Call it once to set initial state based on current scroll position
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []); // Empty dependency array means this effect runs once on mount and cleans up on unmount
 
   // Effect to set initial theme & handle clicks outside theme menu
   useEffect(() => {
@@ -192,7 +213,7 @@ const Navbar = () => {
   }
 
   return (
-    <div className="navbar-container glassmorphism">
+    <div className={`navbar-container glassmorphism ${isScrolled ? 'navbar-scrolled' : ''}`}>
       <p className="logo">
         <Link href="/">Snacks</Link>
       </p>

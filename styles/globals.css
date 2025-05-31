@@ -142,8 +142,27 @@ a {
   align-items: center;
   margin: 10px 25px;
   padding: 10px 0;
-  position: relative;
-  z-index: 1000;
+  position: sticky; /* <<< Added */
+  top: 0; /* <<< Added */
+  z-index: 1001; /* <<< Increased from 1000 to be above cart overlay */
+  /* Ensure background is applied for sticky to work as expected, especially if it was transparent */
+  /* The glassmorphism class already provides a background, so this should be fine. */
+  /* We might need to adjust padding or margin if the layout shifts undesirably. */
+  transition: background 0.3s ease-in-out; /* Add this for smooth transparency change */
+}
+
+/* Styles for scrolled navbar */
+.navbar-container.navbar-scrolled {
+    /* Default (Light mode) scrolled */
+    background: rgba(255, 255, 255, 0.15); /* More transparent than original 0.25 for light */
+}
+
+.dark-mode .navbar-container.navbar-scrolled {
+    background: rgba(40, 40, 40, 0.20); /* More transparent than original 0.35 for dark */
+}
+
+.rgb-mode .navbar-container.navbar-scrolled {
+    background: var(--scrolled-glass-background-color-rgb); /* Uses the new CSS variable from Navbar.jsx */
 }
 
 .nav-items-right {
