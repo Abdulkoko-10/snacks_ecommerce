@@ -729,7 +729,7 @@ span.text-red {
   /* These are inherited from .cart-container, but can be explicit if .cart-container base changes */
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  overflow-y: auto !important;
   /* glassmorphism class is applied in JSX, so styles here are additive or overriding.
      If glassmorphism is intended for desktop modal content, ensure its styles are compatible.
   */
@@ -744,6 +744,9 @@ span.text-red {
 }
 
 .cart-container-desktop .product-container {
+  overflow-y: visible;
+  flex-grow: 0;
+  max-height: none;
   /* Potentially adjust max-height if needed, e.g., calc(80vh - header_height - footer_height) */
 }
 
