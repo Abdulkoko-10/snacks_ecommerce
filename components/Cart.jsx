@@ -86,6 +86,21 @@ const Cart = () => {
   const { showCart } = useStateContext(); // Ensure showCart is destructured
 
   useEffect(() => {
+    const bodyStyle = document.body.style;
+    const originalOverflow = bodyStyle.overflow;
+
+    if (showCart) {
+      bodyStyle.overflow = 'hidden';
+    } else {
+      bodyStyle.overflow = originalOverflow || ''; // Restore to original or empty string (browser default)
+    }
+
+    return () => {
+      bodyStyle.overflow = originalOverflow || ''; // Restore on cleanup
+    };
+  }, [showCart]);
+
+  useEffect(() => {
     if (showCart && !isDesktop) {
       setCartHeightTarget('middle'); // Always open to middle for mobile
     }
