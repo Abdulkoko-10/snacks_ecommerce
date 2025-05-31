@@ -74,14 +74,22 @@ const Cart = () => {
       onClose={() => setShowCart(false)}
       PaperProps={{
         sx: {
-          backgroundColor: 'var(--primary-background-color)',
-          color: 'var(--text-color)',
+          backgroundColor: 'transparent', // Keep from previous step
+          color: 'var(--text-color)',     // Keep from previous step
           borderTopLeftRadius: '20px',
           borderTopRightRadius: '20px',
+          // Styles for desktop centering:
+          '@media (min-width: 768px)': {
+            maxWidth: '800px',
+            width: '90%',
+            left: '50%',
+            right: 'auto',
+            transform: 'translateX(-50%)',
+          }
         }
       }}
     >
-      <div className="cart-container" style={{ padding: '20px', maxHeight: '70vh', overflowY: 'auto' }}>
+      <div className="cart-container glassmorphism" style={{ padding: '20px', maxHeight: '70vh', overflowY: 'auto' }}>
         <div className="cart-heading" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '20px' }}>
           <span className="heading" style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--text-color)' }}>Your Cart</span>
           <span className="cart-num-items" style={{ marginLeft: '10px', color: 'var(--text-color)' }}>({totalQuantities} items)</span>
