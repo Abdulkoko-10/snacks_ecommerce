@@ -684,8 +684,11 @@ span.text-red {
   background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   z-index: 1000;
+  overflow-y: auto;
+  padding-top: 5vh;
+  padding-bottom: 5vh;
 }
 
 /* Base .cart-container styles (some might be overridden by desktop/mobile specific) */
@@ -720,7 +723,6 @@ span.text-red {
   width: 90vw;            /* Changed width */
   max-width: 95vw;        /* Changed max-width */
   min-height: 90vh;       /* Changed min-height */
-  max-height: 95vh;       /* Changed max-height */
   height: auto;           /* Allow content to define height up to max-height */
   border-radius: 12px;    /* Slightly larger radius for a larger modal */
   box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.15); /* Slightly adjusted shadow for new size */
