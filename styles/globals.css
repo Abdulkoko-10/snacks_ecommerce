@@ -745,6 +745,7 @@ span.text-red {
 .cart-container-desktop .product-container {
   overflow-y: auto; /* Ensure desktop modal also scrolls long content */
   flex-grow: 1;
+  height: 0; /* Allow container to shrink and grow correctly within flex parent with max-height */
   /* Potentially adjust max-height if needed, e.g., calc(80vh - header_height - footer_height) */
 }
 
