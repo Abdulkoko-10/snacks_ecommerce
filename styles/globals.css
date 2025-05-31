@@ -745,8 +745,9 @@ span.text-red {
 
 .cart-container-desktop .product-container {
   overflow-y: auto; /* Ensure desktop modal also scrolls long content */
-  flex-grow: 1;
-  /* Potentially adjust max-height if needed, e.g., calc(80vh - header_height - footer_height) */
+  /* flex-grow: 1; */ /* REMOVED or commented out */
+  height: calc(95vh - 337px); /* ADDED explicit height calculation */
+  /* Existing padding on .product-container (e.g. padding: 10px in .product-container global rule) should be fine */
 }
 
 
