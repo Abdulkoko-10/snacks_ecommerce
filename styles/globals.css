@@ -685,11 +685,11 @@ span.text-red {
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* CHANGED from center */
-  overflow-y: auto;     /* ADDED */
-  padding-top: 5vh;     /* ADDED for spacing */
-  padding-bottom: 5vh;  /* ADDED for spacing */
-  /* box-sizing: border-box; Ensure padding is included - already global */
+  align-items: center; /* REVERTED to center */
+  overflow-y: auto;   /* ENSURE this is present */
+  /* padding-top: 5vh; */    /* REMOVED */
+  /* padding-bottom: 5vh; */ /* REMOVED */
+  /* box-sizing: border-box; is global */
   z-index: 1000;
 }
 
