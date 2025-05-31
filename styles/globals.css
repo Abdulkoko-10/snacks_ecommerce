@@ -133,6 +133,7 @@ a {
   max-width: 1400px;
   margin: auto;
   width: 100%;
+  padding-top: 70px; /* Added for fixed navbar */
 }
 .layout {
   padding: 20px;
@@ -145,7 +146,7 @@ a {
   align-items: center;
   margin: 0; /* Changed from 10px 25px */
   padding: 10px 25px; /* Changed from 10px 0 */
-  position: sticky; /* Changed from relative */
+  position: fixed; /* Changed from sticky */
   top: 0; /* Added */
   width: 100%; /* Added */
   z-index: 1000;
@@ -1210,6 +1211,9 @@ span.text-red {
     padding: 60px 20px; /* Adjusted padding for mobile */
     height: auto; /* Auto height for mobile */
     min-height: 400px; /* Min height for mobile */
+  }
+  .main-container { /* Rule added for mobile padding adjustment */
+    padding-top: 50px; /* Adjusted for smaller navbar height on mobile */
   }
   .hero-banner-image {
     width: 70%;
