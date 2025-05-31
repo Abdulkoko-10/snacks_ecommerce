@@ -20,7 +20,10 @@ import useMediaQuery from '../hooks/useMediaQuery'; // Import the hook
 const Cart = () => {
   const isDesktop = useMediaQuery('(min-width: 768px)'); // Call the hook
   const [cartHeightTarget, setCartHeightTarget] = useState('middle');
-  // const cartRef = useRef(); // Potentially remove if showCart state handles visibility
+  const cartContainerRef = useRef(null); // Added
+  const cartHeaderRef = useRef(null); // Added
+  const productContainerRef = useRef(null); // Added
+  const cartFooterRef = useRef(null); // Added
   const {
     totalPrice,
     totalQuantities,
@@ -92,6 +95,57 @@ const Cart = () => {
     // No explicit reset on close needed as 'hidden' variant takes over.
   }, [showCart, isDesktop, setCartHeightTarget]);
 
+  useEffect(() => {
+    const calculateProductContainerHeight = () => {
+      if (showCart && isDesktop && cartContainerRef.current && cartHeaderRef.current && productContainerRef.current) {
+        const cartContainerStyle = window.getComputedStyle(cartContainerRef.current);
+        const cartContainerPaddingTop = parseFloat(cartContainerStyle.paddingTop);
+        const cartContainerPaddingBottom = parseFloat(cartContainerStyle.paddingBottom);
+
+        const cartContainerClientHeight = cartContainerRef.current.clientHeight;
+
+        const headerHeight = cartHeaderRef.current.offsetHeight;
+        const headerStyle = window.getComputedStyle(cartHeaderRef.current);
+        const headerMarginBottom = parseFloat(headerStyle.marginBottom);
+
+        const footerHeight = cartFooterRef.current ? cartFooterRef.current.offsetHeight : 0;
+
+        const productContainerStyle = window.getComputedStyle(productContainerRef.current);
+        const productContainerMarginTop = parseFloat(productContainerStyle.marginTop);
+
+        let availableHeight = cartContainerClientHeight - cartContainerPaddingTop - cartContainerPaddingBottom;
+        availableHeight -= (headerHeight + headerMarginBottom);
+        if (footerHeight > 0) {
+          availableHeight -= footerHeight;
+        }
+        availableHeight -= productContainerMarginTop;
+
+        if (availableHeight > 0) {
+          productContainerRef.current.style.height = `${availableHeight}px`;
+        } else {
+          productContainerRef.current.style.height = '200px'; // Fallback height
+        }
+      }
+    };
+
+    calculateProductContainerHeight(); // Initial calculation
+
+    if (isDesktop) {
+      window.addEventListener('resize', calculateProductContainerHeight);
+      return () => {
+        window.removeEventListener('resize', calculateProductContainerHeight);
+        if (productContainerRef.current) {
+          productContainerRef.current.style.height = ''; // Reset on cleanup
+        }
+      };
+    } else {
+      // Ensure style is also reset if switching from desktop to mobile while cart is open
+      if (productContainerRef.current) {
+          productContainerRef.current.style.height = '';
+      }
+    }
+  }, [showCart, isDesktop, cartItems.length]);
+
   return (
     <motion.div
       className={isDesktop ? "cart-overlay" : "cart-panel-mobile"} // Use new class "cart-panel-mobile"
@@ -134,9 +188,10 @@ const Cart = () => {
     >
       {/* Consider adding a visual drag handle if design requires */}
       {/* <div className="drag-handle"></div> (and style it) */}
-      <div className={`cart-container ${isDesktop ? 'cart-container-desktop' : 'cart-container-inner-mobile'} glassmorphism`}>
+      <div ref={cartContainerRef} className={`cart-container ${isDesktop ? 'cart-container-desktop' : 'cart-container-inner-mobile'} glassmorphism`}>
         {/* Keep glassmorphism for now, can be removed or adjusted via CSS if needed for desktop / or applied to cart-panel-mobile */}
         <button
+          ref={cartHeaderRef}
           type="button"
           className="cart-heading"
           onClick={() => setShowCart(false)}
@@ -162,7 +217,7 @@ const Cart = () => {
           </div>
         )}
 
-        <div className="product-container">
+        <div ref={productContainerRef} className="product-container">
           {cartItems.length >= 1 &&
             cartItems.map((item) => (
               <div className="product" key={item._id}>
@@ -221,7 +276,7 @@ const Cart = () => {
             ))}
         </div>
         {cartItems.length >= 1 && (
-          <div className="cart-bottom">
+          <div ref={cartFooterRef} className="cart-bottom">
             <div className="total">
               <h3>Subtotal:</h3>
               <h3>${totalPrice}</h3>
