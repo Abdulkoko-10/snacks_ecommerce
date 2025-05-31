@@ -686,7 +686,7 @@ span.text-red {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 10100; /* Changed to be higher than navbar */
 }
 
 /* Base .cart-container styles (some might be overridden by desktop/mobile specific) */

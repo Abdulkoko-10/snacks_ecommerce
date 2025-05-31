@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { AiOutlineShopping } from 'react-icons/ai';
 import { FiSun, FiMoon, FiDroplet, FiMoreHorizontal } from 'react-icons/fi'; // Import Feather icons
 
-import { Cart } from './';
 import { useStateContext } from '../context/StateContext';
 
 // Helper to calculate contrast color (black or white)
@@ -49,7 +48,7 @@ const hexToRgba = (hex, alpha) => {
 
 
 const Navbar = () => {
-  const { showCart, setShowCart, totalQuantities } = useStateContext();
+  const { setShowCart, totalQuantities } = useStateContext();
   const [themeMode, setThemeMode] = useState('light'); // 'light', 'dark', 'rgb'
   const [rgbColor, setRgbColor] = useState('#324d67'); // Default RGB color
   const [rgbInputColor, setRgbInputColor] = useState(rgbColor); // For the color picker input
@@ -264,7 +263,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {showCart && <Cart />}
     </div>
   );
 };
