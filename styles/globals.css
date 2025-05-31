@@ -681,11 +681,11 @@ span.text-red {
   left: 0;
   width: 100%;
   height: 100%;
-  overflow: hidden; /* Ensuring this covers all overflow, not just y */
+  overflow: hidden;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; /* Changed from center */
   z-index: 10100;
 }
 
@@ -729,7 +729,7 @@ span.text-red {
   display: flex;
   flex-direction: column;
   overflow: hidden;     /* Restored */
-  /* margin: 20px 0; */ /* Removing this, assuming it was not part of the original design */
+  margin-top: 3vh; /* Added this line */
   /* glassmorphism class is applied in JSX, so styles here are additive or overriding.
      If glassmorphism is intended for desktop modal content, ensure its styles are compatible.
   */
