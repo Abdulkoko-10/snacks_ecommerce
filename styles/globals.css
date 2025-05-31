@@ -882,12 +882,14 @@ span.text-red {
   border: none;
 }
 .cart-bottom {
-  position: absolute;
-  bottom: 12px;
-  right: 5px;
-  width: 100%;
-  padding: 30px 65px;
+  /* position: absolute; REMOVED */
+  /* bottom: 12px;    REMOVED */
+  /* right: 5px;     REMOVED */
+  width: 100%; /* Or auto if padding is handled by parent - using 100% for now */
+  padding: 20px; /* Adjusted padding */
   background-color: var(--primary-background-color); /* Ensure cart bottom bg adapts */
+  /* box-sizing: border-box; Already global */
+  flex-shrink: 0; /* ADDED: Prevent shrinking */
 }
 
 .btn-container {
