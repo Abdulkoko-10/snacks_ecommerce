@@ -1,14 +1,14 @@
-import React, { useRef } from "react";
+import React from "react";
 import Link from "next/link";
 import {
   AiOutlineMinus,
   AiOutlinePlus,
-  AiOutlineLeft,
   AiOutlineShopping,
 } from "react-icons/ai";
 import { TiDeleteOutline } from "react-icons/ti";
 import { FaLock } from 'react-icons/fa';
 import toast from "react-hot-toast";
+import { SwipeableDrawer } from '@mui/material';
 //import Image from 'next/image'; // Import next/image
 
 import { useStateContext } from "../context/StateContext";
@@ -16,11 +16,12 @@ import { urlFor } from "../lib/client";
 import getStripe from "../lib/getStripe";
 
 const Cart = () => {
-  const cartRef = useRef();
+  const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
   const {
     totalPrice,
     totalQuantities,
     cartItems,
+    showCart,
     setShowCart,
     toggleCartItemQuanitity,
     onRemove,
@@ -68,22 +69,31 @@ const Cart = () => {
   };
 
   return (
-    <div className="cart-wrapper" ref={cartRef}>
-      <div className="cart-container glassmorphism"> {/* Added 'glassmorphism' */}
-        <button
-          type="button"
-          className="cart-heading"
-          onClick={() => setShowCart(false)}
-        >
-          <AiOutlineLeft />
-          <span className="heading">Your Cart</span>
-          <span className="cart-num-items">({totalQuantities} items)</span>
-        </button>
-
+    <SwipeableDrawer
+      anchor="bottom"
+      open={showCart}
+      onClose={() => setShowCart(false)}
+      onOpen={() => setShowCart(true)}
+      disableBackdropTransition={!iOS}
+      disableDiscovery={iOS}
+      PaperProps={{
+        sx: {
+          backgroundColor: 'transparent',
+          color: 'var(--text-color)',
+          borderTopLeftRadius: '20px',
+          borderTopRightRadius: '20px',
+        }
+      }}
+    >
+      <div className="cart-container glassmorphism" style={{ padding: '20px', maxHeight: '70vh', overflowY: 'auto' }}>
+        <div className="cart-heading" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '20px' }}>
+          <span className="heading" style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--text-color)' }}>Your Cart</span>
+          <span className="cart-num-items" style={{ marginLeft: '10px', color: 'var(--text-color)' }}>({totalQuantities} items)</span>
+        </div>
         {cartItems.length < 1 && (
           <div className="empty-cart">
             <AiOutlineShopping size={150} />
-            <h3>Your shopping bag is empty</h3>
+            <h3 style={{color: 'var(--text-color)'}}>Your shopping bag is empty</h3>
             <Link href="/">
               <button
                 type="button"
@@ -115,21 +125,21 @@ const Cart = () => {
                 />
                 <div className="item-desc">
                   <div className="flex top">
-                    <h5>{item.name}</h5>
-                    <h4>${item.price}</h4>
+                    <h5 style={{ color: 'var(--text-color)' }}>{item.name}</h5>
+                    <h4 style={{ color: 'var(--text-color)' }}>${item.price}</h4>
                   </div>
                   <div className="flex bottom">
                     <div>
-                      <p className="quantity-desc">
+                      <p className="quantity-desc" style={{ border: '1px solid var(--secondary-background-color)'}}>
                         <span
                           className="minus"
                           onClick={() =>
                             toggleCartItemQuanitity(item._id, "dec")
                           }
                         >
-                          <AiOutlineMinus />
+                          <AiOutlineMinus style={{ color: 'var(--text-color)' }} />
                         </span>
-                        <span className="num" onClick="">
+                        <span className="num" onClick="" style={{ borderLeft: '1px solid var(--secondary-background-color)', borderRight: '1px solid var(--secondary-background-color)', color: 'var(--text-color)'}}>
                           {item.quantity}
                         </span>
                         <span
@@ -138,7 +148,7 @@ const Cart = () => {
                             toggleCartItemQuanitity(item._id, "inc")
                           }
                         >
-                          <AiOutlinePlus />
+                          <AiOutlinePlus style={{ color: 'var(--text-color)' }} />
                         </span>
                       </p>
                     </div>
@@ -146,6 +156,7 @@ const Cart = () => {
                       type="button"
                       className="remove-item"
                       onClick={() => onRemove(item)}
+                      style={{ color: 'var(--primary-color)' }}
                     >
                       <TiDeleteOutline />
                     </button>
@@ -157,8 +168,8 @@ const Cart = () => {
         {cartItems.length >= 1 && (
           <div className="cart-bottom">
             <div className="total">
-              <h3>Subtotal:</h3>
-              <h3>${totalPrice}</h3>
+              <h3 style={{ color: 'var(--text-color)' }}>Subtotal:</h3>
+              <h3 style={{ color: 'var(--text-color)' }}>${totalPrice}</h3>
             </div>
             <div className="btn-container">
               <button type="button" className="btn" onClick={handlePreOrder}>
@@ -171,8 +182,8 @@ const Cart = () => {
                 <span className="tooltip-text" style={{
                   visibility: 'hidden',
                   width: '120px',
-                  backgroundColor: 'black',
-                  color: '#fff',
+                  backgroundColor: 'var(--secondary-background-color)', // Theme-aware
+                  color: 'var(--text-color)', // Theme-aware
                   textAlign: 'center',
                   borderRadius: '6px',
                   padding: '5px 0',
@@ -191,7 +202,7 @@ const Cart = () => {
           </div>
         )}
       </div>
-    </div>
+    </SwipeableDrawer>
   );
 };
 
