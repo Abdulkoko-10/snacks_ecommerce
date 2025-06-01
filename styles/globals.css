@@ -636,9 +636,8 @@ span.text-red {
 }
 .cart-container {
   height: 100vh;
-  width: 600px;
+  width: 100vw;
   background-color: var(--primary-background-color); /* Was white */
-  float: right;
   position: relative;
   color: var(--text-color); 
   padding: 30px 15px; /* Consolidated padding, this was the effective one */
