@@ -91,8 +91,8 @@ const Navbar = () => {
     // Other RGB variables like glassmorphism or product card shadows can also be updated here
     // if more granular control is needed beyond their CSS defaults (which are based on light theme).
     // For example:
-    // document.documentElement.style.setProperty('--glass-background-color-rgb', hexToRgba(selectedRgbColor, 0.25)); // Requires hexToRgba
-    // document.documentElement.style.setProperty('--glass-border-color-rgb', hexToRgba(mainContrastColor, 0.18));
+    document.documentElement.style.setProperty('--glass-background-color-rgb', hexToRgba(secondaryBackgroundColor, 0.30));
+    document.documentElement.style.setProperty('--glass-border-color-rgb', hexToRgba(mainContrastColor, 0.20));
 
     // Set the scrolled navbar background for RGB mode, considering mobile viewport
     const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 800px)').matches;

@@ -11,7 +11,7 @@
   --secondary-background-dark: #2a2a2a;
   --glass-background-light: rgba(255, 255, 255, 0.25);
   --glass-background-dark: rgba(40, 40, 40, 0.35);
-  --glass-border-light: rgba(255, 255, 255, 0.18);
+  --glass-border-light: rgba(0, 0, 0, 0.12);
   --glass-border-dark: rgba(60, 60, 60, 0.28);
   --glass-box-shadow-light: rgba(31, 38, 135, 0.37);
   --glass-box-shadow-dark: rgba(0, 0, 0, 0.37);
@@ -507,7 +507,7 @@ span.text-red {
   line-height: 1.2;
 }
 .hero-banner-container h1 { /* Large text in hero */
-  color: var(--primary-background-color);
+  color: var(--text-color); /* Ensures contrast across all themes */
   font-size: 6em; /* Quicksand */
   margin-left: -10px;
   text-transform: uppercase;
@@ -581,7 +581,7 @@ span.text-red {
 .banner-desc button {
   border-radius: 15px;
   padding: 12px 20px; /* Adjusted padding */
-  background-color: var(--background-light);
+  background-color: var(--text-on-primary-color); /* MODIFIED */
   color: var(--primary-color);
   border: none;
   margin-top: 20px; /* Adjusted margin */
@@ -903,7 +903,7 @@ span.text-red {
 }
 .buttons .add-to-cart {
   padding: 12px 20px; /* Adjusted padding */
-  border: 1px solid var(--primary-color);
+  border: 1px solid var(--glass-border-color); /* MODIFIED */
   margin-top: 40px;
   font-size: 1rem; /* Adjusted for Open Sans */
   font-weight: 600; /* Adjusted for Open Sans */
@@ -1399,6 +1399,10 @@ span.text-red {
 }
 .star-icon svg { /* Target SVG within if icons are direct children */
   color: var(--primary-color); /* Or a specific star color variable */
+}
+
+.rgb-mode .star-icon svg {
+  color: var(--text-color-rgb);
 }
 
 /* ReviewList Component */

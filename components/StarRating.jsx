@@ -18,7 +18,7 @@ const StarRating = ({ rating = 0, onRatingChange, isInput = false, starSize = 24
           key={i}
           size={starSize}
           onClick={() => handleClick(i)}
-          style={{ cursor: isInput ? 'pointer' : 'default', color: 'var(--primary-color)' }}
+          style={{ cursor: isInput ? 'pointer' : 'default' }}
           className="star-icon"
         />
       );
@@ -28,7 +28,7 @@ const StarRating = ({ rating = 0, onRatingChange, isInput = false, starSize = 24
           key={i}
           size={starSize}
           onClick={() => handleClick(i)}
-          style={{ cursor: isInput ? 'pointer' : 'default', color: 'var(--primary-color)' }}
+          style={{ cursor: isInput ? 'pointer' : 'default' }}
           className="star-icon"
         />
       );
