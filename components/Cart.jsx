@@ -137,7 +137,7 @@ const Cart = () => {
                             toggleCartItemQuanitity(item._id, "dec")
                           }
                         >
-                          <AiOutlineMinus style={{ color: 'var(--text-color)' }} />
+                          <AiOutlineMinus />
                         </span>
                         <span className="num" onClick="" style={{ borderLeft: '1px solid var(--secondary-background-color)', borderRight: '1px solid var(--secondary-background-color)', color: 'var(--text-color)'}}>
                           {item.quantity}
@@ -148,7 +148,7 @@ const Cart = () => {
                             toggleCartItemQuanitity(item._id, "inc")
                           }
                         >
-                          <AiOutlinePlus style={{ color: 'var(--text-color)' }} />
+                          <AiOutlinePlus />
                         </span>
                       </p>
                     </div>

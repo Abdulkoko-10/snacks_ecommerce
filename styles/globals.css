@@ -283,7 +283,7 @@ a {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ccc;
+  background-color: var(--secondary-background-color); /* Themed */
   transition: .4s;
   border-radius: 24px; /* Keep it rounded */
 }
@@ -295,7 +295,7 @@ a {
   width: 18px;  /* Smaller circle */
   left: 3px;    /* Adjust position */
   bottom: 3px;  /* Adjust position */
-  background-color: white;
+  background-color: var(--primary-background-color); /* Themed */
   transition: .4s;
   border-radius: 50%;
 }
@@ -422,7 +422,7 @@ span.text-red {
 
 .btn-add-to-cart-hover {
   background-color: var(--primary-color);
-  color: var(--background-light);
+  color: var(--text-on-primary-color); /* Corrected */
 }
 .btn-add-to-cart-hover:hover {
   background-color: var(--secondary-color); /* Darken on hover */
@@ -581,7 +581,7 @@ span.text-red {
 .banner-desc button {
   border-radius: 15px;
   padding: 12px 20px; /* Adjusted padding */
-  background-color: var(--background-light);
+  background-color: var(--text-on-primary-color); /* Corrected for better theming */
   color: var(--primary-color);
   border: none;
   margin-top: 20px; /* Adjusted margin */
@@ -1525,13 +1525,13 @@ span.text-red {
 }
 
 .error-message {
-  background-color: rgba(240, 45, 52, 0.1); /* Light red */
+  background-color: rgba(var(--primary-color-rgb, 240, 45, 52), 0.1); /* Use RGB variable for alpha */
   color: var(--primary-color); /* Already uses a themeable variable */
   border: 1px solid var(--primary-color); /* Already uses a themeable variable */
 }
 
 .success-message {
-  background-color: rgba(40, 167, 69, 0.1); /* Light green */
+  background-color: rgba(var(--success-message-color-rgb, 40, 167, 69), 0.1); /* Use RGB variable for alpha */
   color: var(--success-message-color); /* UPDATED */
   border: 1px solid var(--success-message-color); /* UPDATED */
 }
@@ -1681,18 +1681,18 @@ span.text-red {
 
 /* Locked button style */
 .btn-locked {
-  background-color: #cccccc;
-  color: #666666;
-  border-color: #aaaaaa; /* Or match background */
+  background-color: var(--secondary-background-color);
+  color: var(--text-color);
+  border: 1px solid var(--glass-border-color);
   cursor: not-allowed;
-  opacity: 0.7;
+  opacity: 0.6; /* Adjusted overall opacity */
 }
 
 .btn-locked:hover,
 .btn-locked:active {
-  background-color: #cccccc !important; /* Maintain inactive appearance */
-  color: #666666 !important;
-  /* Add any other properties that need to be overridden from the default .btn styles */
+  background-color: var(--secondary-background-color) !important; /* Maintain inactive appearance */
+  color: var(--text-color) !important; /* Maintain inactive appearance */
+  opacity: 0.6 !important; /* Ensure opacity is maintained */
   box-shadow: none !important; /* Example: remove shadow if .btn has one */
   transform: scale(1, 1) !important; /* Prevent hover scale effect from .btn:hover */
 }

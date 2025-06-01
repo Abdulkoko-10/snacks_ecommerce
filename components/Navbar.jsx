@@ -90,9 +90,34 @@ const Navbar = () => {
 
     // Other RGB variables like glassmorphism or product card shadows can also be updated here
     // if more granular control is needed beyond their CSS defaults (which are based on light theme).
-    // For example:
-    // document.documentElement.style.setProperty('--glass-background-color-rgb', hexToRgba(selectedRgbColor, 0.25)); // Requires hexToRgba
-    // document.documentElement.style.setProperty('--glass-border-color-rgb', hexToRgba(mainContrastColor, 0.18));
+
+    // Glassmorphism colors
+    document.documentElement.style.setProperty('--glass-background-color-rgb', hexToRgba(selectedRgbColor, 0.25));
+    document.documentElement.style.setProperty('--glass-border-color-rgb', hexToRgba(mainContrastColor, 0.2)); // Increased alpha for better visibility
+    document.documentElement.style.setProperty('--glass-box-shadow-color-rgb', hexToRgba(mainContrastColor === '#000000' ? '#000000' : '#FFFFFF', 0.37)); // Shadow based on contrast
+
+    // Product card hover shadow
+    // Use a semi-transparent version of the contrast color for the shadow to ensure it's visible
+    // against the --secondary-background-color-rgb (which is a darkened version of selectedRgbColor)
+    document.documentElement.style.setProperty('--product-card-hover-shadow-rgb', hexToRgba(mainContrastColor, 0.15));
+
+    // Text on primary color - this should be the main contrast color to ensure readability
+    // when primary-color-rgb (selectedRgbColor) is used as a background.
+    document.documentElement.style.setProperty('--text-on-primary-color', mainContrastColor);
+    // The CSS already sets: --text-on-primary-color: var(--text-color-rgb); in .rgb-mode
+    // and --text-color-rgb is set to mainContrastColor. So this explicit JS set might be redundant if
+    // --text-color-rgb is reliably mainContrastColor. However, setting it directly ensures it.
+
+    // Status colors (plus, success)
+    // We want them to remain versions of green but adapt to theme brightness.
+    const successGreenDark = '#28a745'; // A standard, fairly dark green
+    const successGreenLight = '#60d660'; // A lighter, vibrant green
+
+    const chosenSuccessGreen = mainContrastColor === '#FFFFFF' ? successGreenLight : successGreenDark;
+
+    document.documentElement.style.setProperty('--plus-color-rgb', chosenSuccessGreen);
+    document.documentElement.style.setProperty('--success-icon-color-rgb', chosenSuccessGreen);
+    document.documentElement.style.setProperty('--success-message-color-rgb', chosenSuccessGreen);
 
     // Set the scrolled navbar background for RGB mode, considering mobile viewport
     const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 800px)').matches;
