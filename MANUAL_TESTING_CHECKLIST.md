@@ -1,9 +1,9 @@
-# Manual Testing Checklist: Bottom Sheet Cart
+# Manual Testing Checklist: Bottom Sheet Cart (Full Width)
 
 **I. Visibility and Basic Interaction:**
-    - [ ] **Open Cart (Desktop - Centered):**
+    - [ ] **Open Cart (Desktop - Full Width):**
         - Action: On a desktop view (viewport width >= 768px), click the cart icon/button.
-        - Expected: The bottom sheet slides up from the bottom, centered horizontally. It should have a max-width of 800px (or 90% of viewport width if the viewport is less than ~889px wide, leading to a cart width less than 800px). The Drawer paper itself is transparent.
+        - Expected: The bottom sheet slides up from the bottom, occupying the full width of the screen. The Drawer paper itself is transparent.
     - [ ] **Open Cart (Mobile - Full Width):**
         - Action: On a mobile view (viewport width < 768px), click the cart icon/button.
         - Expected: The bottom sheet slides up from the bottom, occupying the full width of the screen. The Drawer paper itself is transparent.
@@ -62,21 +62,21 @@
         - Expected: Text remains clearly readable against the glassmorphism background. `var(--text-color)` should ensure this.
     - [ ] **Content Overflow (Desktop & Mobile):**
         - Action: Add enough items to the cart so that the content exceeds the `maxHeight` of the `cart-container` (`70vh`).
-        - Expected: A vertical scrollbar appears within the content area of the bottom sheet. The "Your Cart" heading and the cart bottom (subtotal/buttons) should ideally remain visible or behave gracefully with scrolling, though the current implementation might scroll them with the content. Verify scrolling is smooth.
+        - Expected: A vertical scrollbar appears within the content area of the bottom sheet. The "Your Cart" heading and the cart bottom (subtotal/buttons) should ideally remain visible or behave gracefully with scrolling. Verify scrolling is smooth.
     - [ ] **General Aesthetics (All Themes - Desktop & Mobile):**
         - Action: Visually inspect the bottom sheet in all themes and layouts.
         - Expected: Spacing, alignment, font sizes, and overall appearance are aesthetically pleasing and consistent with the application's design. The added border radius on the top corners of the sheet is visible.
 
 **IV. Responsiveness:**
-    - [ ] **Transition between Mobile and Desktop Layouts:**
-        - Action: Open the cart. Resize the browser window width across the 768px breakpoint (e.g., from 600px to 900px and back).
-        - Expected: The cart sheet smoothly transitions between full-width (mobile) and centered/max-width (desktop) layouts without visual glitches or breaking the layout.
-    - [ ] **Desktop Centering (various widths >= 768px):**
+    - [ ] **Transition between Mobile and Desktop (Consistent Full Width):**
+        - Action: Open the cart. Resize the browser window width across various sizes (e.g., from 600px to 900px, 1200px and back).
+        - Expected: The cart sheet remains full-width across all screen sizes without visual glitches or breaking the layout.
+    - [ ] **Desktop (various widths >= 768px - Full Width):**
         - Action: Resize browser on desktop to various widths (e.g., 768px, 800px, 1000px, 1200px). Open the cart.
-        - Expected: The sheet remains horizontally centered. Its width should be 90% of the viewport if `0.9 * viewport_width < 800px`, otherwise it should cap at `800px`.
+        - Expected: The sheet is full-width and behaves consistently.
     - [ ] **Mobile View (various small screens):**
         - Action: Using browser developer tools, switch to various small screen/mobile views (e.g., iPhone SE, iPhone X, Galaxy S5). Open the cart.
         - Expected: The bottom sheet is full-width. Content is readable and usable. No horizontal overflow. Buttons are easily tappable.
-    - [ ] **Tablet View:**
-        - Action: Switch to a tablet view (e.g., iPad - width typically >= 768px, so desktop centered layout should apply). Open the cart.
-        - Expected: The bottom sheet adapts appropriately, showing the centered desktop layout. If tablet width is < 768px (uncommon), it should show mobile full-width layout.
+    - [ ] **Tablet View (Full Width):**
+        - Action: Switch to a tablet view (e.g., iPad). Open the cart.
+        - Expected: The bottom sheet is full-width and adapts appropriately.

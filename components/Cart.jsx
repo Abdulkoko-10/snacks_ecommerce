@@ -74,18 +74,10 @@ const Cart = () => {
       onClose={() => setShowCart(false)}
       PaperProps={{
         sx: {
-          backgroundColor: 'transparent', // Keep from previous step
-          color: 'var(--text-color)',     // Keep from previous step
+          backgroundColor: 'transparent',
+          color: 'var(--text-color)',
           borderTopLeftRadius: '20px',
           borderTopRightRadius: '20px',
-          // Styles for desktop centering:
-          '@media (min-width: 768px)': {
-            maxWidth: '800px',
-            width: '90%',
-            left: '50%',
-            right: 'auto',
-            transform: 'translateX(-50%)',
-          }
         }
       }}
     >
