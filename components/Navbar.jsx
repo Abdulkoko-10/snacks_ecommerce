@@ -94,7 +94,7 @@ const Navbar = () => {
     // Glassmorphism colors
     document.documentElement.style.setProperty('--glass-background-color-rgb', hexToRgba(selectedRgbColor, 0.25));
     document.documentElement.style.setProperty('--glass-border-color-rgb', hexToRgba(mainContrastColor, 0.2)); // Increased alpha for better visibility
-    document.documentElement.style.setProperty('--glass-box-shadow-color-rgb', hexToRgba(mainContrastColor === '#000000' ? '#000000' : '#FFFFFF', 0.37)); // Shadow based on contrast
+    document.documentElement.style.setProperty('--glass-box-shadow-color-rgb', hexToRgba('#000000', 0.12)); // Consistently dark, subtle shadow
 
     // Product card hover shadow
     // Use a semi-transparent version of the contrast color for the shadow to ensure it's visible
