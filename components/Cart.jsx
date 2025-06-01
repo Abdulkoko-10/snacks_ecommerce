@@ -202,7 +202,7 @@ const Cart = () => {
           </div>
         )}
       </div>
-    </Drawer>
+    </SwipeableDrawer>
   );
 };
 
