@@ -78,6 +78,7 @@ const Cart = () => {
           color: 'var(--text-color)',
           borderTopLeftRadius: '20px',
           borderTopRightRadius: '20px',
+          width: '100%', // Explicitly set width to 100%
         }
       }}
     >

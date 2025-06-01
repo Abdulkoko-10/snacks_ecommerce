@@ -1,9 +1,12 @@
-# Manual Testing Checklist: Bottom Sheet Cart (Full Width)
+# Manual Testing Checklist: Bottom Sheet Cart (Full Width Verified)
 
 **I. Visibility and Basic Interaction:**
-    - [ ] **Open Cart (Desktop - Full Width):**
-        - Action: On a desktop view (viewport width >= 768px), click the cart icon/button.
-        - Expected: The bottom sheet slides up from the bottom, occupying the full width of the screen. The Drawer paper itself is transparent.
+    - [ ] **Open Cart (Desktop - True Full Width):**
+        - Action: On a desktop view (e.g., viewport width >= 1024px), click the cart icon/button.
+        - Expected: The bottom sheet slides up from the bottom, **spanning the entire viewport width from left to right**. The Drawer paper itself is transparent.
+    - [ ] **Open Cart (Tablet - Full Width):**
+        - Action: On a tablet view (e.g., viewport width between 768px and 1023px), click the cart icon/button.
+        - Expected: The bottom sheet slides up from the bottom, spanning the full width of the screen. The Drawer paper itself is transparent.
     - [ ] **Open Cart (Mobile - Full Width):**
         - Action: On a mobile view (viewport width < 768px), click the cart icon/button.
         - Expected: The bottom sheet slides up from the bottom, occupying the full width of the screen. The Drawer paper itself is transparent.
@@ -68,15 +71,15 @@
         - Expected: Spacing, alignment, font sizes, and overall appearance are aesthetically pleasing and consistent with the application's design. The added border radius on the top corners of the sheet is visible.
 
 **IV. Responsiveness:**
-    - [ ] **Transition between Mobile and Desktop (Consistent Full Width):**
-        - Action: Open the cart. Resize the browser window width across various sizes (e.g., from 600px to 900px, 1200px and back).
-        - Expected: The cart sheet remains full-width across all screen sizes without visual glitches or breaking the layout.
-    - [ ] **Desktop (various widths >= 768px - Full Width):**
-        - Action: Resize browser on desktop to various widths (e.g., 768px, 800px, 1000px, 1200px). Open the cart.
-        - Expected: The sheet is full-width and behaves consistently.
+    - [ ] **Desktop (various widths - True Full Width):**
+        - Action: Resize browser on desktop across various widths (e.g., 1024px, 1280px, 1920px). Open the cart.
+        - Expected: Sheet is consistently full-width, edge-to-edge, and not "stuck to the left".
+    - [ ] **Transition between Screen Sizes (Consistent Full Width):**
+        - Action: Open the cart. Resize the browser window across mobile, tablet, and desktop widths.
+        - Expected: The cart sheet remains consistently full-width.
     - [ ] **Mobile View (various small screens):**
         - Action: Using browser developer tools, switch to various small screen/mobile views (e.g., iPhone SE, iPhone X, Galaxy S5). Open the cart.
         - Expected: The bottom sheet is full-width. Content is readable and usable. No horizontal overflow. Buttons are easily tappable.
     - [ ] **Tablet View (Full Width):**
-        - Action: Switch to a tablet view (e.g., iPad). Open the cart.
+        - Action: Switch to a tablet view (e.g., iPad, Nexus 7). Open the cart.
         - Expected: The bottom sheet is full-width and adapts appropriately.
