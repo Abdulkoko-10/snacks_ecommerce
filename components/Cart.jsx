@@ -8,7 +8,7 @@ import {
 import { TiDeleteOutline } from "react-icons/ti";
 import { FaLock } from 'react-icons/fa';
 import toast from "react-hot-toast";
-import { Drawer } from '@mui/material';
+import { SwipeableDrawer } from '@mui/material';
 //import Image from 'next/image'; // Import next/image
 
 import { useStateContext } from "../context/StateContext";
@@ -16,6 +16,7 @@ import { urlFor } from "../lib/client";
 import getStripe from "../lib/getStripe";
 
 const Cart = () => {
+  const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
   const {
     totalPrice,
     totalQuantities,
@@ -68,10 +69,13 @@ const Cart = () => {
   };
 
   return (
-    <Drawer
+    <SwipeableDrawer
       anchor="bottom"
       open={showCart}
       onClose={() => setShowCart(false)}
+      onOpen={() => setShowCart(true)}
+      disableBackdropTransition={!iOS}
+      disableDiscovery={iOS}
       PaperProps={{
         sx: {
           backgroundColor: 'transparent',
