@@ -4,12 +4,41 @@ import { toast } from "react-hot-toast";
 
 const Context = createContext();
 
+// Helper function to calculate contrast color
+const calculateContrastColor = (hexColor) => {
+  if (!hexColor) return "#FFFFFF"; // Default to white if no color
+  const r = parseInt(hexColor.slice(1, 3), 16);
+  const g = parseInt(hexColor.slice(3, 5), 16);
+  const b = parseInt(hexColor.slice(5, 7), 16);
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance > 0.5 ? "#000000" : "#FFFFFF";
+};
+
+// Helper function to darken a color
+const darkenColor = (hexColor, percent) => {
+  if (!hexColor) return "#000000"; // Default to black if no color
+  let r = parseInt(hexColor.slice(1, 3), 16);
+  let g = parseInt(hexColor.slice(3, 5), 16);
+  let b = parseInt(hexColor.slice(5, 7), 16);
+
+  r = Math.floor(r * (1 - percent / 100));
+  g = Math.floor(g * (1 - percent / 100));
+  b = Math.floor(b * (1 - percent / 100));
+
+  return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()}`;
+};
+
 export const StateContext = ({ children }) => {
   const [showCart, setShowCart] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalQuantities, setTotalQuantities] = useState(0);
   const [qty, setQty] = useState(1);
+
+  // Theme state variables
+  const [themeMode, setThemeMode] = useState("light"); // 'light', 'dark', 'rgb'
+  const [rgbColor, setRgbColor] = useState("#324d67"); // Default RGB color
+  const [mainContrastColor, setMainContrastColor] = useState(calculateContrastColor(rgbColor));
 
   let foundProduct;
   let index;
@@ -113,6 +142,54 @@ export const StateContext = ({ children }) => {
     });
   };
 
+  // Theme management functions
+  const applyRgbThemeLogic = (currentColor) => {
+    const contrast = calculateContrastColor(currentColor);
+    setMainContrastColor(contrast);
+
+    // Return CSS variables for Clerk's appearance prop
+    return {
+      colorPrimary: currentColor,
+      colorText: contrast,
+      colorBackground: darkenColor(currentColor, 10), // Example: Slightly darker background
+      colorInputBackground: darkenColor(currentColor, 5),
+      colorInputText: contrast,
+      // Add other variables as needed for Clerk components
+    };
+  };
+
+  const setAndStoreTheme = (newThemeMode, newRgbColor = rgbColor) => {
+    localStorage.setItem("themeMode", newThemeMode);
+    setThemeMode(newThemeMode);
+
+    document.documentElement.classList.remove("dark-mode", "rgb-mode");
+
+    if (newThemeMode === "dark") {
+      document.documentElement.classList.add("dark-mode");
+    } else if (newThemeMode === "rgb") {
+      document.documentElement.classList.add("rgb-mode");
+      setRgbColor(newRgbColor);
+      localStorage.setItem("rgbColor", newRgbColor);
+      applyRgbThemeLogic(newRgbColor); // Update contrast color and get CSS vars (though not directly applied here)
+    }
+  };
+
+  // Initialize theme on load
+  useEffect(() => {
+    const storedThemeMode = localStorage.getItem("themeMode");
+    const storedRgbColor = localStorage.getItem("rgbColor");
+
+    if (storedThemeMode) {
+      setAndStoreTheme(storedThemeMode, storedRgbColor || rgbColor);
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      setAndStoreTheme("dark");
+    } else {
+      setAndStoreTheme("light");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run once on mount
+
+
   return (
     <Context.Provider
       value={{
@@ -131,6 +208,12 @@ export const StateContext = ({ children }) => {
         onAdd,
         toggleCartItemQuanitity,
         onRemove,
+        // Theme context values
+        themeMode,
+        rgbColor,
+        mainContrastColor,
+        setAndStoreTheme,
+        applyRgbThemeLogic,
       }}
     >
       {children}
