@@ -1696,3 +1696,46 @@ span.text-red {
   box-shadow: none !important; /* Example: remove shadow if .btn has one */
   transform: scale(1, 1) !important; /* Prevent hover scale effect from .btn:hover */
 }
+
+.theme-dropdown-menu .clerk-user-button-li,
+.theme-dropdown-menu .clerk-signin-button-li {
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease-in-out;
+  white-space: nowrap;
+  display: flex; /* To help center UserButton if needed */
+  align-items: center;
+}
+
+.theme-dropdown-menu .clerk-user-button-li:hover,
+.theme-dropdown-menu .clerk-signin-button-li:hover {
+  background-color: var(--primary-color);
+  color: var(--text-on-primary-color);
+}
+
+.theme-dropdown-menu .clerk-signin-button-li .clerk-button-as-link {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit; /* Inherits from li, which will change on hover */
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+
+/* Ensure UserButton itself looks okay in the dropdown */
+.clerk-user-button-li .cl-userButtonTrigger {
+  outline: none !important;
+  box-shadow: none !important;
+}
+.clerk-user-button-li .cl-userButtonBox {
+   width: 28px; /* Adjust size as needed */
+   height: 28px; /* Adjust size as needed */
+}
+.clerk-user-button-li .cl-avatarBox {
+   width: 28px; /* Adjust size as needed */
+   height: 28px; /* Adjust size as needed */
+}
