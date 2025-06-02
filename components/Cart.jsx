@@ -10,6 +10,7 @@ import { FaLock } from 'react-icons/fa';
 import toast from "react-hot-toast";
 import { SwipeableDrawer } from '@mui/material';
 //import Image from 'next/image'; // Import next/image
+import { useUser, SignInButton } from '@clerk/nextjs';
 
 import { useStateContext } from "../context/StateContext";
 import { urlFor } from "../lib/client";
@@ -17,6 +18,7 @@ import getStripe from "../lib/getStripe";
 
 const Cart = () => {
   const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const { isSignedIn, user } = useUser(); // Get user and signedIn status
   const {
     totalPrice,
     totalQuantities,
@@ -172,9 +174,20 @@ const Cart = () => {
               <h3 style={{ color: 'var(--text-color)' }}>${totalPrice}</h3>
             </div>
             <div className="btn-container">
-              <button type="button" className="btn" onClick={handlePreOrder}>
-                Pre-order Now
-              </button>
+              {isSignedIn ? (
+                <button type="button" className="btn" onClick={handlePreOrder}>
+                  Pre-order Now
+                </button>
+              ) : (
+                <SignInButton
+                  mode="modal"
+                  redirectUrl={typeof window !== 'undefined' ? window.location.pathname : '/'}
+                >
+                  <button type="button" className="btn">
+                    Sign In to Pre-order
+                  </button>
+                </SignInButton>
+              )}
               <div className="tooltip-container" style={{ position: 'relative', display: 'inline-block', width: '100%', marginTop: '10px' }}>
                 <button type="button" className="btn btn-locked" onClick={handleCheckout} style={{ width: '100%' }}>
                   <FaLock style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Pay with Stripe

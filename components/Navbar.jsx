@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { AiOutlineShopping } from 'react-icons/ai';
 import { FiSun, FiMoon, FiDroplet, FiMoreHorizontal } from 'react-icons/fi'; // Import Feather icons
+import { UserButton, SignInButton, SignedIn, SignedOut } from '@clerk/nextjs';
 
 import { Cart } from './';
 import { useStateContext } from '../context/StateContext';
@@ -259,6 +260,24 @@ const Navbar = () => {
               <li onClick={() => selectTheme('light')}>Light Theme</li>
               <li onClick={() => selectTheme('dark')}>Dark Theme</li>
               <li onClick={() => selectTheme('rgb')}>RGB Theme</li>
+              <SignedIn>
+                <li>
+                  <UserButton afterSignOutUrl={typeof window !== 'undefined' ? window.location.pathname : '/'} />
+                </li>
+              </SignedIn>
+              <SignedOut>
+                <li>
+                  <SignInButton
+                    mode="modal"
+                    redirectUrl={typeof window !== 'undefined' ? window.location.pathname : '/'}
+                  >
+                    {/* This span helps if SignInButton doesn't take full width or needs text styling like other li items */}
+                    <span style={{ display: 'block', width: '100%', cursor: 'pointer' }}>
+                      Sign In
+                    </span>
+                  </SignInButton>
+                </li>
+              </SignedOut>
             </ul>
           )}
         </div>
