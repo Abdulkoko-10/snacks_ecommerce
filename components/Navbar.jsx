@@ -262,14 +262,14 @@ const Navbar = () => {
               <li onClick={() => selectTheme('rgb')}>RGB Theme</li>
               <SignedIn>
                 <li>
-                  <UserButton afterSignOutUrl={typeof window !== 'undefined' ? window.location.pathname : '/'} />
+                  <UserButton />
                 </li>
               </SignedIn>
               <SignedOut>
                 <li>
                   <SignInButton
                     mode="modal"
-                    redirectUrl={typeof window !== 'undefined' ? window.location.pathname : '/'}
+                    fallbackRedirectUrl={typeof window !== 'undefined' ? window.location.pathname : '/'}
                   >
                     {/* This span helps if SignInButton doesn't take full width or needs text styling like other li items */}
                     <span style={{ display: 'block', width: '100%', cursor: 'pointer' }}>

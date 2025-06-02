@@ -181,7 +181,7 @@ const Cart = () => {
               ) : (
                 <SignInButton
                   mode="modal"
-                  redirectUrl={typeof window !== 'undefined' ? window.location.pathname : '/'}
+                  fallbackRedirectUrl={typeof window !== 'undefined' ? window.location.pathname : '/'}
                 >
                   <button type="button" className="btn">
                     Sign In to Pre-order
