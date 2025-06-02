@@ -24,36 +24,6 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-### Environment Variables
-
-This project requires certain environment variables to be set up for full functionality. These include keys for services like Sanity (for content management), Stripe (for payments), and Clerk (for authentication).
-
-1.  **Copy the example file**:
-    Create a new file named `.env.local` in the root of your project by copying the existing `.env.example` file:
-    ```bash
-    cp .env.example .env.local
-    ```
-2.  **Fill in the values**:
-    Open `.env.local` and replace the placeholder values with your actual API keys and configuration details for each service.
-
-### Clerk Authentication Setup
-
-To enable user authentication features, you'll need to configure Clerk:
-
-1.  **Create a Clerk Account**: If you don't have one, sign up at [https://clerk.com](https://clerk.com).
-2.  **Create a Clerk Application**: In your Clerk dashboard, create a new application for this project.
-3.  **Find API Keys**: Navigate to the API Keys section in your Clerk application settings. You will need the "Publishable key" and the "Secret key".
-4.  **Update `.env.local`**:
-    Add these keys to your `.env.local` file:
-    ```
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="your_clerk_publishable_key_here"
-    CLERK_SECRET_KEY="your_clerk_secret_key_here"
-    ```
-    *   `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` is used on the frontend.
-    *   `CLERK_SECRET_KEY` is used on the backend for server-side authentication.
-
-Make sure to keep your secret keys confidential and do not commit `.env.local` to your repository.
-
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

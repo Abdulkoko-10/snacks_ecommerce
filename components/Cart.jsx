@@ -10,9 +10,9 @@ import { FaLock } from 'react-icons/fa';
 import toast from "react-hot-toast";
 import { SwipeableDrawer } from '@mui/material';
 //import Image from 'next/image'; // Import next/image
+import { useUser, SignInButton } from '@clerk/nextjs';
 
 import { useStateContext } from "../context/StateContext";
-import { useUser, useClerk } from "@clerk/nextjs";
 import { urlFor } from "../lib/client";
 import getStripe from "../lib/getStripe";
 
@@ -32,7 +32,6 @@ const Cart = () => {
   } = useStateContext();
 
   const { isSignedIn } = useUser();
-  const { openSignIn } = useClerk();
 
   const handlePreOrder = () => {
     toast.success('Your pre-order has been placed successfully!');
@@ -53,7 +52,6 @@ const Cart = () => {
     }
 
     // Original checkout logic (should not be reached if isPaymentLocked is true)
-    // This part will only be executed if isPaymentLocked is false AND user is signed in.
     const stripe = await getStripe();
 
     const response = await fetch("/api/stripe", {
@@ -177,22 +175,23 @@ const Cart = () => {
               <h3 style={{ color: 'var(--text-color)' }}>${totalPrice}</h3>
             </div>
             <div className="btn-container">
-              <button type="button" className="btn" onClick={handlePreOrder}>
-                Pre-order Now
-              </button>
-              <div className="tooltip-container" style={{ position: 'relative', display: 'inline-block', width: '100%', marginTop: '10px' }}>
-                <button
-                  type="button"
-                  className="btn btn-locked"
-                  onClick={async () => {
-                    if (!isSignedIn) {
-                      openSignIn({});
-                    } else {
-                      await handleCheckout();
-                    }
-                  }}
-                  style={{ width: '100%' }}
+              {isSignedIn ? (
+                <button type="button" className="btn" onClick={handlePreOrder}>
+                  Pre-order Now
+                </button>
+              ) : (
+                <SignInButton
+                  mode="modal"
+                  afterSignInUrl={typeof window !== 'undefined' ? window.location.pathname + '?openCart=true' : '/?openCart=true'}
+                  afterSignUpUrl={typeof window !== 'undefined' ? window.location.pathname + '?openCart=true' : '/?openCart=true'}
                 >
+                  <button type="button" className="btn">
+                    Sign In to Pre-order
+                  </button>
+                </SignInButton>
+              )}
+              <div className="tooltip-container" style={{ position: 'relative', display: 'inline-block', width: '100%', marginTop: '10px' }}>
+                <button type="button" className="btn btn-locked" onClick={handleCheckout} style={{ width: '100%' }}>
                   <FaLock style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Pay with Stripe
                 </button>
                 <span className="tooltip-text" style={{

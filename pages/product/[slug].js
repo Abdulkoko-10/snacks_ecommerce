@@ -12,7 +12,6 @@ import {
 import { client, urlFor } from "../../lib/client";
 //import Image from 'next/image'; // Ensure Image is imported
 import Product from "../../components/Product";
-import { useUser, useClerk } from "@clerk/nextjs";
 import { useStateContext } from "../../context/StateContext";
 import StarRating from '../../components/StarRating'; // Import StarRating
 import ReviewList from '../../components/ReviewList';   // Import ReviewList
@@ -33,9 +32,6 @@ const ProductDetails = ({ product, products, reviews: initialReviews }) => {
   const [index, setIndex] = useState(0);
   const { decQty, incQty, qty, onAdd, setShowCart } = useStateContext();
   const router = useRouter(); // For constructing current page URL
-
-  const { isSignedIn } = useUser();
-  const { openSignIn } = useClerk();
 
   const [isAddedFeedback, setIsAddedFeedback] = useState(false);
   const [isBuyNowFeedback, setIsBuyNowFeedback] = useState(false);
