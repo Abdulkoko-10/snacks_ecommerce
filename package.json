@@ -17,6 +17,7 @@
     "@sanity/client": "^7.4.0",
     "@sanity/image-url": "^1.1.0",
     "@stripe/stripe-js": "^1.25.0",
+    "@testing-library/dom": "^10.4.0",
     "canvas-confetti": "^1.5.1",
     "next": "^15.3.3",
     "next-sanity-image": "^6.2.0",
@@ -29,11 +30,11 @@
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^12.1.5",
+    "@testing-library/react": "^16.3.0",
     "eslint": "^8",
     "eslint-config-next": "^15.3.3",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^29.7.0",
-    "jest-environment-jsdom": "^29.7.0"
+    "jest-environment-jsdom": "^30.0.0-beta.3"
   }
 }
