@@ -10,6 +10,10 @@
     "test": "jest --watch"
   },
   "dependencies": {
+    "@clerk/nextjs": "^3.8.3",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/material": "^5.15.20",
     "@sanity/client": "^2.23.2",
     "@sanity/image-url": "^1.0.1",
     "@stripe/stripe-js": "^1.25.0",
@@ -21,10 +25,7 @@
     "react-hot-toast": "^2.2.0",
     "react-icons": "^4.3.1",
     "stripe": "^8.209.0",
-    "swiper": "^11.2.8",
-    "@mui/material": "^5.15.20",
-    "@emotion/react": "^11.11.4",
-    "@emotion/styled": "^11.11.5"
+    "swiper": "^11.2.8"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
