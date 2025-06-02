@@ -123,7 +123,7 @@ export default function App({ Component, pageProps }) {
 
   return (
     <ClerkProvider
-      frontendApi={process.env.NEXT_PUBLIC_CLERK_FRONTEND_API}
+      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
       appearance={clerkAppearance}
     >
       <StateContext>
