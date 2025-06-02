@@ -10,7 +10,7 @@
     "test": "jest --watch"
   },
   "dependencies": {
-    "@clerk/nextjs": "~4.29.3",
+    "@clerk/nextjs": "~4.20.0",
     "@clerk/themes": "~1.7.9",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
