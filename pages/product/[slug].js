@@ -223,20 +223,6 @@ const ProductDetails = ({ product, products, reviews: initialReviews }) => {
             >
               {isBuyNowFeedback ? "✓ Adding..." : "Buy Now"}
             </button>
-            <button
-              type="button"
-              className="btn pre-order-btn" // Using 'btn' for consistency if it exists, or a new class
-              onClick={() => {
-                if (!isSignedIn) {
-                  openSignIn({});
-                } else {
-                  alert(`Pre-ordering ${name}! (Placeholder)`);
-                  console.log(`User ${isSignedIn ? 'is' : 'is not'} signed in. Initiate pre-order flow for ${name}.`);
-                }
-              }}
-            >
-              Pre-order
-            </button>
           </div>
         </div>
       </div>
