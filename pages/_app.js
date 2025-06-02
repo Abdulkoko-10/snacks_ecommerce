@@ -122,9 +122,7 @@ export default function App({ Component, pageProps }) {
   };
 
   return (
-    <ClerkProvider
-      appearance={clerkAppearance}
-    >
+    <ClerkProvider {...pageProps} appearance={clerkAppearance}>
       <StateContext>
         <Layout>
           <Toaster />

@@ -1,6 +1,6 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { authMiddleware } from "@clerk/nextjs/server";
 
-export default clerkMiddleware({
+export default authMiddleware({
   // Ensure all routes are public for now.
   // Authentication will be triggered by specific actions (e.g., pre-order)
   // within the component logic.
