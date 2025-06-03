@@ -276,6 +276,14 @@ const Navbar = () => {
                     appearance={{
                       elements: {
                         userButtonPopoverCard: "glassmorphism", // Apply glassmorphism to the popover card
+                        userButtonTrigger: {
+                          // Attempt to set a color for the icon, assuming it uses currentColor or similar
+                          color: "var(--secondary-color)",
+                          // Ensure it has some size, though Clerk usually handles this.
+                          // These are examples; might need adjustment or might not be necessary if color fixes it.
+                          // width: "32px",
+                          // height: "32px",
+                        }
                       },
                       variables: {
                         colorPrimary: "var(--primary-color)",
