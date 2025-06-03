@@ -324,9 +324,6 @@ const Navbar = () => {
                 }}>
                   <UserButton
                     afterSignOutUrl="/"
-                    {/*appearance={{
-                      elements: { userButtonPopoverCard: { pointerEvents: "initial" } },
-                    }}*/}
                     userProfileProps={{ // This themes the modal that the button opens
                       appearance: clerkAppearance,
                     }}
