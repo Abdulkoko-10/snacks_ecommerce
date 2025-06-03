@@ -56,6 +56,12 @@
 
   /* Navbar Height */
   --navbar-height: 70px;
+
+  /* Button specific variables */
+  --primary-color-hover: #c0242a; /* Darker shade of #f02d34 */
+  --clr-btn-primary-bg: var(--primary-color);
+  --clr-btn-primary-text: var(--text-on-primary-color);
+  --clr-btn-primary-hover-bg: var(--primary-color-hover);
 }
 
 .dark-mode {
@@ -87,7 +93,13 @@
   --success-message-color: var(--success-message-color-rgb);
   
   /* Text on primary-colored backgrounds should use the main text color of RGB theme (which is contrastColor) */
-  --text-on-primary-color: var(--text-color-rgb); 
+  --text-on-primary-color: var(--text-color-rgb);
+
+  /* Button specific variables for RGB mode */
+  --clr-btn-primary-bg: var(--primary-color-rgb);
+  /* --clr-btn-primary-text is already correctly mapped via --text-on-primary-color */
+  /* For hover, ideally JS would set a --primary-color-rgb-hover. Using a fallback for now. */
+  --clr-btn-primary-hover-bg: var(--secondary-background-color-rgb); /* Fallback: using a generally darker RGB theme color */
 }
 
 /* Apply theme to body by default, can be toggled */
@@ -1695,4 +1707,19 @@ span.text-red {
   /* Add any other properties that need to be overridden from the default .btn styles */
   box-shadow: none !important; /* Example: remove shadow if .btn has one */
   transform: scale(1, 1) !important; /* Prevent hover scale effect from .btn:hover */
+}
+
+/* Styles for the UserButton list item in the theme dropdown */
+.theme-dropdown-menu li.user-button-li {
+  padding: 5px; /* Reduced padding to better fit the UserButton */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 40px; /* Ensure a minimum height for consistency, adjust as needed */
+}
+
+/* Optional: Override hover for the UserButton li if it interferes with UserButton's own UI */
+.theme-dropdown-menu li.user-button-li:hover {
+  background-color: transparent; /* Remove parent li hover effect */
+  /* Or, ensure UserButton's popover appears above this, then this might not be needed */
 }
