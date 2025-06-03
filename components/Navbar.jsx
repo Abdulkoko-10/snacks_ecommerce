@@ -277,15 +277,13 @@ const Navbar = () => {
                       elements: {
                         userButtonPopoverCard: "glassmorphism", // Apply glassmorphism to the popover card
                         userButtonTrigger: {
-                          // Force dimensions and visibility
-                          display: 'block', // Or 'inline-block'
-                          width: '30px',    // Explicit width
-                          height: '30px',   // Explicit height
-                          backgroundColor: 'magenta', // TEMPORARY: New obvious diagnostic color
+                          // Force dimensions and visibility with !important
+                          display: 'block !important',
+                          width: '30px !important',
+                          height: '30px !important',
+                          backgroundColor: 'magenta !important', // TEMPORARY: New obvious diagnostic color
 
-                          // Remove color/fill properties for this specific test
-                          // fill: null, // Ensuring no fill is applied (commenting out is equivalent for this DSL)
-                          // color: null, // Ensuring no CSS color is applied (commenting out is equivalent for this DSL)
+                          // color and fill are intentionally omitted for this test
                         }
                       },
                       variables: {
