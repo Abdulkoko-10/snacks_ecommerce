@@ -253,6 +253,17 @@ const Navbar = () => {
     }
   };
 
+  const userButtonInDropdownAppearance = {
+    ...clerkAppearance, // Inherit all variables and existing element styles
+    elements: {
+      ...(clerkAppearance.elements || {}), // Inherit other element styles
+      userButtonPopoverCard: {
+        ...((clerkAppearance.elements && clerkAppearance.elements.userButtonPopoverCard) || {}), // Inherit existing styles for popover card
+        pointerEvents: "initial", // Apply the fix
+      },
+    },
+  };
+
   return (
     <div className={`navbar-container glassmorphism ${isScrolled ? 'scrolled-navbar' : ''}`}>
       <p className="logo">
@@ -312,7 +323,8 @@ const Navbar = () => {
                 }}>
                   <UserButton
                     afterSignOutUrl="/"
-                    userProfileProps={{
+                    appearance={userButtonInDropdownAppearance}
+                    userProfileProps={{ // This should remain to theme the full user profile page
                       appearance: clerkAppearance,
                     }}
                   />
