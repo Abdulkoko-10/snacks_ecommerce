@@ -253,16 +253,17 @@ const Navbar = () => {
     }
   };
 
-  const userButtonInDropdownAppearance = {
-    ...clerkAppearance, // Inherit all variables and existing element styles
-    elements: {
-      ...(clerkAppearance.elements || {}), // Inherit other element styles
-      userButtonPopoverCard: {
-        ...((clerkAppearance.elements && clerkAppearance.elements.userButtonPopoverCard) || {}), // Inherit existing styles for popover card
-        pointerEvents: "initial", // Apply the fix
-      },
-    },
-  };
+  // userButtonInDropdownAppearance is no longer needed as the minimal appearance is applied directly.
+  // const userButtonInDropdownAppearance = {
+  //   ...clerkAppearance, // Inherit all variables and existing element styles
+  //   elements: {
+  //     ...(clerkAppearance.elements || {}), // Inherit other element styles
+  //     userButtonPopoverCard: {
+  //       ...((clerkAppearance.elements && clerkAppearance.elements.userButtonPopoverCard) || {}), // Inherit existing styles for popover card
+  //       pointerEvents: "initial", // Apply the fix
+  //     },
+  //   },
+  // };
 
   return (
     <div className={`navbar-container glassmorphism ${isScrolled ? 'scrolled-navbar' : ''}`}>
@@ -323,8 +324,10 @@ const Navbar = () => {
                 }}>
                   <UserButton
                     afterSignOutUrl="/"
-                    appearance={userButtonInDropdownAppearance}
-                    userProfileProps={{ // This should remain to theme the full user profile page
+                    appearance={{
+                      elements: { userButtonPopoverCard: { pointerEvents: "initial" } },
+                    }}
+                    userProfileProps={{ // This themes the modal that the button opens
                       appearance: clerkAppearance,
                     }}
                   />
