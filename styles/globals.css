@@ -972,6 +972,184 @@ span.text-red {
   margin-top: 30px; 
 }
 
+/* === Clerk Component Theme Overrides === */
+
+/* Ensure Clerk components use the application's box-sizing model */
+.cl-rootBox *,
+.cl-rootBox *::before,
+.cl-rootBox *::after {
+  box-sizing: border-box;
+}
+
+/* Modal Backdrop/Overlay - if needed beyond what Clerk provides by default */
+/* Clerk's newer versions handle backdrop fairly well with `appearance` prop,
+   but if a global override is desired for opacity or background: */
+/*
+.cl-modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.5); // Example
+}
+*/
+
+/* Main modal and card elements - reinforcing glassmorphism if appearance prop is not enough or for elements not covered */
+/* The `appearance.elements.modalContent` and `appearance.elements.card` should handle this,
+   but these are here as a fallback or for additional specificity if Clerk's internal structure is complex. */
+.cl-modalContent,
+.cl-card,
+.cl-userButtonPopoverCard,
+.cl-userProfilePage { /* For the user profile modal page */
+  background: var(--glass-background-color) !important; /* Important to override Clerk's inline styles if necessary */
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important; /* For Safari */
+  border-radius: var(--card-border-radius, 10px) !important; /* Use app variable or fallback */
+  border: 1px solid var(--glass-border-color) !important;
+  box-shadow: 0 8px 32px 0 var(--glass-box-shadow-color) !important;
+}
+
+/* Specific styling for the card inside the modal, if it needs to differ or be reinforced */
+.cl-modalContent .cl-card {
+    /* Usually, the styles above are sufficient. If .cl-card needs specific overrides when inside .cl-modalContent: */
+    /* background: transparent !important; /* Example: if modalContent provides the glass effect */
+    /* box-shadow: none !important; */
+}
+
+/* User Button Popover - already targeted by appearance, but can be reinforced */
+.cl-userButtonPopoverCard .cl-userButtonPopoverMain {
+    /* If the inner part of the popover needs specific styling: */
+    /* background: transparent !important; */ /* Example if popoverCard has the glass effect */
+}
+
+/* Headings and Text */
+.cl-headerTitle,
+.cl-headerSubtitle,
+.cl-formFieldLabel,
+.cl-identityPreviewText,
+.cl-footerActionText,
+.cl-socialButtonsBlockButtonText, /* Text inside social buttons */
+.cl-dividerText, /* e.g. "or" in sign-in form */
+.cl-formHeaderTitle, /* User Profile section titles */
+.cl-profileSectionPrimaryButton__userProfile { /* Text for "Edit profile" etc. */
+  color: var(--text-color) !important;
+}
+
+/* Input Fields */
+.cl-formFieldInput {
+  background-color: var(--secondary-background-color) !important;
+  color: var(--text-color) !important;
+  border: 1px solid var(--glass-border-color) !important;
+  border-radius: var(--border-radius, 0.5rem) !important; /* Use app variable or fallback */
+}
+
+.cl-formFieldInput:focus {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 2px var(--primary-color-transparent, rgba(240, 45, 52, 0.3)) !important; /* Assuming --primary-color-transparent exists or using fallback */
+}
+
+/* Buttons */
+/* Primary Buttons (e.g., "Continue", "Sign In") */
+.cl-formButtonPrimary,
+.cl-userProfilePage .cl-profileSectionPrimaryButton__userProfile, /* e.g. "Edit Profile" */
+button.cl-button.cl-button__primary { /* More specific selector for primary buttons */
+  background-color: var(--primary-color) !important;
+  color: var(--text-on-primary-color) !important;
+  border-radius: var(--border-radius, 0.5rem) !important;
+  border: 1px solid transparent !important;
+}
+.cl-formButtonPrimary:hover,
+.cl-userProfilePage .cl-profileSectionPrimaryButton__userProfile:hover,
+button.cl-button.cl-button__primary:hover {
+  background-color: var(--primary-button-hover-bg-color, var(--secondary-color)) !important; /* Add a hover variable or use secondary */
+  color: var(--text-on-primary-color) !important; /* Ensure text color remains consistent or update if needed */
+}
+
+/* Secondary/Link-like Buttons (e.g., "Forgot Password?", "Sign up") */
+.cl-footerActionLink,
+.cl-alternativeMethodsBlockButton, /* "Sign in with Google" etc. if not using socialButtonsBlockButton */
+.cl-formResendCodeLink, /* Resend code link */
+.cl-formResetPasswordLink { /* Reset password link */
+  color: var(--primary-color) !important;
+}
+.cl-footerActionLink:hover,
+.cl-alternativeMethodsBlockButton:hover,
+.cl-formResendCodeLink:hover,
+.cl-formResetPasswordLink:hover {
+  color: var(--secondary-color) !important; /* Or a link hover color variable */
+  text-decoration: underline !important;
+}
+
+/* Social Buttons (Google, Facebook, etc.) */
+.cl-socialButtonsBlockButton {
+  background-color: var(--secondary-background-color) !important;
+  border: 1px solid var(--glass-border-color) !important;
+  color: var(--text-color) !important; /* Text color for "Sign in with X" */
+  border-radius: var(--border-radius, 0.5rem) !important;
+}
+.cl-socialButtonsBlockButton:hover {
+  background-color: var(--glass-border-color) !important; /* Subtle hover effect */
+}
+.cl-socialButtonsProviderIcon { /* The actual Google/FB icon */
+  filter: none !important; /* Remove Clerk's default grayscale/color filters if they clash */
+}
+
+
+/* Links within Clerk components, if not covered above */
+.cl-rootBox a, .cl-rootBox a:visited {
+  color: var(--primary-color) !important;
+}
+.cl-rootBox a:hover {
+  color: var(--secondary-color) !important; /* Or a link hover color variable */
+}
+
+/* User Profile specific elements */
+.cl-userProfilePage .cl-navbar { /* Navbar within User Profile Modal */
+  background-color: transparent !important; /* Make it blend with the glassmorphism */
+}
+.cl-userProfilePage .cl-navbarButton { /* Navigation buttons in User Profile (Profile, Security) */
+  color: var(--text-color) !important;
+  border-radius: var(--border-radius, 0.5rem) !important;
+}
+.cl-userProfilePage .cl-navbarButton__active {
+  background-color: var(--primary-color) !important;
+  color: var(--text-on-primary-color) !important;
+}
+.cl-userProfilePage .cl-badge { /* Badges like "Primary" for email */
+  background-color: var(--secondary-color) !important;
+  color: var(--text-on-secondary-color, #fff) !important; /* Assuming --text-on-secondary-color or fallback */
+}
+.cl-userProfilePage .cl-internalHeader { /* Section headers like "Password", "Email addresses" */
+    /* These might be covered by cl-headerTitle already, but for more specificity: */
+    color: var(--text-color) !important;
+    /* border-bottom: 1px solid var(--glass-border-color) !important; */ /* Optional: if a separator is desired */
+}
+
+/* Remove default Clerk focus ring if custom one is applied, or style it */
+.cl-formFieldInput:focus,
+.cl-button:focus,
+.cl-formButtonPrimary:focus,
+.cl-socialButtonsBlockButton:focus,
+.cl-footerActionLink:focus {
+  /* Default Clerk focus ring might be an outline. If custom box-shadow is used on focus, disable outline: */
+  /* outline: none !important; */
+}
+
+/* Helper variable if not defined in :root, for primary color with alpha */
+:root {
+  /* Define if not already present, for focus box-shadow */
+  --primary-color-transparent: rgba(240, 45, 52, 0.3);
+  /* Define if not already present, for button hover */
+  --primary-button-hover-bg-color: var(--secondary-color);
+  /* Define if not already present, for text on secondary color backgrounds */
+  --text-on-secondary-color: #ffffff;
+}
+
+/* If RGB mode dynamically changes --primary-color, this will be picked up.
+   If specific RGB versions of these variables are needed, they'd have to be defined
+   and potentially swapped via JS or more complex CSS.
+   For now, this assumes --primary-color, --text-color etc. are correctly
+   reflecting the current theme (light/dark/RGB via body classes).
+*/
+
+/* === End Clerk Component Theme Overrides === */
+
 /* Styles for cart sidebar on mobile devices */
 @media screen and (max-width: 600px) {
   .cart-wrapper {

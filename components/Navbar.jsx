@@ -210,6 +210,43 @@ const Navbar = () => {
     themeIconTitle = "Activate Light Mode";
   }
 
+  const clerkAppearance = {
+    variables: {
+      colorPrimary: 'var(--primary-color)',
+      colorText: 'var(--text-color)',
+      colorBackground: 'var(--secondary-background-color)',
+      colorInputBackground: 'var(--secondary-background-color)',
+      colorInputText: 'var(--text-color)',
+      borderRadius: 'var(--border-radius, 0.5rem)', // Use fallback if --border-radius is not defined
+    },
+    elements: {
+      modalContent: {
+        background: 'var(--glass-background-color)',
+        backdropFilter: 'blur(10px)',
+        webkitBackdropFilter: 'blur(10px)', // For Safari
+        borderRadius: 'var(--card-border-radius, 10px)', // Use fallback
+        border: '1px solid var(--glass-border-color)',
+        boxShadow: '0 8px 32px 0 var(--glass-box-shadow-color)',
+      },
+      card: {
+        background: 'var(--glass-background-color)',
+        backdropFilter: 'blur(10px)',
+        webkitBackdropFilter: 'blur(10px)',
+        borderRadius: 'var(--card-border-radius, 10px)',
+        border: '1px solid var(--glass-border-color)',
+        boxShadow: 'none',
+      },
+      userButtonPopoverCard: {
+        background: 'var(--glass-background-color)',
+        backdropFilter: 'blur(10px)',
+        webkitBackdropFilter: 'blur(10px)',
+        borderRadius: 'var(--card-border-radius, 10px)',
+        border: '1px solid var(--glass-border-color)',
+        boxShadow: '0 8px 32px 0 var(--glass-box-shadow-color)',
+      },
+    }
+  };
+
   return (
     <div className={`navbar-container glassmorphism ${isScrolled ? 'scrolled-navbar' : ''}`}>
       <p className="logo">
@@ -261,14 +298,15 @@ const Navbar = () => {
               <li onClick={() => selectTheme('dark')}>Dark Theme</li>
               <li onClick={() => selectTheme('rgb')}>RGB Theme</li>
               <SignedIn>
-                <li>
-                  <UserButton afterSignOutUrl="/" />
+                <li onClick={(e) => e.stopPropagation()}>
+                  <UserButton afterSignOutUrl="/" appearance={clerkAppearance} />
                 </li>
               </SignedIn>
               <SignedOut>
                 <li>
                   <SignInButton
                     mode="modal"
+                    appearance={clerkAppearance}
                   >
                     {/* This span helps if SignInButton doesn't take full width or needs text styling like other li items */}
                     <span style={{ display: 'block', width: '100%', cursor: 'pointer' }}>
