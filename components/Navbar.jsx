@@ -299,7 +299,8 @@ const Navbar = () => {
               <li onClick={() => selectTheme('rgb')}>RGB Theme</li>
               <SignedIn>
                 <li onClick={(e) => e.stopPropagation()}>
-                  <UserButton afterSignOutUrl="/" appearance={clerkAppearance} />
+                  {/*<UserButton afterSignOutUrl="/" appearance={clerkAppearance} />*/}
+                  <UserButton afterSignOutUrl="/" />
                 </li>
               </SignedIn>
               <SignedOut>
