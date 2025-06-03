@@ -310,7 +310,12 @@ const Navbar = () => {
                   e.stopPropagation();
                   // console.log('UserButton LI clicked, propagation stopped.');
                 }}>
-                  <UserButton afterSignOutUrl="/" appearance={clerkAppearance} />
+                  <UserButton
+                    afterSignOutUrl="/"
+                    userProfileProps={{
+                      appearance: clerkAppearance,
+                    }}
+                  />
                 </li>
               </SignedIn>
               <SignedOut>
