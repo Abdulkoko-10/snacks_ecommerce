@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { AiOutlineShopping } from 'react-icons/ai';
 import { FiSun, FiMoon, FiDroplet, FiMoreHorizontal } from 'react-icons/fi'; // Import Feather icons
-import { UserButton, SignInButton, SignedIn, SignedOut } from '@clerk/nextjs';
+import { UserButton, SignInButton, SignedIn, SignedOut, useUser, useAuth } from '@clerk/nextjs';
 
 import { Cart } from './';
 import { useStateContext } from '../context/StateContext';
@@ -57,6 +57,12 @@ const Navbar = () => {
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const themeMenuRef = useRef(null); // For detecting clicks outside
   const [isScrolled, setIsScrolled] = useState(false);
+
+  // Clerk state logging
+  const { isSignedIn, userId } = useAuth();
+  const { user } = useUser();
+  // console.log('[Navbar Render] Clerk Auth State: isSignedIn=', isSignedIn, 'userId=', userId);
+  // console.log('[Navbar Render] Clerk User Object:', user);
 
   const applyRgbTheme = useCallback((selectedRgbColor) => {
     const mainContrastColor = calculateContrastColor(selectedRgbColor);
@@ -297,13 +303,18 @@ const Navbar = () => {
               <li onClick={() => selectTheme('light')}>Light Theme</li>
               <li onClick={() => selectTheme('dark')}>Dark Theme</li>
               <li onClick={() => selectTheme('rgb')}>RGB Theme</li>
+              {/* {console.log('[Navbar Dropdown] Attempting to render SignedIn/SignedOut block. isSignedIn=', isSignedIn)} */}
               <SignedIn>
-                <li onClick={(e) => e.stopPropagation()}>
-                  {/*<UserButton afterSignOutUrl="/" appearance={clerkAppearance} />*/}
-                  <UserButton afterSignOutUrl="/" />
+                {/* {console.log('[Navbar Dropdown] Rendering UserButton because user IS signed in.')} */}
+                <li onClick={(e) => {
+                  e.stopPropagation();
+                  // console.log('UserButton LI clicked, propagation stopped.');
+                }}>
+                  <UserButton afterSignOutUrl="/" appearance={clerkAppearance} />
                 </li>
               </SignedIn>
               <SignedOut>
+                {/* {console.log('[Navbar Dropdown] Rendering SignInButton because user is NOT signed in.')} */}
                 <li>
                   <SignInButton
                     mode="modal"
