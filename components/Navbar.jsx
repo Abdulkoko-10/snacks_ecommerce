@@ -270,7 +270,7 @@ const Navbar = () => {
               <li onClick={() => selectTheme('dark')}>Dark Theme</li>
               <li onClick={() => selectTheme('rgb')}>RGB Theme</li>
               <SignedIn>
-                <li className="user-button-li" onClick={() => setShowThemeMenu(false)}>
+                <li className="user-button-li">
                   <UserButton
                     afterSignOutUrl="/"
                   />
