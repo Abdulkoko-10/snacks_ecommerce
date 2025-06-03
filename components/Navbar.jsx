@@ -273,26 +273,6 @@ const Navbar = () => {
                 <li className="user-button-li">
                   <UserButton
                     afterSignOutUrl="/"
-                    appearance={{
-                      elements: {
-                        userButtonPopoverCard: "glassmorphism", // Apply glassmorphism to the popover card
-                        userButtonTrigger: {
-                          // Force dimensions and visibility with !important
-                          display: 'block !important',
-                          width: '30px !important',
-                          height: '30px !important',
-                          backgroundColor: 'magenta !important', // TEMPORARY: New obvious diagnostic color
-
-                          // color and fill are intentionally omitted for this test
-                        }
-                      },
-                      variables: {
-                        colorPrimary: "var(--primary-color)",
-                        colorText: "var(--text-color)",
-                        colorBackground: "var(--secondary-background-color)", // Popover card background
-                        // Potentially add colorTextSecondary, colorAlphaShade, etc. if needed for finer control
-                      },
-                    }}
                   />
                 </li>
               </SignedIn>
