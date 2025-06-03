@@ -322,7 +322,7 @@ const Navbar = () => {
                   e.stopPropagation();
                   // console.log('UserButton LI clicked, propagation stopped.');
                 }}>
-                  <UserButton
+                  {/*<UserButton
                     afterSignOutUrl="/"
                     appearance={{
                       elements: { userButtonPopoverCard: { pointerEvents: "initial" } },
@@ -330,6 +330,12 @@ const Navbar = () => {
                     userProfileProps={{ // This themes the modal that the button opens
                       appearance: clerkAppearance,
                     }}
+                  />*/}
+                  <UserButton
+                  appearance={{
+                    elements: { userButtonPopoverCard: { pointerEvents: "initial" } },
+                  }}
+                  afterSignOutUrl="/"
                   />
                 </li>
               </SignedIn>
