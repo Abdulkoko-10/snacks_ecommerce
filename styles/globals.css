@@ -1150,6 +1150,74 @@ button.cl-button.cl-button__primary:hover {
 
 /* === End Clerk Component Theme Overrides === */
 
+/* Clerk Modal Adjustments for Padding and Desktop Size */
+.cl-modalContent,
+.cl-userProfilePage { /* UserProfilePage can also be a modal */
+  /* Add padding at the top to account for the navbar */
+  padding-top: calc(var(--navbar-height) + 40px) !important; /* Increased from 20px to 40px for more spacing */
+  /* Ensure the modal can scroll if content overflows due to padding */
+  overflow-y: auto !important;
+  max-height: calc(100vh - 40px) !important; /* Prevent modal from being taller than viewport minus some margin */
+}
+
+/* On desktop, make the auth modals wider */
+@media screen and (min-width: 800px) {
+  .cl-modalContent { /* For sign-in/sign-up modals */
+    width: 500px !important;
+    max-width: calc(100vw - 40px) !important; /* Ensure some space from viewport edges */
+    /* Optional: Adjust max-height if top padding causes issues on very short desktop views */
+    max-height: calc(100vh - var(--navbar-height) - 60px) !important; /* navbar + top/bottom margin */
+  }
+
+  .cl-userProfilePage { /* For the user profile modal, which can be larger */
+    width: 650px !important;
+    max-width: calc(100vw - 40px) !important;
+    max-height: calc(100vh - var(--navbar-height) - 60px) !important; /* navbar + top/bottom margin */
+  }
+
+  /* If the card element itself needs adjustment when inside these wider modals */
+  .cl-modalContent .cl-card,
+  .cl-userProfilePage .cl-card {
+    width: 100% !important; /* Ensure card fills the new width of modalContent/userProfilePage */
+  }
+}
+
+/* Ensure the list item containing the UserButton in the dropdown is visible and styled consistently */
+.theme-dropdown-menu li:has(> div[id^="clerk-user-button-"]) {
+  display: list-item !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  height: auto !important;
+  width: auto !important;
+  padding: 0 !important; /* Reset padding, UserButton itself might have internal padding preference or use its container for clickable area */
+}
+
+/* Ensure the UserButton's direct wrapper inside the li is visible and takes up space */
+/* Clerk's UserButton usually creates a div wrapper. This targets that. */
+.theme-dropdown-menu li > div[id^="clerk-user-button-"] {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  width: 100% !important; /* Make sure the button wrapper takes full width of the li */
+  /* The UserButton component itself should handle its internal padding and presentation.
+     The goal here is to make sure its container li and its immediate wrapper are visible. */
+}
+
+/* Override for Clerk's user button specific styling if it's setting its own padding that misaligns with other items */
+/* This is speculative, but UserButtons sometimes have their own opinionated styling. */
+.theme-dropdown-menu li > div[id^="clerk-user-button-"] .cl-userButtonBox {
+  padding: 10px 20px !important; /* Match other li item padding */
+  display: block !important; /* Ensure it behaves like other list items */
+  width: 100% !important;
+  box-sizing: border-box !important; /* Ensure padding is included in width */
+}
+.theme-dropdown-menu li > div[id^="clerk-user-button-"] .cl-userButtonTrigger {
+    width: 100% !important; /* Make the trigger element (avatar and name) take full width */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important; /* Align content to the start like other text items */
+}
+
 /* Styles for cart sidebar on mobile devices */
 @media screen and (max-width: 600px) {
   .cart-wrapper {
