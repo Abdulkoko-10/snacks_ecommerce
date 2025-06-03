@@ -277,12 +277,18 @@ const Navbar = () => {
                       elements: {
                         userButtonPopoverCard: "glassmorphism", // Apply glassmorphism to the popover card
                         userButtonTrigger: {
-                          // Attempt to set a color for the icon, assuming it uses currentColor or similar
-                          color: "var(--secondary-color)",
-                          // Ensure it has some size, though Clerk usually handles this.
-                          // These are examples; might need adjustment or might not be necessary if color fixes it.
-                          // width: "32px",
-                          // height: "32px",
+                          // Experiment 1: Try to set the SVG fill color
+                          fill: 'var(--secondary-color)',
+
+                          // Experiment 2: Add a temporary, highly visible background
+                          // to see if the trigger element itself is taking up space.
+                          backgroundColor: 'lime', // TEMPORARY FOR DEBUGGING
+
+                          // For good measure, ensure some basic display properties if needed,
+                          // though Clerk's defaults should usually handle this.
+                          // display: 'inline-block', // Or 'block'
+                          // width: '24px', // Example explicit size
+                          // height: '24px', // Example explicit size
                         }
                       },
                       variables: {
