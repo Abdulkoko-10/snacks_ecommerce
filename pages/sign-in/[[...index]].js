@@ -32,11 +32,14 @@ const SignInPage = () => {
             rootBox: "mx-auto", // Center the component
           },
           variables: {
-            colorPrimary: "var(--clr-primary)",
-            colorText: "var(--clr-text-primary)",
-            colorBackground: "var(--clr-background)",
-            colorInputBackground: "var(--clr-input-background)",
-            colorInputText: "var(--clr-input-text)",
+            colorPrimary: "var(--primary-color)",
+            colorText: "var(--text-color)",
+            colorBackground: "var(--primary-background-color)", // Background of the card/modal
+            colorInputBackground: "var(--secondary-background-color)", // Background for input fields
+            colorInputText: "var(--text-color)", // Text within input fields
+            // colorShimmer: uses primaryColor unless specified.
+            // colorDanger: typically red, can be var(--primary-color) if it's red, or a specific error color.
+            // colorSuccess: typically green, can be var(--success-message-color) or similar.
           },
         }}
       />

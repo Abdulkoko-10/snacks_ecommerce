@@ -92,8 +92,12 @@ const Navbar = () => {
     // Other RGB variables like glassmorphism or product card shadows can also be updated here
     // if more granular control is needed beyond their CSS defaults (which are based on light theme).
     // For example:
-    // document.documentElement.style.setProperty('--glass-background-color-rgb', hexToRgba(selectedRgbColor, 0.25)); // Requires hexToRgba
-    // document.documentElement.style.setProperty('--glass-border-color-rgb', hexToRgba(mainContrastColor, 0.18));
+    document.documentElement.style.setProperty('--glass-background-color-rgb', hexToRgba(selectedRgbColor, 0.25));
+    document.documentElement.style.setProperty('--glass-border-color-rgb', hexToRgba(mainContrastColor, 0.18));
+    // For the box shadow, let's use a generic dark shadow for RGB mode, or it could be derived too.
+    // Using a slightly less intense version of the dark mode shadow for now.
+    document.documentElement.style.setProperty('--glass-box-shadow-color-rgb', 'rgba(0, 0, 0, 0.3)');
+
 
     // Set the scrolled navbar background for RGB mode, considering mobile viewport
     const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 800px)').matches;
@@ -266,7 +270,7 @@ const Navbar = () => {
               <li onClick={() => selectTheme('dark')}>Dark Theme</li>
               <li onClick={() => selectTheme('rgb')}>RGB Theme</li>
               <SignedIn>
-                <li>
+                <li className="user-button-li">
                   <UserButton
                     afterSignOutUrl="/"
                     appearance={{
@@ -274,16 +278,17 @@ const Navbar = () => {
                         userButtonPopoverCard: "glassmorphism", // Apply glassmorphism to the popover card
                       },
                       variables: {
-                        colorPrimary: "var(--clr-primary)",
-                        colorText: "var(--clr-text-primary)",
-                        colorBackground: "var(--clr-background)",
+                        colorPrimary: "var(--primary-color)",
+                        colorText: "var(--text-color)",
+                        colorBackground: "var(--secondary-background-color)", // Popover card background
+                        // Potentially add colorTextSecondary, colorAlphaShade, etc. if needed for finer control
                       },
                     }}
                   />
                 </li>
               </SignedIn>
               <SignedOut>
-                <li>
+                <li onClick={() => setShowThemeMenu(false)}>
                   <SignInButton
                     mode="modal"
                   >
