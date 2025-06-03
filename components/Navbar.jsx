@@ -273,20 +273,6 @@ const Navbar = () => {
                 <li className="user-button-li" onClick={() => setShowThemeMenu(false)}>
                   <UserButton
                     afterSignOutUrl="/"
-                    appearance={{
-                      elements: {
-                        // Apply glassmorphism ONLY to the popover card
-                        userButtonPopoverCard: 'glassmorphism',
-
-                        // DO NOT add userButtonTrigger here for now
-                      },
-                      variables: {
-                        // Theme variables for the popover content
-                        colorPrimary: 'var(--primary-color)',
-                        colorText: 'var(--text-color)',
-                        colorBackground: 'var(--secondary-background-color)', // This themes the popover's base background
-                      }
-                    }}
                   />
                 </li>
               </SignedIn>
