@@ -7,7 +7,7 @@ import { dark } from "@clerk/themes"; // Import a base theme if you want to use 
 
 export default function App({ Component, pageProps }) {
   const clerkAppearance = {
-    baseTheme: undefined, // Can be `dark` or light (default) or undefined to use system preference
+    baseTheme: dark, // Can be `dark` or light (default) or undefined to use system preference
     variables: {
       // General
       colorPrimary: "var(--primary-color)",
@@ -124,7 +124,7 @@ export default function App({ Component, pageProps }) {
   return (
     <ClerkProvider
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-      // appearance={clerkAppearance}
+      appearance={clerkAppearance}
     >
       <StateContext>
         <Layout>

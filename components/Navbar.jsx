@@ -261,12 +261,12 @@ const Navbar = () => {
               <li onClick={() => selectTheme('dark')}>Dark Theme</li>
               <li onClick={() => selectTheme('rgb')}>RGB Theme</li>
               <SignedIn>
-                <li>
+                <li onClick={(e) => e.stopPropagation()}>
                   <UserButton afterSignOutUrl="/" />
                 </li>
               </SignedIn>
               <SignedOut>
-                <li>
+                <li onClick={(e) => e.stopPropagation()}>
                   <SignInButton
                     mode="modal"
                   >
