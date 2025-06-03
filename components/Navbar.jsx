@@ -145,6 +145,11 @@ const Navbar = () => {
 
     // Handle clicks outside the theme menu to close it
     const handleClickOutside = (event) => {
+      // If the click is on the UserButton or its popover, don't close the theme menu.
+      // Clerk components often have root elements with classes like 'cl-...'
+      if (event.target.closest && event.target.closest('[class*="cl-"]')) {
+        return;
+      }
       if (themeMenuRef.current && !themeMenuRef.current.contains(event.target)) {
         setShowThemeMenu(false);
       }
@@ -262,7 +267,19 @@ const Navbar = () => {
               <li onClick={() => selectTheme('rgb')}>RGB Theme</li>
               <SignedIn>
                 <li>
-                  <UserButton afterSignOutUrl="/" />
+                  <UserButton
+                    afterSignOutUrl="/"
+                    appearance={{
+                      elements: {
+                        userButtonPopoverCard: "glassmorphism", // Apply glassmorphism to the popover card
+                      },
+                      variables: {
+                        colorPrimary: "var(--clr-primary)",
+                        colorText: "var(--clr-text-primary)",
+                        colorBackground: "var(--clr-background)",
+                      },
+                    }}
+                  />
                 </li>
               </SignedIn>
               <SignedOut>

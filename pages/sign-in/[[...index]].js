@@ -13,7 +13,33 @@ const SignInPage = () => {
 
   return (
     <div style={pageStyle}>
-      <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" />
+      <SignIn
+        path="/sign-in"
+        routing="path"
+        signUpUrl="/sign-up"
+        appearance={{
+          elements: {
+            formButtonPrimary: {
+              backgroundColor: "var(--clr-btn-primary-bg)",
+              color: "var(--clr-btn-primary-text)",
+              fontSize: "0.875rem", // text-sm
+              textTransform: "normal-case",
+              '&:hover': {
+                backgroundColor: "var(--clr-btn-primary-hover-bg)",
+              },
+            },
+            card: "glassmorphism", // Apply glassmorphism to the card
+            rootBox: "mx-auto", // Center the component
+          },
+          variables: {
+            colorPrimary: "var(--clr-primary)",
+            colorText: "var(--clr-text-primary)",
+            colorBackground: "var(--clr-background)",
+            colorInputBackground: "var(--clr-input-background)",
+            colorInputText: "var(--clr-input-text)",
+          },
+        }}
+      />
     </div>
   );
 };
