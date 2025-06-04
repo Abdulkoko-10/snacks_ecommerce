@@ -13,7 +13,36 @@ const SignUpPage = () => {
 
   return (
     <div style={pageStyle}>
-      <SignUp path="/sign-up" routing="path" signInUrl="/sign-in" />
+      <SignUp
+        path="/sign-up"
+        routing="path"
+        signInUrl="/sign-in"
+        appearance={{
+          elements: {
+            formButtonPrimary: {
+              backgroundColor: "var(--clr-btn-primary-bg)",
+              color: "var(--clr-btn-primary-text)",
+              fontSize: "0.875rem", // text-sm
+              textTransform: "normal-case",
+              '&:hover': {
+                backgroundColor: "var(--clr-btn-primary-hover-bg)",
+              },
+            },
+            card: "glassmorphism", // Apply glassmorphism to the card
+            rootBox: "mx-auto", // Center the component (if applicable, though centering is mainly by pageStyle)
+          },
+          variables: {
+            colorPrimary: "var(--primary-color)",
+            colorText: "var(--text-color)",
+            colorBackground: "var(--primary-background-color)", // Background of the card/modal
+            colorInputBackground: "var(--secondary-background-color)", // Background for input fields
+            colorInputText: "var(--text-color)", // Text within input fields
+            // Potentially map other variables like colorDanger, colorSuccess if defined in globals.css
+            // colorDanger: "var(--some-danger-color)",
+            // colorSuccess: "var(--some-success-color)",
+          },
+        }}
+      />
     </div>
   );
 };
