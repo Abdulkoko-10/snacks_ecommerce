@@ -17,6 +17,35 @@ const SignUpPage = () => {
         path="/sign-up"
         routing="path"
         signInUrl="/sign-in"
+        appearance={{
+          elements: {
+            formButtonPrimary: {
+              backgroundColor: "var(--clr-btn-primary-bg)",
+              color: "var(--clr-btn-primary-text)",
+              fontSize: "0.875rem",
+              textTransform: "normal-case",
+              '&:hover': {
+                backgroundColor: "var(--clr-btn-primary-hover-bg)",
+              },
+            },
+            card: {
+              background: 'var(--glass-background-color) !important',
+              backdropFilter: 'blur(10px) !important',
+              WebkitBackdropFilter: 'blur(10px) !important',
+              borderRadius: '10px !important',
+              border: '1px solid var(--glass-border-color) !important',
+              boxShadow: '0 8px 32px 0 var(--glass-box-shadow-color) !important',
+              padding: '30px !important'
+            },
+            rootBox: "mx-auto",
+          },
+          variables: {
+            colorPrimary: "var(--primary-color)",
+            colorText: "var(--text-color)",
+            colorInputBackground: "var(--secondary-background-color)",
+            colorInputText: "var(--text-color)",
+          },
+        }}
       />
     </div>
   );
