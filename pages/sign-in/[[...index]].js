@@ -1,4 +1,5 @@
 import { SignIn } from "@clerk/nextjs";
+import { clerkAppearance } from '../../lib/clerkAppearance';
 
 const SignInPage = () => {
   // --navbar-height is defined in globals.css, default to 70px if not found
@@ -17,6 +18,7 @@ const SignInPage = () => {
         path="/sign-in"
         routing="path"
         signUpUrl="/sign-up"
+        appearance={clerkAppearance}
       />
     </div>
   );
