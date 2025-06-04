@@ -28,6 +28,15 @@ const SignUpPage = () => {
                 backgroundColor: "var(--clr-btn-primary-hover-bg)",
               },
             },
+            card: {
+              background: 'var(--glass-background-color)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)', // For Safari compatibility
+              borderRadius: '10px', // This might need adjustment based on Clerk's actual card structure/variables
+              border: '1px solid var(--glass-border-color)',
+              boxShadow: '0 8px 32px 0 var(--glass-box-shadow-color)',
+              padding: '30px' // Initial padding, may need review
+            },
             rootBox: "mx-auto", // Center the component (if applicable, though centering is mainly by pageStyle)
           },
           variables: {

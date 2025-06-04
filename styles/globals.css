@@ -1381,45 +1381,6 @@ span.text-red {
   }
 }
 
-/* Apply glassmorphism directly to Clerk's card component */
-.cl-card {
-  background: var(--glass-background-color) !important; /* Added !important as a precaution */
-  backdrop-filter: blur(10px) !important;
-  -webkit-backdrop-filter: blur(10px) !important;
-  /* Use a Clerk variable for border-radius if known, otherwise a default.
-     Clerk might have its own border-radius, so this might need to be
-     removed or adjusted if it causes issues. For now, let's try with a common value. */
-  border-radius: 10px !important;
-  border: 1px solid var(--glass-border-color) !important;
-  box-shadow: 0 8px 32px 0 var(--glass-box-shadow-color) !important;
-
-  /* Ensure other potential conflicting Clerk styles are overridden */
-  /* For example, if Clerk sets a specific background image or gradient */
-  background-image: none !important;
-}
-
-/* It's also possible Clerk uses a different class or a more specific one
-   for the content box that should be glassy. These are other candidates
-   if .cl-card alone isn't sufficient or is too broad.
-   Consider these if .cl-card doesn't work: */
-/*
-.cl-modalContent,
-.cl-signIn-root .cl-card, // More specific for sign-in
-.cl-signUp-root .cl-card { // More specific for sign-up
-  background: var(--glass-background-color) !important;
-  backdrop-filter: blur(10px) !important;
-  -webkit-backdrop-filter: blur(10px) !important;
-  border-radius: 10px !important;
-  border: 1px solid var(--glass-border-color) !important;
-  box-shadow: 0 8px 32px 0 var(--glass-box-shadow-color) !important;
-  background-image: none !important;
-}
-*/
-
-/* The text color, input backgrounds etc., within the card should still be
-   controlled by appearance.variables in the JS files.
-   This CSS focuses on making the card container itself glassy. */
-
 .glassmorphism {
   background: var(--glass-background-color);
   backdrop-filter: blur(10px);
