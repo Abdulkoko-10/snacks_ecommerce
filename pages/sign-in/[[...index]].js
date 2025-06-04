@@ -34,7 +34,6 @@ const SignInPage = () => {
           variables: {
             colorPrimary: "var(--primary-color)",
             colorText: "var(--text-color)",
-            colorBackground: "var(--primary-background-color)", // Background of the card/modal
             colorInputBackground: "var(--secondary-background-color)", // Background for input fields
             colorInputText: "var(--text-color)", // Text within input fields
             // colorShimmer: uses primaryColor unless specified.
