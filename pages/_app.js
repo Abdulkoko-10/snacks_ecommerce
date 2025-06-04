@@ -30,15 +30,17 @@ export default function App({ Component, pageProps }) {
     },
     elements: {
       card: { // This is the main container for the sign-in/up form
-        backgroundColor: "var(--glass-background-color)",
+        backgroundColor: "var(--glass-background-color)", // Should be translucent
+        backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
         borderColor: "var(--glass-border-color)",
         boxShadow: "0 8px 32px 0 var(--glass-box-shadow-color)",
         borderRadius: "10px", // Consistent with .glassmorphism class
+        // Consider if padding is needed here or if Clerk handles it internally
       },
       modalContent: { // modalContent often wraps the card
         backgroundColor: "transparent", // Make it transparent if card is already glassmorphism
-        // borderColor: "var(--glass-border-color)", // card will handle its own border
-        // boxShadow: "none", // card will handle its own shadow
+        boxShadow: "none", // Let the card handle shadow
       },
       modalBackdrop: "rgba(0, 0, 0, 0.5)", // Standard semi-transparent dark backdrop
       formButtonPrimary: {
@@ -124,7 +126,7 @@ export default function App({ Component, pageProps }) {
   return (
     <ClerkProvider
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-      // appearance={clerkAppearance}
+      appearance={clerkAppearance}
     >
       <StateContext>
         <Layout>

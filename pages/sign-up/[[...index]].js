@@ -17,38 +17,6 @@ const SignUpPage = () => {
         path="/sign-up"
         routing="path"
         signInUrl="/sign-in"
-        appearance={{
-          elements: {
-            formButtonPrimary: {
-              backgroundColor: "var(--clr-btn-primary-bg)",
-              color: "var(--clr-btn-primary-text)",
-              fontSize: "0.875rem", // text-sm
-              textTransform: "normal-case",
-              '&:hover': {
-                backgroundColor: "var(--clr-btn-primary-hover-bg)",
-              },
-            },
-            card: {
-              background: 'var(--glass-background-color) !important',
-              backdropFilter: 'blur(10px) !important',
-              WebkitBackdropFilter: 'blur(10px) !important', // For Safari compatibility
-              borderRadius: '10px !important', // This might need adjustment based on Clerk's actual card structure/variables
-              border: '1px solid var(--glass-border-color) !important',
-              boxShadow: '0 8px 32px 0 var(--glass-box-shadow-color) !important',
-              padding: '30px !important' // Initial padding, may need review
-            },
-            rootBox: "mx-auto", // Center the component (if applicable, though centering is mainly by pageStyle)
-          },
-          variables: {
-            colorPrimary: "var(--primary-color)",
-            colorText: "var(--text-color)",
-            colorInputBackground: "var(--secondary-background-color)", // Background for input fields
-            colorInputText: "var(--text-color)", // Text within input fields
-            // Potentially map other variables like colorDanger, colorSuccess if defined in globals.css
-            // colorDanger: "var(--some-danger-color)",
-            // colorSuccess: "var(--some-success-color)",
-          },
-        }}
       />
     </div>
   );
