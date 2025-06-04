@@ -28,7 +28,6 @@ const SignUpPage = () => {
                 backgroundColor: "var(--clr-btn-primary-hover-bg)",
               },
             },
-            card: "glassmorphism", // Apply glassmorphism to the card
             rootBox: "mx-auto", // Center the component (if applicable, though centering is mainly by pageStyle)
           },
           variables: {
