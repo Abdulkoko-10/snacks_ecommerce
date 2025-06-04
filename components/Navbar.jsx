@@ -273,6 +273,29 @@ const Navbar = () => {
                 <li className="user-button-li">
                   <UserButton
                     afterSignOutUrl="/"
+  userProfileProps={{
+    appearance: {
+      elements: {
+        card: "glassmorphism", // Apply glassmorphism to the modal's main card
+        formButtonPrimary: {
+          backgroundColor: "var(--clr-btn-primary-bg)",
+          color: "var(--clr-btn-primary-text)",
+          fontSize: "0.875rem",
+          textTransform: "normal-case",
+          '&:hover': {
+            backgroundColor: "var(--clr-btn-primary-hover-bg)",
+          },
+        },
+      },
+      variables: {
+        colorPrimary: "var(--primary-color)",
+        colorText: "var(--text-color)",
+        colorBackground: "var(--primary-background-color)",
+        colorInputBackground: "var(--secondary-background-color)",
+        colorInputText: "var(--text-color)",
+      },
+    },
+  }}
                   />
                 </li>
               </SignedIn>
