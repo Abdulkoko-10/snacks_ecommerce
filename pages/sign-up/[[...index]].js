@@ -7,7 +7,7 @@ const SignUpPage = () => {
     justifyContent: 'center',
     alignItems: 'center',
     minHeight: 'calc(100vh - var(--navbar-height, 70px))', // Adjust 70px if your navbar height variable is different or not set
-    padding: '20px',
+    padding: '60px 20px 20px 20px',
     boxSizing: 'border-box', // Ensures padding doesn't add to height causing overflow with 100vh
   };
 
