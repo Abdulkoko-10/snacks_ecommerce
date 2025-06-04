@@ -8,56 +8,59 @@ import { dark, light } from '@clerk/themes'; // Import Clerk base themes
 import { clerkAppearance as customClerkAppearance } from '../lib/clerkAppearance'; // Our custom styles
 
 export default function App({ Component, pageProps }) {
-  const [clerkTheme, setClerkTheme] = useState(light); // Default to Clerk's light theme
+  // Initialize with null, so ClerkProvider isn't rendered with a potentially incorrect theme initially
+  const [effectiveAppearance, setEffectiveAppearance] = useState(null);
 
   useEffect(() => {
-    // Function to update Clerk theme based on document class or localStorage
-    const updateClerkTheme = () => {
+    const updateClerkAppearanceConfig = () => {
       let currentAppTheme = 'light'; // Default
+      // Ensure this code runs only on the client side
       if (typeof window !== 'undefined') {
         currentAppTheme = localStorage.getItem('themeMode') ||
                           (document.documentElement.classList.contains('dark-mode') ? 'dark' :
                            (document.documentElement.classList.contains('rgb-mode') ? 'rgb' : 'light'));
       }
 
-      if (currentAppTheme === 'dark') {
-        setClerkTheme(dark);
-      } else {
-        // For both 'light' and 'rgb' modes of our app, use Clerk's light base theme
-        setClerkTheme(light);
-      }
+      const baseThemeForClerk = currentAppTheme === 'dark' ? dark : light;
+
+      setEffectiveAppearance({
+        ...customClerkAppearance, // Our custom elements and variables
+        baseTheme: baseThemeForClerk,   // Dynamically set Clerk base theme
+      });
     };
 
-    updateClerkTheme(); // Set initial theme
+    updateClerkAppearanceConfig(); // Determine and set the appearance config
 
-    // Observe changes to documentElement's class attribute
-    // This is important if theme changes can happen after initial load without a page reload.
-    const observer = new MutationObserver(updateClerkTheme);
+    // Observer for class changes on documentElement (theme switches)
+    const observer = new MutationObserver(updateClerkAppearanceConfig);
     if (typeof window !== 'undefined') {
       observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     }
 
-    // Also listen for custom theme change events if Navbar dispatches any, or storage events
-    window.addEventListener('storage', updateClerkTheme); // If theme is changed in another tab
+    // Listener for storage events (theme changes in other tabs)
+    window.addEventListener('storage', updateClerkAppearanceConfig);
 
     return () => {
       if (typeof window !== 'undefined') {
         observer.disconnect();
       }
-      window.removeEventListener('storage', updateClerkTheme);
+      window.removeEventListener('storage', updateClerkAppearanceConfig);
     };
-  }, []);
+  }, []); // Empty dependency array means this effect runs once on mount and cleans up on unmount
 
-  // Merge Clerk base theme with our custom appearance settings
-  const mergedAppearance = {
-    ...customClerkAppearance, // Our custom elements and variables
-    baseTheme: clerkTheme,   // Dynamically set Clerk base theme
-  };
+  // If effectiveAppearance is not yet determined, return null or a loading indicator
+  // This prevents ClerkProvider from rendering with a default/potentially incorrect theme before client-side detection
+  if (!effectiveAppearance) {
+    // Render a minimal layout or loader if desired, instead of null
+    // For now, returning null to test the core logic.
+    // Consider a basic Layout shell if null causes issues with Next.js hydration.
+    return null;
+  }
 
   return (
     <ClerkProvider
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-      appearance={mergedAppearance} // Apply the merged appearance
+      appearance={effectiveAppearance} // Apply the determined appearance
     >
       <StateContext>
         <Layout>
