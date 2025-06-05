@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { AiOutlineShopping } from 'react-icons/ai';
 import { FiSun, FiMoon, FiDroplet, FiMoreHorizontal } from 'react-icons/fi'; // Import Feather icons
 import { UserButton, SignInButton, SignedIn, SignedOut } from '@clerk/nextjs';
+import { useTheme } from 'next-themes'; // Import useTheme
 
 import { Cart } from './';
 import { useStateContext } from '../context/StateContext';
@@ -51,7 +52,8 @@ const hexToRgba = (hex, alpha) => {
 
 const Navbar = () => {
   const { showCart, setShowCart, totalQuantities } = useStateContext();
-  const [themeMode, setThemeMode] = useState('light'); // 'light', 'dark', 'rgb'
+  const { theme, setTheme, resolvedTheme } = useTheme(); // Use next-themes hook
+  const [themeMode, setThemeMode] = useState('light'); // Navbar's internal state: 'light', 'dark', 'rgb'
   const [rgbColor, setRgbColor] = useState('#324d67'); // Default RGB color
   const [rgbInputColor, setRgbInputColor] = useState(rgbColor); // For the color picker input
   const [showThemeMenu, setShowThemeMenu] = useState(false);
@@ -120,32 +122,25 @@ const Navbar = () => {
     // Call handler once on mount to check initial scroll position
     handleScroll();
 
-    const savedThemeMode = localStorage.getItem('themeMode');
+    // Simplified initial theme setup using next-themes and localStorage for RGB
+    const savedAppThemeMode = localStorage.getItem('appThemeMode'); // Use distinct key
     const savedRgbColor = localStorage.getItem('rgbColor');
-    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-    document.documentElement.classList.remove('dark-mode', 'rgb-mode'); // Clear old classes
-
-    if (savedThemeMode === 'rgb' && savedRgbColor) {
-      setThemeMode('rgb');
-      setRgbColor(savedRgbColor);
-      setRgbInputColor(savedRgbColor);
-      document.documentElement.classList.add('rgb-mode');
-      applyRgbTheme(savedRgbColor);
-    } else if (savedThemeMode === 'dark') {
-      setThemeMode('dark');
-      document.documentElement.classList.add('dark-mode');
-    } else if (savedThemeMode === 'light') {
-      setThemeMode('light');
-      // No class needed for light mode by default, ensure others are removed
-    } else if (systemPrefersDark) {
-      setThemeMode('dark');
-      localStorage.setItem('themeMode', 'dark');
-      document.documentElement.classList.add('dark-mode');
-    } else {
-      setThemeMode('light'); // Default to light
-      localStorage.setItem('themeMode', 'light');
+    if (savedAppThemeMode === 'rgb' && savedRgbColor) {
+        setTheme('light'); // Tell next-themes to set base to light
+        document.documentElement.classList.add('rgb-mode');
+        applyRgbTheme(savedRgbColor);
+        setThemeMode('rgb'); // Navbar's internal state
+        setRgbColor(savedRgbColor);
+        setRgbInputColor(savedRgbColor);
+    } else if (savedAppThemeMode === 'dark') {
+        setTheme('dark');
+        setThemeMode('dark'); // Navbar's internal state
+    } else { // Covers 'light' and null/undefined from localStorage
+        setTheme('light'); // Default for next-themes
+        setThemeMode('light'); // Navbar's internal state
     }
+    // Note: localStorage.setItem for 'appThemeMode' is now handled in setAndStoreTheme
 
     // Handle clicks outside the theme menu to close it
     const handleClickOutside = (event) => {
@@ -164,23 +159,39 @@ const Navbar = () => {
       window.removeEventListener('scroll', handleScroll); // Cleanup scroll listener
     };
 
-  }, [applyRgbTheme]); // applyRgbTheme is a dependency, keep it if it's stable or memoized correctly
+  }, [applyRgbTheme, setTheme]); // Added setTheme to dependency array
 
-  const setAndStoreTheme = (newThemeMode, newRgbColor = rgbColor) => {
+  const setAndStoreTheme = (newNavThemeMode, newRgbColor = rgbColor) => {
+    // Update next-themes
+    if (newNavThemeMode === 'light') {
+      setTheme('light');
+    } else if (newNavThemeMode === 'dark') {
+      setTheme('dark');
+    } else if (newNavThemeMode === 'rgb') {
+      setTheme('light'); // Tell next-themes to go to light mode as base for RGB
+                          // Actual 'rgb-mode' class and styles will be applied below
+    }
+
+    // Update Navbar's internal state and apply specific RGB logic
+    localStorage.setItem('appThemeMode', newNavThemeMode); // Use a distinct key for app's specific mode
+    setThemeMode(newNavThemeMode); // Update React state for Navbar's UI
+
+    // Clear existing theme classes managed by Navbar manually for now
+    // next-themes will manage its own class ('dark' or 'light', not 'rgb-mode')
     document.documentElement.classList.remove('dark-mode', 'rgb-mode');
-    localStorage.setItem('themeMode', newThemeMode);
-    setThemeMode(newThemeMode);
 
-    if (newThemeMode === 'dark') {
-      document.documentElement.classList.add('dark-mode');
-    } else if (newThemeMode === 'rgb') {
+    if (newNavThemeMode === 'dark') {
+      // next-themes will add 'dark'. We ensure 'rgb-mode' is not present.
+      // document.documentElement.classList.add('dark-mode') // Handled by next-themes
+    } else if (newNavThemeMode === 'rgb') {
       document.documentElement.classList.add('rgb-mode');
       applyRgbTheme(newRgbColor);
-      setRgbColor(newRgbColor); // Ensure internal state is also up-to-date
-      setRgbInputColor(newRgbColor); // Sync input picker
+      setRgbColor(newRgbColor);
+      setRgbInputColor(newRgbColor);
       localStorage.setItem('rgbColor', newRgbColor);
+    } else { // 'light'
+      // next-themes will add 'light'. We ensure 'rgb-mode' and 'dark-mode' are not present.
     }
-    // For 'light' mode, no class is added beyond removing others.
   };
 
   const toggleTheme = () => {
