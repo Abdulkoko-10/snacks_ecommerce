@@ -12,10 +12,11 @@ export default function ClerkThemeProvider({ children }) {
   // For our app's 'rgb' mode, we default to Clerk's 'light' base theme.
   const baseThemeForClerk = resolvedTheme === 'dark' ? dark : light;
 
-  // Merge our custom appearance settings with the determined Clerk base theme
+  // Temporarily use only the base theme to test SignInButton functionality
   const mergedAppearance = {
-    ...customClerkAppearance, // Our custom elements (e.g., card) and variables
     baseTheme: baseThemeForClerk,
+    // Spreading customClerkAppearance is commented out for now
+    // ...customClerkAppearance,
   };
 
   return (
