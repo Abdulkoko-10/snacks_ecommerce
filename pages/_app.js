@@ -11,7 +11,7 @@ export default function App({ Component, pageProps }) {
     variables: {
       // General
       colorPrimary: "var(--primary-color)",
-      colorBackground: "var(--primary-background-color)",
+      colorBackground: "var(--glass-background-color)", // Use glassmorphism for main component backgrounds
       colorText: "var(--text-color)",
       colorInputBackground: "var(--secondary-background-color)",
       colorInputText: "var(--text-color)",
@@ -45,7 +45,7 @@ export default function App({ Component, pageProps }) {
         backgroundColor: "var(--primary-color)",
         color: "var(--text-on-primary-color)", // Assuming you have this for text on primary buttons
         '&:hover': {
-          backgroundColor: "var(--secondary-color)", // Example: darken on hover
+          backgroundColor: "var(--primary-color-hover, var(--secondary-color))", // Use defined hover color, fallback to secondary
         },
       },
       formFieldInput: {
@@ -117,6 +117,16 @@ export default function App({ Component, pageProps }) {
         backgroundColor: "var(--secondary-background-color)",
         color: "var(--text-color)",
         borderColor: "var(--glass-border-color)",
+      },
+      userButtonPopoverCard: { // Styles for the UserButton popover card
+        backgroundColor: "var(--glass-background-color)",
+        borderColor: "var(--glass-border-color)",
+        boxShadow: "0 8px 32px 0 var(--glass-box-shadow-color)",
+        borderRadius: "10px",
+      },
+      userButtonTrigger: { // Placeholder for UserButton trigger styling if needed
+        // Example: to match navbar icon colors if default isn't suitable
+        // color: 'var(--secondary-color)',
       }
     }
   };
@@ -124,7 +134,7 @@ export default function App({ Component, pageProps }) {
   return (
     <ClerkProvider
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-      // appearance={clerkAppearance}
+      appearance={clerkAppearance}
     >
       <StateContext>
         <Layout>
