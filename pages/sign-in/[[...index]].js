@@ -37,9 +37,9 @@ const SignInPage = () => {
             colorBackground: "var(--primary-background-color)", // Background of the card/modal
             colorInputBackground: "var(--secondary-background-color)", // Background for input fields
             colorInputText: "var(--text-color)", // Text within input fields
-            // colorShimmer: uses primaryColor unless specified.
-            // colorDanger: typically red, can be var(--primary-color) if it's red, or a specific error color.
-            // colorSuccess: typically green, can be var(--success-message-color) or similar.
+            colorShimmer: "var(--primary-color)",
+            colorDanger: "var(--primary-color)",
+            colorSuccess: "var(--success-message-color)",
           },
         }}
       />

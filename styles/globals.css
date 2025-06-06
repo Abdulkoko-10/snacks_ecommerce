@@ -33,7 +33,7 @@
   --secondary-background-color-rgb: var(--secondary-background-light);
   --glass-background-color-rgb: var(--glass-background-light);
   --glass-border-color-rgb: var(--glass-border-light);
-  --glass-box-shadow-color-rgb: var(--glass-box-shadow-light);
+  --glass-box-shadow-color-rgb: rgba(0, 0, 0, 0.25); /* More neutral default for RGB */
   --product-card-hover-shadow-rgb: var(--product-card-hover-shadow-light);
   --primary-color-rgb: var(--primary-color); /* For elements like links, buttons that use primary color directly */
   --secondary-color-rgb: var(--secondary-color); /* For elements that use secondary color directly */
