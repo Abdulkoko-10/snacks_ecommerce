@@ -38,6 +38,15 @@
   --primary-color-rgb: var(--primary-color); /* For elements like links, buttons that use primary color directly */
   --secondary-color-rgb: var(--secondary-color); /* For elements that use secondary color directly */
 
+  /* Error Colors */
+  --error-color-light: #d32f2f; /* Material Design Red 700 */
+  --error-color-dark: #f44336;  /* Material Design Red 500 */
+  --error-color-rgb: var(--error-color-light); /* Default for RGB, JS should update */
+  --error-color: var(--error-color-light); /* Default error color */
+
+  /* Hover color for primary text/links, JS should update for RGB */
+  --primary-color-hover-rgb: var(--primary-color-hover); /* Fallback to default, JS should update */
+
   /* New variables for specific hardcoded colors */
   --plus-color: rgb(49, 168, 49);
   --plus-color-rgb: var(--plus-color);
@@ -65,6 +74,9 @@
 }
 
 .dark-mode {
+  --error-color: var(--error-color-dark);
+  /* --primary-color is not changed in dark mode, so --primary-color-hover from :root is acceptable */
+  /* If --primary-color were different in dark mode, we'd need a specific --primary-color-hover-dark */
   --text-on-primary-color: var(--background-light); /* Text on primary color (red) is still light in dark mode */
   --text-color: var(--text-color-dark);
   --primary-background-color: var(--background-dark);
@@ -77,6 +89,8 @@
 }
 
 .rgb-mode {
+  --error-color: var(--error-color-rgb);
+  --primary-color-hover: var(--primary-color-hover-rgb); /* JS should define --primary-color-hover-rgb based on --primary-color-rgb */
   --text-color: var(--text-color-rgb);
   --primary-background-color: var(--primary-background-color-rgb);
   --secondary-background-color: var(--secondary-background-color-rgb);
@@ -145,7 +159,33 @@ p {
 a {
   color: var(--primary-color);
   text-decoration: none;
+  transition: color 0.2s ease-in-out; /* Smooth transition for hover/focus */
 }
+
+a:hover {
+  color: var(--primary-color-hover, var(--primary-color)); /* Fallback to primary-color */
+  text-decoration: underline;
+}
+
+a:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+  text-decoration: none; /* Optional: remove underline on focus if outline is sufficient */
+}
+
+/* More specific focus for elements that should look like interactive targets */
+*:focus-visible { /* Using focus-visible for better accessibility, falls back to :focus where not supported */
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb, 240, 45, 52), 0.2); /* Softer glow, uses primary-color-rgb for dynamic color */
+}
+
+/* Reset for elements where default browser focus is sufficient or custom is too intrusive */
+*:focus-visible:not(input):not(select):not(textarea):not(button):not(a) {
+  outline: none;
+  box-shadow: none;
+}
+
 
 .main-container {
   max-width: 1400px;
@@ -1518,9 +1558,9 @@ span.text-red {
 
 .form-group input[type="text"]:focus,
 .form-group textarea:focus {
-  outline: none;
+  outline: none; /* Custom outline is handled by :focus-visible or specific component styles */
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb, 240, 45, 52), 0.3); /* Define --primary-color-rgb or adjust */
+  /* box-shadow is handled by *:focus-visible, but can be made more specific if needed */
 }
 
 .form-group textarea {
