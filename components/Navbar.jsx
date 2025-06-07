@@ -277,7 +277,8 @@ const Navbar = () => {
                 </li>
               </SignedIn>
               <SignedOut>
-                <li onClick={() => setShowThemeMenu(false)}>
+                {/* Removed onClick={() => setShowThemeMenu(false)} from here to allow SignIn modal to open correctly */}
+                <li>
                   <SignInButton
                     mode="modal"
                   >
