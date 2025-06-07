@@ -1711,15 +1711,15 @@ span.text-red {
 
 /* Styles for the UserButton list item in the theme dropdown */
 .theme-dropdown-menu li.user-button-li {
-  /* padding: 5px; */ /* Reduced padding to better fit the UserButton */
-  /* display: flex; */
-  /* justify-content: center; */
-  /* align-items: center; */
-  /* min-height: 40px; */ /* Ensure a minimum height for consistency, adjust as needed */
+  padding: 5px; /* Reduced padding to better fit the UserButton */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 40px; /* Ensure a minimum height for consistency, adjust as needed */
 }
 
 /* Optional: Override hover for the UserButton li if it interferes with UserButton's own UI */
 .theme-dropdown-menu li.user-button-li:hover {
-  /* background-color: transparent; */ /* Remove parent li hover effect */
+  background-color: transparent; /* Remove parent li hover effect */
   /* Or, ensure UserButton's popover appears above this, then this might not be needed */
 }
