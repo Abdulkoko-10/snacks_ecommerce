@@ -7,10 +7,10 @@ import { dark } from "@clerk/themes"; // Import a base theme if you want to use 
 import { useTheme } from 'next-themes'; // Added import
 
 export default function App({ Component, pageProps }) {
-  const { resolvedTheme }_ = useTheme(); // Added line
+  const { resolvedTheme } = useTheme(); // Added line
 
   const clerkAppearance = {
-    baseTheme: resolvedTheme_ === 'dark' ? dark : undefined, // Modified line
+    baseTheme: resolvedTheme === 'dark' ? dark : undefined, // Modified line
     variables: {
       // General
       colorPrimary: "var(--primary-color)",
