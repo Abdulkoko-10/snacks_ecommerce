@@ -284,7 +284,10 @@ const Navbar = ({ clerkAppearance }) => { // clerkAppearance added here
                     mode="modal"
                   >
                     {/* This span helps if SignInButton doesn't take full width or needs text styling like other li items */}
-                    <span style={{ display: 'block', width: '100%', cursor: 'pointer' }}>
+                    <span
+                      style={{ display: 'block', width: '100%', cursor: 'pointer' }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       Sign In
                     </span>
                   </SignInButton>
