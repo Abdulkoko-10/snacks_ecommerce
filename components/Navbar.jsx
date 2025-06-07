@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { AiOutlineShopping } from 'react-icons/ai';
 import { FiSun, FiMoon, FiDroplet, FiMoreHorizontal } from 'react-icons/fi'; // Import Feather icons
 import { UserButton, SignInButton, SignedIn, SignedOut } from '@clerk/nextjs';
+import { useTheme } from 'next-themes';
 
 import { Cart } from './';
 import { useStateContext } from '../context/StateContext';
@@ -51,7 +52,8 @@ const hexToRgba = (hex, alpha) => {
 
 const Navbar = () => {
   const { showCart, setShowCart, totalQuantities } = useStateContext();
-  const [themeMode, setThemeMode] = useState('light'); // 'light', 'dark', 'rgb'
+  const { theme, setTheme, resolvedTheme } = useTheme();
+  // const [themeMode, setThemeMode] = useState('light'); // Removed, replaced by next-themes
   const [rgbColor, setRgbColor] = useState('#324d67'); // Default RGB color
   const [rgbInputColor, setRgbInputColor] = useState(rgbColor); // For the color picker input
   const [showThemeMenu, setShowThemeMenu] = useState(false);
@@ -105,52 +107,15 @@ const Navbar = () => {
     document.documentElement.style.setProperty('--scrolled-navbar-bg-rgb', hexToRgba(selectedRgbColor, scrolledRgbAlpha));
   }, []);
 
-  // Effect to set initial theme & handle clicks outside theme menu
+  // Effect for scroll, click-outside, and initial RGB color loading
   useEffect(() => {
-    // Scroll handler
     const handleScroll = () => {
-      if (window.scrollY > 0) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      setIsScrolled(window.scrollY > 0);
     };
-
     window.addEventListener('scroll', handleScroll);
-    // Call handler once on mount to check initial scroll position
-    handleScroll();
+    handleScroll(); // Initial check
 
-    const savedThemeMode = localStorage.getItem('themeMode');
-    const savedRgbColor = localStorage.getItem('rgbColor');
-    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-    document.documentElement.classList.remove('dark-mode', 'rgb-mode'); // Clear old classes
-
-    if (savedThemeMode === 'rgb' && savedRgbColor) {
-      setThemeMode('rgb');
-      setRgbColor(savedRgbColor);
-      setRgbInputColor(savedRgbColor);
-      document.documentElement.classList.add('rgb-mode');
-      applyRgbTheme(savedRgbColor);
-    } else if (savedThemeMode === 'dark') {
-      setThemeMode('dark');
-      document.documentElement.classList.add('dark-mode');
-    } else if (savedThemeMode === 'light') {
-      setThemeMode('light');
-      // No class needed for light mode by default, ensure others are removed
-    } else if (systemPrefersDark) {
-      setThemeMode('dark');
-      localStorage.setItem('themeMode', 'dark');
-      document.documentElement.classList.add('dark-mode');
-    } else {
-      setThemeMode('light'); // Default to light
-      localStorage.setItem('themeMode', 'light');
-    }
-
-    // Handle clicks outside the theme menu to close it
     const handleClickOutside = (event) => {
-      // If the click is on the UserButton or its popover, don't close the theme menu.
-      // Clerk components often have root elements with classes like 'cl-...'
       if (event.target.closest && event.target.closest('[class*="cl-"]')) {
         return;
       }
@@ -159,63 +124,62 @@ const Navbar = () => {
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      window.removeEventListener('scroll', handleScroll); // Cleanup scroll listener
-    };
 
-  }, [applyRgbTheme]); // applyRgbTheme is a dependency, keep it if it's stable or memoized correctly
-
-  const setAndStoreTheme = (newThemeMode, newRgbColor = rgbColor) => {
-    document.documentElement.classList.remove('dark-mode', 'rgb-mode');
-    localStorage.setItem('themeMode', newThemeMode);
-    setThemeMode(newThemeMode);
-
-    if (newThemeMode === 'dark') {
-      document.documentElement.classList.add('dark-mode');
-    } else if (newThemeMode === 'rgb') {
-      document.documentElement.classList.add('rgb-mode');
-      applyRgbTheme(newRgbColor);
-      setRgbColor(newRgbColor); // Ensure internal state is also up-to-date
-      setRgbInputColor(newRgbColor); // Sync input picker
-      localStorage.setItem('rgbColor', newRgbColor);
+    const savedRgbColor = localStorage.getItem('rgbColor');
+    if (savedRgbColor) {
+      setRgbColor(savedRgbColor);
+      setRgbInputColor(savedRgbColor);
+      // Initial application if theme is already 'rgb' handled by the other useEffect
     }
-    // For 'light' mode, no class is added beyond removing others.
-  };
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []); // Empty dependency array for one-time setup
+
+  // Effect to apply RGB theme when theme is 'rgb' or rgbColor changes
+  useEffect(() => {
+    if (theme === 'rgb') {
+      const colorToApply = localStorage.getItem('rgbColor') || rgbColor;
+      if (colorToApply !== rgbColor) { // If local storage had a different color not yet in state
+        setRgbColor(colorToApply);
+        setRgbInputColor(colorToApply);
+      }
+      applyRgbTheme(colorToApply);
+    }
+  }, [theme, rgbColor, applyRgbTheme]);
+
 
   const toggleTheme = () => {
-    let newMode;
-    if (themeMode === 'light') newMode = 'dark';
-    else if (themeMode === 'dark') newMode = 'rgb';
-    else newMode = 'light'; // themeMode === 'rgb'
-    setAndStoreTheme(newMode);
+    if (resolvedTheme === 'light') setTheme('dark');
+    else if (resolvedTheme === 'dark') setTheme('rgb');
+    else setTheme('light');
   };
   
   const selectTheme = (selectedMode) => {
-    setAndStoreTheme(selectedMode);
+    setTheme(selectedMode);
     setShowThemeMenu(false);
   };
 
   const handleRgbColorChange = (event) => {
     const newColor = event.target.value;
-    setRgbInputColor(newColor); // Update input immediately for picker UI
-    setRgbColor(newColor); // Update actual color state
-    applyRgbTheme(newColor);
+    setRgbInputColor(newColor);
+    setRgbColor(newColor);
     localStorage.setItem('rgbColor', newColor);
+    // If current theme is 'rgb', the useEffect watching [theme, rgbColor] will call applyRgbTheme.
   };
   
-  // Determine toggle state for the visual switch
-  // Determine which icon to display based on the current themeMode
   let currentThemeIcon;
   let themeIconTitle = "Toggle Theme";
-  if (themeMode === 'light') {
-    currentThemeIcon = <FiMoon size={22} />; // Icon to switch to Dark
+  if (resolvedTheme === 'light') {
+    currentThemeIcon = <FiMoon size={22} />;
     themeIconTitle = "Activate Dark Mode";
-  } else if (themeMode === 'dark') {
-    currentThemeIcon = <FiDroplet size={22} />;  // Icon to switch to RGB
+  } else if (resolvedTheme === 'dark') {
+    currentThemeIcon = <FiDroplet size={22} />;
     themeIconTitle = "Activate RGB Mode";
-  } else { // themeMode === 'rgb'
-    currentThemeIcon = <FiSun size={22} />;  // Icon to switch to Light
+  } else { // resolvedTheme could be 'rgb' or system default that resolved to 'rgb'
+    currentThemeIcon = <FiSun size={22} />;
     themeIconTitle = "Activate Light Mode";
   }
 
@@ -237,7 +201,7 @@ const Navbar = () => {
         </button>
 
         {/* RGB Color Picker */}
-        {themeMode === 'rgb' && (
+        {theme === 'rgb' && (
           <input
             type="color"
             value={rgbInputColor}
@@ -277,7 +241,7 @@ const Navbar = () => {
                 </li>
               </SignedIn>
               <SignedOut>
-                <li onClick={() => setShowThemeMenu(false)}>
+                <li>
                   <SignInButton
                     mode="modal"
                   >
