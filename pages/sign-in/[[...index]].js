@@ -17,31 +17,6 @@ const SignInPage = () => {
         path="/sign-in"
         routing="path"
         signUpUrl="/sign-up"
-        appearance={{
-          elements: {
-            formButtonPrimary: {
-              backgroundColor: "var(--clr-btn-primary-bg)",
-              color: "var(--clr-btn-primary-text)",
-              fontSize: "0.875rem", // text-sm
-              textTransform: "normal-case",
-              '&:hover': {
-                backgroundColor: "var(--clr-btn-primary-hover-bg)",
-              },
-            },
-            card: "glassmorphism", // Apply glassmorphism to the card
-            rootBox: "mx-auto", // Center the component
-          },
-          variables: {
-            colorPrimary: "var(--primary-color)",
-            colorText: "var(--text-color)",
-            colorBackground: "var(--primary-background-color)", // Background of the card/modal
-            colorInputBackground: "var(--secondary-background-color)", // Background for input fields
-            colorInputText: "var(--text-color)", // Text within input fields
-            // colorShimmer: uses primaryColor unless specified.
-            // colorDanger: typically red, can be var(--primary-color) if it's red, or a specific error color.
-            // colorSuccess: typically green, can be var(--success-message-color) or similar.
-          },
-        }}
       />
     </div>
   );

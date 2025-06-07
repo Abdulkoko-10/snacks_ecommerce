@@ -49,7 +49,7 @@ const hexToRgba = (hex, alpha) => {
 };
 
 
-const Navbar = () => {
+const Navbar = ({ clerkAppearance }) => { // clerkAppearance added here
   const { showCart, setShowCart, totalQuantities } = useStateContext();
   const [themeMode, setThemeMode] = useState('light'); // 'light', 'dark', 'rgb'
   const [rgbColor, setRgbColor] = useState('#324d67'); // Default RGB color
@@ -273,6 +273,8 @@ const Navbar = () => {
                 <li className="user-button-li">
                   <UserButton
                     afterSignOutUrl="/"
+                    appearance={clerkAppearance}
+                    userProfileProps={{ appearance: clerkAppearance }}
                   />
                 </li>
               </SignedIn>

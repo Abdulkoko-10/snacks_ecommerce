@@ -4,10 +4,13 @@ import { StateContext } from "../context/StateContext";
 import { Toaster } from "react-hot-toast";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes"; // Import a base theme if you want to use one
+import { useTheme } from 'next-themes'; // Added import
 
 export default function App({ Component, pageProps }) {
+  const { resolvedTheme }_ = useTheme(); // Added line
+
   const clerkAppearance = {
-    baseTheme: undefined, // Can be `dark` or light (default) or undefined to use system preference
+    baseTheme: resolvedTheme_ === 'dark' ? dark : undefined, // Modified line
     variables: {
       // General
       colorPrimary: "var(--primary-color)",
@@ -124,10 +127,10 @@ export default function App({ Component, pageProps }) {
   return (
     <ClerkProvider
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-      // appearance={clerkAppearance}
+      appearance={clerkAppearance} // Uncommented and uses the modified clerkAppearance
     >
       <StateContext>
-        <Layout>
+        <Layout clerkAppearance={clerkAppearance}>  {/* clerkAppearance prop added here */}
           <Toaster />
           <Component {...pageProps} />
         </Layout>

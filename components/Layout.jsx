@@ -3,14 +3,14 @@ import Head from 'next/head'
 import Navbar from './Navbar'
 import Footer from './Footer'
 
-const Layout = ( { children } ) => {
+const Layout = ( { children, clerkAppearance } ) => { // clerkAppearance added here
   return (
     <div className="layout">
       <Head>
         <title>Snacks</title>
       </Head>
       <header>
-        <Navbar />
+        <Navbar clerkAppearance={clerkAppearance} /> {/* clerkAppearance passed here */}
       </header>
       <main className="main-container">
        {children}
