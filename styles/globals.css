@@ -64,7 +64,7 @@
   --clr-btn-primary-hover-bg: var(--primary-color-hover);
 }
 
-.dark-mode {
+html.dark {
   --text-on-primary-color: var(--background-light); /* Text on primary color (red) is still light in dark mode */
   --text-color: var(--text-color-dark);
   --primary-background-color: var(--background-dark);
@@ -76,7 +76,7 @@
   --product-card-hover-shadow: var(--product-card-hover-shadow-dark);
 }
 
-.rgb-mode {
+html.rgb {
   --text-color: var(--text-color-rgb);
   --primary-background-color: var(--primary-background-color-rgb);
   --secondary-background-color: var(--secondary-background-color-rgb);
@@ -178,11 +178,11 @@ a {
      This class specifically overrides the background for the scrolled state. */
 }
 
-.dark-mode .scrolled-navbar {
+html.dark .scrolled-navbar {
   background: var(--scrolled-navbar-bg-dark) !important;
 }
 
-.rgb-mode .scrolled-navbar {
+html.rgb .scrolled-navbar {
   background: var(--scrolled-navbar-bg-rgb) !important;
 }
 
