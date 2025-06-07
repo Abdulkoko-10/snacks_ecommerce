@@ -279,14 +279,13 @@ const Navbar = ({ clerkAppearance }) => { // clerkAppearance added here
                 </li>
               </SignedIn>
               <SignedOut>
-                <li onClick={() => setShowThemeMenu(false)}>
+                <li> {/* onClick removed */}
                   <SignInButton
                     mode="modal"
                   >
-                    {/* This span helps if SignInButton doesn't take full width or needs text styling like other li items */}
                     <span
                       style={{ display: 'block', width: '100%', cursor: 'pointer' }}
-                      onClick={(e) => e.stopPropagation()}
+                      // onClick for stopPropagation also removed for simplicity now
                     >
                       Sign In
                     </span>
