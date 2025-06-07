@@ -273,6 +273,28 @@ const Navbar = () => {
                 <li className="user-button-li">
                   <UserButton
                     afterSignOutUrl="/"
+                    appearance={{
+                      variables: {
+                        colorPrimary: "var(--primary-color)",
+                        colorText: "var(--text-color)",
+                        colorBackground: "var(--primary-background-color)",
+                        colorTextSecondary: "var(--text-color)",
+                        colorInputBackground: "var(--secondary-background-color)",
+                        colorInputText: "var(--text-color)",
+                      },
+                      elements: {
+                        userButtonPopoverCard: "glassmorphism",
+                        userButtonPopoverActionButton: {
+                          color: "var(--text-color)",
+                          "&:hover": {
+                            backgroundColor: "var(--secondary-background-color)",
+                          },
+                          "&:active": {
+                            backgroundColor: "var(--glass-border-color)",
+                          },
+                        },
+                      }
+                    }}
                   />
                 </li>
               </SignedIn>
