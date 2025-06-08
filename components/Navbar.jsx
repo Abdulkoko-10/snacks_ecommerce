@@ -273,10 +273,10 @@ const Navbar = () => {
                 <li
                   className="user-button-li"
                   onClick={() => {
-                    // Defer closing the theme menu slightly
-                    requestAnimationFrame(() => {
+                    // Defer closing the theme menu to the end of the event queue
+                    setTimeout(() => {
                       setShowThemeMenu(false);
-                    });
+                    }, 0);
                   }}
                 >
                   <UserButton
