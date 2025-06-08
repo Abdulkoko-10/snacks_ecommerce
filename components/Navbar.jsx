@@ -270,7 +270,15 @@ const Navbar = () => {
               <li onClick={() => selectTheme('dark')}>Dark Theme</li>
               <li onClick={() => selectTheme('rgb')}>RGB Theme</li>
               <SignedIn>
-                <li className="user-button-li" /* onClick={() => setShowThemeMenu(false)}} // Temporarily removed */ >
+                <li
+                  className="user-button-li"
+                  onClick={() => {
+                    // Defer closing the theme menu slightly
+                    requestAnimationFrame(() => {
+                      setShowThemeMenu(false);
+                    });
+                  }}
+                >
                   <UserButton
                     afterSignOutUrl="/"
                   />
