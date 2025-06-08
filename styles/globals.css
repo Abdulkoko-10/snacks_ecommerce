@@ -1723,3 +1723,84 @@ span.text-red {
   background-color: transparent; /* Remove parent li hover effect */
   /* Or, ensure UserButton's popover appears above this, then this might not be needed */
 }
+
+/* Clerk UserButton / UserProfile Modal Theming Overrides */
+/* Apply glassmorphism to the main User Profile modal/card */
+/* Common Clerk class for the root of the user profile modal/page might be .cl-userProfileRoot */
+/* The card itself within that might be .cl-card or a more specific .cl-userProfile-card */
+.cl-userProfileRoot .cl-card, /* More specific if UserProfile uses a nested card */
+.cl-userProfileModalContent .cl-card, /* If modal content has a card */
+body > .cl-modal-root .cl-modal-content /* General modal, if UserButton opens a generic modal */ {
+  background: var(--glass-background-color) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important; /* For Safari */
+  border: 1px solid var(--glass-border-color) !important;
+  box-shadow: 0 8px 32px 0 var(--glass-box-shadow-color) !important;
+  border-radius: 10px !important; /* Consistent border radius */
+}
+
+/* Text elements within the User Profile modal */
+.cl-userProfileRoot h1,
+.cl-userProfileRoot h2,
+.cl-userProfileRoot p,
+.cl-userProfileRoot label,
+.cl-userProfileRoot div, /* General divs that might contain text */
+.cl-userProfileRoot span, /* General spans */
+.cl-userProfileRoot a, /* Links */
+.cl-userProfileRoot li,
+.cl-userProfileRoot button, /* Text on non-primary buttons */
+.cl-modalContent h1, /* For generic modal text */
+.cl-modalContent p,
+.cl-modalContent label {
+  color: var(--text-color) !important;
+}
+
+/* Input fields text color (already handled by appearance.variables.colorInputText but good as a fallback) */
+.cl-userProfileRoot input,
+.cl-modalContent input {
+  color: var(--text-color) !important;
+  background-color: var(--secondary-background-color) !important; /* Ensure input background is also themed */
+  border: 1px solid var(--glass-border-color) !important;
+}
+
+.cl-userProfileRoot input:focus,
+.cl-modalContent input:focus {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 1px var(--primary-color) !important;
+}
+
+
+/* Primary buttons within the User Profile modal */
+/* Clerk uses various classes for buttons, .cl-button, .cl-formButtonPrimary, .cl-profileSectionPrimaryButton etc. */
+.cl-userProfileRoot .cl-button.cl-button--primary,
+.cl-userProfileRoot .cl-formButtonPrimary,
+.cl-userProfileRoot .cl-profileSectionPrimaryButton, /* Common in profile sections */
+.cl-modalContent .cl-button.cl-button--primary {
+  background-color: var(--clr-btn-primary-bg) !important;
+  color: var(--clr-btn-primary-text) !important;
+  font-size: 0.875rem !important; /* Consistent font size */
+  text-transform: normal-case !important; /* Consistent text case */
+}
+
+.cl-userProfileRoot .cl-button.cl-button--primary:hover,
+.cl-userProfileRoot .cl-formButtonPrimary:hover,
+.cl-userProfileRoot .cl-profileSectionPrimaryButton:hover,
+.cl-modalContent .cl-button.cl-button--primary:hover {
+  background-color: var(--clr-btn-primary-hover-bg) !important;
+}
+
+/* Styling for other elements like navigation tabs/links if present */
+.cl-userProfileRoot .cl-navbarButton { /* Navigation buttons in user profile */
+  color: var(--text-color) !important;
+}
+.cl-userProfileRoot .cl-navbarButton:hover,
+.cl-userProfileRoot .cl-navbarButton__active { /* Active and hover states for nav */
+  color: var(--primary-color) !important;
+  background-color: var(--glass-border-color) !important; /* Subtle background for active/hover */
+}
+
+/* Fallback for modal backdrop if Clerk renders one separately and it's not covered by userProfileCard's glassmorphism */
+/* .cl-modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.3) !important; /* Example: a subtle dark overlay */
+  /* backdrop-filter: blur(2px) !important; /* Optional: slight blur on backdrop too */
+/* } */

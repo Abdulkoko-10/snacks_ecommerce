@@ -94,9 +94,8 @@ const Navbar = () => {
     // For example:
     document.documentElement.style.setProperty('--glass-background-color-rgb', hexToRgba(selectedRgbColor, 0.25));
     document.documentElement.style.setProperty('--glass-border-color-rgb', hexToRgba(mainContrastColor, 0.18));
-    // For the box shadow, let's use a generic dark shadow for RGB mode, or it could be derived too.
-    // Using a slightly less intense version of the dark mode shadow for now.
-    document.documentElement.style.setProperty('--glass-box-shadow-color-rgb', 'rgba(0, 0, 0, 0.3)');
+    // Dynamically set the box shadow color based on the contrast color for better adaptability.
+    document.documentElement.style.setProperty('--glass-box-shadow-color-rgb', hexToRgba(mainContrastColor, 0.25));
 
 
     // Set the scrolled navbar background for RGB mode, considering mobile viewport
@@ -273,6 +272,36 @@ const Navbar = () => {
                 <li className="user-button-li">
                   <UserButton
                     afterSignOutUrl="/"
+                    appearance={{
+                      elements: {
+                        userProfileCard: "glassmorphism",
+                        formButtonPrimary: {
+                          backgroundColor: "var(--clr-btn-primary-bg)",
+                          color: "var(--clr-btn-primary-text)",
+                          fontSize: "0.875rem",
+                          textTransform: "normal-case",
+                          '&:hover': {
+                            backgroundColor: "var(--clr-btn-primary-hover-bg)",
+                          },
+                        },
+                        formInput: {
+                          borderColor: "var(--glass-border-color)",
+                          '&:focus': {
+                            borderColor: "var(--primary-color)",
+                            boxShadow: "0 0 0 1px var(--primary-color)",
+                          },
+                        },
+                      },
+                      variables: {
+                        colorPrimary: "var(--primary-color)",
+                        colorText: "var(--text-color)",
+                        colorBackground: "var(--primary-background-color)",
+                        colorInputBackground: "var(--secondary-background-color)",
+                        colorInputText: "var(--text-color)",
+                        colorDanger: "var(--primary-color)",
+                        colorSuccess: "var(--success-message-color)",
+                      },
+                    }}
                   />
                 </li>
               </SignedIn>

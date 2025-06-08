@@ -30,16 +30,23 @@ const SignInPage = () => {
             },
             card: "glassmorphism", // Apply glassmorphism to the card
             rootBox: "mx-auto", // Center the component
+            formInput: {
+              borderColor: "var(--glass-border-color)",
+              '&:focus': {
+                borderColor: "var(--primary-color)",
+                boxShadow: "0 0 0 1px var(--primary-color)",
+              },
+            },
           },
           variables: {
             colorPrimary: "var(--primary-color)",
             colorText: "var(--text-color)",
             colorBackground: "var(--primary-background-color)", // Background of the card/modal
-            colorInputBackground: "var(--secondary-background-color)", // Background for input fields
+            colorInputBackground: "var(--secondary-background-color)", // Background for input fields - kept opaque for readability
             colorInputText: "var(--text-color)", // Text within input fields
+            colorDanger: "var(--primary-color)", // Using primary-color (red) for danger states
+            colorSuccess: "var(--success-message-color)", // Using defined success color for success states
             // colorShimmer: uses primaryColor unless specified.
-            // colorDanger: typically red, can be var(--primary-color) if it's red, or a specific error color.
-            // colorSuccess: typically green, can be var(--success-message-color) or similar.
           },
         }}
       />
