@@ -272,6 +272,13 @@ const Navbar = () => {
                 <li className="user-button-li">
                   <UserButton
                     afterSignOutUrl="/"
+                    appearance={{ // Minimal appearance prop for trigger icon color
+                      elements: {
+                        userButtonTrigger: {
+                          color: "var(--secondary-color)", // Match other navbar icon colors
+                        }
+                      }
+                    }}
                   />
                 </li>
               </SignedIn>
