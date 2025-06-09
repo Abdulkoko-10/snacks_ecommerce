@@ -28,7 +28,8 @@ const SignUpPage = () => {
                 backgroundColor: "var(--clr-btn-primary-hover-bg)",
               },
             },
-            card: "glassmorphism", // Apply glassmorphism to the card
+            cardBox: "glassmorphism", // Attempting to apply to cardBox
+            card: "glassmorphism", // Keeping original as fallback or if cardBox is a wrapper
             rootBox: "mx-auto", // Center the component
             formInput: {
               borderColor: "var(--glass-border-color)",

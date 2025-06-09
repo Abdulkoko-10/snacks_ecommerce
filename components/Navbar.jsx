@@ -274,6 +274,12 @@ const Navbar = () => {
                     afterSignOutUrl="/"
                     appearance={{
                       elements: {
+                        userButtonTrigger: { // Style for the UserButton trigger itself
+                          color: "var(--secondary-color)", // Match other navbar icons
+                          '&:hover': {
+                            color: "var(--primary-color)", // Example hover color
+                          }
+                        },
                         userProfileCard: "glassmorphism",
                         formButtonPrimary: {
                           backgroundColor: "var(--clr-btn-primary-bg)",
