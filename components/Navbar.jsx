@@ -272,42 +272,6 @@ const Navbar = () => {
                 <li className="user-button-li">
                   <UserButton
                     afterSignOutUrl="/"
-                    appearance={{
-                      elements: {
-                        userButtonTrigger: { // Style for the UserButton trigger itself
-                          color: "var(--secondary-color)", // Match other navbar icons
-                          '&:hover': {
-                            color: "var(--primary-color)", // Example hover color
-                          }
-                        },
-                        userProfileCard: "glassmorphism",
-                        formButtonPrimary: {
-                          backgroundColor: "var(--clr-btn-primary-bg)",
-                          color: "var(--clr-btn-primary-text)",
-                          fontSize: "0.875rem",
-                          textTransform: "normal-case",
-                          '&:hover': {
-                            backgroundColor: "var(--clr-btn-primary-hover-bg)",
-                          },
-                        },
-                        formInput: {
-                          borderColor: "var(--glass-border-color)",
-                          '&:focus': {
-                            borderColor: "var(--primary-color)",
-                            boxShadow: "0 0 0 1px var(--primary-color)",
-                          },
-                        },
-                      },
-                      variables: {
-                        colorPrimary: "var(--primary-color)",
-                        colorText: "var(--text-color)",
-                        colorBackground: "var(--primary-background-color)",
-                        colorInputBackground: "var(--secondary-background-color)",
-                        colorInputText: "var(--text-color)",
-                        colorDanger: "var(--primary-color)",
-                        colorSuccess: "var(--success-message-color)",
-                      },
-                    }}
                   />
                 </li>
               </SignedIn>
