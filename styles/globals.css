@@ -257,7 +257,7 @@ a {
   margin: 0;
   min-width: 160px; /* Slightly wider */
   z-index: 200; /* Ensure it's above other elements */
-  overflow: hidden; /* Ensures border-radius clips li hover states */
+  overflow: hidden; /* Ensures border-radius clips li hover states - RESTORED */
 }
 
 .theme-dropdown-menu li {
@@ -1718,8 +1718,168 @@ span.text-red {
   min-height: 40px; /* Ensure a minimum height for consistency, adjust as needed */
 }
 
+/* Adjusted styles for UserButton list item to be more accommodating */
+.theme-dropdown-menu li.user-button-li {
+    padding: 2px !important; /* Reduced padding to give more space to UserButton */
+    min-height: auto !important; /* Let UserButton's intrinsic height work */
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    /* Ensure UserButton itself is visible if it has weird default display from Clerk */
+    & > div { /* Assuming UserButton renders in a div */
+        display: flex !important; /* Or block, depending on UserButton's structure */
+        align-items: center !important;
+        justify-content: center !important;
+    }
+}
+
 /* Optional: Override hover for the UserButton li if it interferes with UserButton's own UI */
 .theme-dropdown-menu li.user-button-li:hover {
-  background-color: transparent; /* Remove parent li hover effect */
-  /* Or, ensure UserButton's popover appears above this, then this might not be needed */
+  background-color: transparent !important; /* Remove parent li hover effect, ensure UserButton hover takes precedence */
+}
+
+/* Clerk UserButton / UserProfile Modal Theming Overrides */
+/* Apply glassmorphism to the main User Profile modal/card */
+/* Common Clerk class for the root of the user profile modal/page might be .cl-userProfileRoot */
+/* The card itself within that might be .cl-card or a more specific .cl-userProfile-card */
+.cl-userProfileRoot .cl-card, /* More specific if UserProfile uses a nested card */
+.cl-userProfileSheet .cl-card, /* For sheet-style user profiles */
+.cl-userProfileModalContent .cl-card, /* If modal content has a card */
+body > .cl-modal-root .cl-modal-content /* General modal, if UserButton opens a generic modal */ {
+  background: var(--glass-background-color) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important; /* For Safari */
+  border: 1px solid var(--glass-border-color) !important;
+  box-shadow: 0 8px 32px 0 var(--glass-box-shadow-color) !important;
+  border-radius: 10px !important; /* Consistent border radius */
+}
+
+/* Text elements within the User Profile modal */
+.cl-userProfileRoot h1,
+.cl-userProfileRoot h2,
+.cl-userProfileRoot p,
+.cl-userProfileRoot label,
+.cl-userProfileRoot div, /* General divs that might contain text */
+.cl-userProfileRoot span, /* General spans */
+.cl-userProfileRoot a, /* Links */
+.cl-userProfileRoot li,
+.cl-userProfileRoot button, /* Text on non-primary buttons */
+.cl-modalContent h1, /* For generic modal text */
+.cl-modalContent p,
+.cl-modalContent label {
+  color: var(--text-color) !important;
+}
+
+/* Input fields text color (already handled by appearance.variables.colorInputText but good as a fallback) */
+.cl-userProfileRoot input,
+.cl-modalContent input {
+  color: var(--text-color) !important;
+  background-color: var(--secondary-background-color) !important; /* Ensure input background is also themed */
+  border: 1px solid var(--glass-border-color) !important;
+}
+
+.cl-userProfileRoot input:focus,
+.cl-modalContent input:focus {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 1px var(--primary-color) !important;
+}
+
+
+/* Primary buttons within the User Profile modal */
+/* Clerk uses various classes for buttons, .cl-button, .cl-formButtonPrimary, .cl-profileSectionPrimaryButton etc. */
+.cl-userProfileRoot .cl-button.cl-button--primary,
+.cl-userProfileRoot .cl-formButtonPrimary,
+.cl-userProfileRoot .cl-profileSectionPrimaryButton, /* Common in profile sections */
+.cl-modalContent .cl-button.cl-button--primary {
+  background-color: var(--clr-btn-primary-bg) !important;
+  color: var(--clr-btn-primary-text) !important;
+  font-size: 0.875rem !important; /* Consistent font size */
+  text-transform: normal-case !important; /* Consistent text case */
+}
+
+.cl-userProfileRoot .cl-button.cl-button--primary:hover,
+.cl-userProfileRoot .cl-formButtonPrimary:hover,
+.cl-userProfileRoot .cl-profileSectionPrimaryButton:hover,
+.cl-modalContent .cl-button.cl-button--primary:hover {
+  background-color: var(--clr-btn-primary-hover-bg) !important;
+}
+
+/* Styling for other elements like navigation tabs/links if present */
+.cl-userProfileRoot .cl-navbarButton { /* Navigation buttons in user profile */
+  color: var(--text-color) !important;
+}
+.cl-userProfileRoot .cl-navbarButton:hover,
+.cl-userProfileRoot .cl-navbarButton__active,
+.cl-userProfileRoot .cl-profileSidebarNavigationButton__active { /* Another possible active class for sidebar nav */
+  color: var(--primary-color) !important;
+  background-color: var(--glass-border-color) !important; /* Subtle background for active/hover */
+  border-bottom-color: var(--primary-color) !important; /* For tab-like active indicators */
+}
+
+/* Ensure inner card elements specific to UserProfile are transparent if they exist */
+.cl-userProfileRoot .cl-internal-card {
+    background-color: transparent !important;
+}
+
+/* Ensure the tab navigation bar itself is transparent */
+.cl-userProfileRoot .cl-navbar,
+.cl-userProfileRoot .cl-profileSidebar { /* If sidebar navigation is used */
+    background-color: transparent !important;
+}
+
+/* Ensure content panes for tabs/sections are transparent */
+.cl-userProfileRoot .cl-profileSection, /* Common class for sections like "Profile", "Security" */
+.cl-userProfileRoot .cl-profilePage, /* Sometimes used for the content of a page/tab */
+.cl-userProfileRoot .cl-pageContent, /* General content area within a page */
+.cl-userProfileRoot .cl-scrollableContent /* If content is scrollable */ {
+    background-color: transparent !important;
+}
+
+
+/* Fallback for modal backdrop if Clerk renders one separately and it's not covered by userProfileCard's glassmorphism */
+/* .cl-modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.3) !important; /* Example: a subtle dark overlay */
+  /* backdrop-filter: blur(2px) !important; /* Optional: slight blur on backdrop too */
+/* } */
+
+
+/* Force glassmorphism on Sign-In/Sign-Up cards (Phase 2 for SignIn/SignUp) */
+.cl-signIn-root .cl-card,
+.cl-signUp-root .cl-card {
+  background: var(--glass-background-color) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid var(--glass-border-color) !important;
+  box-shadow: 0 8px 32px 0 var(--glass-box-shadow-color) !important;
+  border-radius: 10px !important; /* Or your theme's border-radius */
+}
+
+/* Ensure text elements inside Sign-In/Sign-Up have correct theme color */
+.cl-signIn-root .cl-card h1,
+.cl-signIn-root .cl-card h2, /* Added h2 for subtitles */
+.cl-signIn-root .cl-card p,
+.cl-signIn-root .cl-card label,
+.cl-signIn-root .cl-card div, /* General divs for text */
+.cl-signUp-root .cl-card h1,
+.cl-signUp-root .cl-card h2, /* Added h2 for subtitles */
+.cl-signUp-root .cl-card p,
+.cl-signUp-root .cl-card label,
+.cl-signUp-root .cl-card div { /* General divs for text */
+  color: var(--text-color) !important;
+}
+
+/* Ensure body of the Sign-In/Sign-Up card (if it's a separate element) also gets themed background */
+.cl-signIn-root .cl-internal-card, /* Common class for an inner card area */
+.cl-signUp-root .cl-internal-card {
+    background-color: transparent !important; /* Make it transparent if the outer card has glassmorphism */
+}
+
+/* Additional overrides for links and other specific elements within SignIn/SignUp if needed */
+.cl-signIn-root .cl-card a,
+.cl-signUp-root .cl-card a {
+  color: var(--primary-color) !important;
+}
+.cl-signIn-root .cl-card a:hover,
+.cl-signUp-root .cl-card a:hover {
+  color: var(--primary-color-hover) !important;
 }

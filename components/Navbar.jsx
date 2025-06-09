@@ -94,9 +94,8 @@ const Navbar = () => {
     // For example:
     document.documentElement.style.setProperty('--glass-background-color-rgb', hexToRgba(selectedRgbColor, 0.25));
     document.documentElement.style.setProperty('--glass-border-color-rgb', hexToRgba(mainContrastColor, 0.18));
-    // For the box shadow, let's use a generic dark shadow for RGB mode, or it could be derived too.
-    // Using a slightly less intense version of the dark mode shadow for now.
-    document.documentElement.style.setProperty('--glass-box-shadow-color-rgb', 'rgba(0, 0, 0, 0.3)');
+    // Dynamically set the box shadow color based on the contrast color for better adaptability.
+    document.documentElement.style.setProperty('--glass-box-shadow-color-rgb', hexToRgba(mainContrastColor, 0.25));
 
 
     // Set the scrolled navbar background for RGB mode, considering mobile viewport
