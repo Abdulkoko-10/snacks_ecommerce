@@ -1742,11 +1742,16 @@ span.text-red {
 /* Apply glassmorphism to the main User Profile modal/card */
 /* Common Clerk class for the root of the user profile modal/page might be .cl-userProfileRoot */
 /* The card itself within that might be .cl-card or a more specific .cl-userProfile-card */
-.cl-userProfileRoot .cl-card, /* More specific if UserProfile uses a nested card */
-.cl-userProfileSheet .cl-card, /* For sheet-style user profiles */
-.cl-userProfileModalContent .cl-card, /* If modal content has a card */
-body > .cl-modal-root .cl-modal-content, /* General modal, if UserButton opens a generic modal */
-body > .cl-modal-root[data-clerk-modal="userProfile"] .cl-modal-content /* Specific for UserProfile modal */ {
+/* Clerk UserButton / UserProfile Modal Theming Overrides - AGGRESSIVE THEMING */
+
+/* Highest Specificity for Glassmorphism on Modal Wrapper */
+html body div[id^='clerk-'][data-clerk-modal][role='dialog'] .cl-userProfile-root .cl-card,
+html body div[id^='clerk-'][data-clerk-modal][role='dialog'] .cl-userProfileSheet .cl-card,
+html body div.cl-modal-root[data-clerk-modal="userProfile"] div.cl-modal-content,
+.cl-userProfileRoot .cl-card,
+.cl-userProfileSheet .cl-card,
+.cl-userProfileModalContent .cl-card,
+body > .cl-modal-root .cl-modal-content { /* Fallback for general modal structure if more specific ones fail */
   background: var(--glass-background-color) !important;
   backdrop-filter: blur(10px) !important;
   -webkit-backdrop-filter: blur(10px) !important; /* For Safari */
@@ -1755,37 +1760,27 @@ body > .cl-modal-root[data-clerk-modal="userProfile"] .cl-modal-content /* Speci
   border-radius: 10px !important; /* Consistent border radius */
 }
 
-/* Text elements within the User Profile modal */
-/* Aggressively theme all common text elements within UserProfile */
-.cl-userProfile-root p,
-.cl-userProfile-root label,
-.cl-userProfile-root h1,
-.cl-userProfile-root h2,
-.cl-userProfile-root h3,
-.cl-userProfile-root h4,
-.cl-userProfile-root h5,
-.cl-userProfile-root h6,
-.cl-userProfile-root strong,
-.cl-userProfile-root span,
-.cl-userProfile-root div,
-.cl-userProfile-root legend,
-.cl-userProfile-root td,
-.cl-userProfile-root th,
-.cl-userProfile-root .cl-formFieldLabel,
-.cl-userProfile-root .cl-headerTitle,
-.cl-userProfile-root .cl-headerSubtitle,
-.cl-userProfile-root .cl-profileSection__titleText,
-.cl-userProfile-root .cl-identityPreviewText,
-.cl-userProfile-root .cl-formFieldInfoText, /* For helper texts under form fields */
-.cl-userProfile-root .cl-internalHeaderTitle, /* Titles within sections */
-.cl-userProfile-root .cl-internalHeaderSubtitle, /* Subtitles within sections */
-.cl-userProfile-root .cl-profileItemList__itemTitle, /* Text in item lists */
-.cl-userProfile-root .cl-profileItemList__itemSubtitle, /* Subtext in item lists */
-.cl-userProfile-root .cl-accordionTriggerButton, /* Text on accordion triggers */
-.cl-userProfile-root .cl-badgeText, /* Text for badges (e.g. "Primary") */
-.cl-userProfile-root .cl-verificationText, /* Verification status texts */
-.cl-userProfile-root button:not(.cl-button--primary):not(.cl-button--secondary):not(.cl-button--danger) /* Text on other non-explicitly-themed buttons */ {
+/* Aggressively Theme Text Elements with :is() and direct child selectors */
+.cl-userProfile-root :is(p, label, h1, h2, h3, h4, h5, h6, strong, span, div, legend, td, th,
+                          .cl-formFieldLabel, .cl-headerTitle, .cl-headerSubtitle,
+                          .cl-profileSection__titleText, .cl-identityPreviewText,
+                          .cl-formFieldInfoText, .cl-internalHeaderTitle, .cl-internalHeaderSubtitle,
+                          .cl-profileItemList__itemTitle, .cl-profileItemList__itemSubtitle,
+                          .cl-accordionTriggerButton, .cl-badgeText, .cl-verificationText,
+                          /* Text on buttons not explicitly themed for bg/fg by other rules */
+                          button:not(.cl-button--primary):not(.cl-button--secondary):not(.cl-button--danger)) {
   color: var(--text-color) !important;
+}
+
+/* Catch-all for direct children of common containers that might render text */
+/* Use with caution, might need refinement if it affects non-text elements too broadly */
+.cl-userProfile-root .cl-profileSection > *,
+.cl-userProfile-root .cl-formField > *,
+.cl-userProfile-root .cl-identityPreview > *,
+.cl-userProfile-root .cl-actionCard > *,
+.cl-userProfile-root .cl-accordionContent > * {
+    color: var(--text-color) !important;
+    /* This could be too broad; if icons/etc. are affected, specific sub-elements would need their color reset or specific styling. */
 }
 
 /* Input fields text color (already handled by appearance.variables.colorInputText but good as a fallback) */
@@ -1875,8 +1870,13 @@ body > .cl-modal-root[data-clerk-modal="userProfile"] .cl-modal-content /* Speci
 
 /* Ensure inner card elements specific to UserProfile are transparent if they exist */
 .cl-userProfile-root .cl-internal-card,
-.cl-userProfile-root .cl-actionCard, /* For cards within sections, e.g. "Connected Accounts" */
-.cl-userProfile-root .cl-accordionContent { /* For content inside accordions if any */
+.cl-userProfile-root .cl-profileSection,
+.cl-userProfile-root .cl-profilePage,
+.cl-userProfile-root .cl-pageContent,
+.cl-userProfile-root .cl-scrollableContent,
+.cl-userProfile-root .cl-actionCard,
+.cl-userProfile-root .cl-accordionContent,
+.cl-userProfile-root .cl-accordionItem {
     background-color: transparent !important;
     background: transparent !important; /* Broader override */
 }
@@ -1888,15 +1888,23 @@ body > .cl-modal-root[data-clerk-modal="userProfile"] .cl-modal-content /* Speci
 }
 
 /* Ensure content panes for tabs/sections are transparent */
-.cl-userProfileRoot .cl-profileSection, /* Common class for sections like "Profile", "Security" */
-.cl-userProfileRoot .cl-profilePage, /* Sometimes used for the content of a page/tab */
-.cl-userProfileRoot .cl-pageContent, /* General content area within a page */
-.cl-userProfile-root .cl-scrollableContent, /* If content is scrollable */
-.cl-userProfile-root .cl-accordionItem { /* Ensure accordion items are also transparent */
-    background-color: transparent !important;
-    background: transparent !important; /* Broader override */
+/* Attempt to Override Internal Clerk CSS Variables (Hypothetical) */
+.cl-userProfile-root,
+html body div[id^='clerk-'][data-clerk-modal][role='dialog'] .cl-userProfile-root,
+html body div.cl-modal-root[data-clerk-modal="userProfile"] div.cl-modal-content {
+  --clerk-color-text: var(--text-color) !important;
+  --clerk-color-textSecondary: var(--text-color) !important; /* Or a slightly less prominent theme variable */
+  --clerk-color-textInfo: var(--text-color) !important;
+  --clerk-color-background: var(--glass-background-color) !important; /* For main card background */
+  --clerk-color-inputBackground: var(--secondary-background-color) !important;
+  --clerk-color-inputBorder: var(--glass-border-color) !important;
+  --clerk-color-primary: var(--primary-color) !important;
+  --clerk-color-danger: var(--primary-color) !important; /* Assuming primary is red for danger */
+  --clerk-color-success: var(--success-message-color) !important;
+  /* Add any other identified Clerk variables here, e.g., for buttons, links if they use vars */
+  /* --clerk-color-buttonPrimaryBackground: var(--clr-btn-primary-bg) !important; */
+  /* --clerk-color-buttonPrimaryText: var(--clr-btn-primary-text) !important; */
 }
-
 
 /* Fallback for modal backdrop if Clerk renders one separately and it's not covered by userProfileCard's glassmorphism */
 /* .cl-modal-backdrop {
