@@ -6,17 +6,7 @@ import { UserButton, SignInButton, SignedIn, SignedOut } from '@clerk/nextjs';
 
 import { Cart } from './';
 import { useStateContext } from '../context/StateContext';
-
-// Helper to calculate contrast color (black or white)
-const calculateContrastColor = (hexColor) => {
-  if (!hexColor) return '#000000'; // Default to black if color is invalid
-  const hex = hexColor.replace('#', '');
-  const r = parseInt(hex.substring(0, 2), 16);
-  const g = parseInt(hex.substring(2, 4), 16);
-  const b = parseInt(hex.substring(4, 6), 16);
-  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-  return luminance > 0.5 ? '#000000' : '#FFFFFF';
-};
+import { calculateContrastColor } from '../lib/utils'; // Imported from shared utils
 
 // Helper to darken a hex color
 const darkenColor = (hexColor, amount) => {

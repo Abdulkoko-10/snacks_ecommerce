@@ -1786,7 +1786,7 @@ html body div[id^='clerk-'][data-clerk-modal][role='dialog'] > .cl-userProfile-r
 
 /* Specific overrides for User Profile text in Dark Mode */
 .dark-mode .cl-userProfile-root :is(p, label, h1, h2, h3, h4, h5, h6, strong, span, div, legend, td, th, .cl-formFieldLabel, .cl-headerTitle, .cl-headerSubtitle, .cl-profileSection__titleText, .cl-identityPreviewText, .cl-accordionTriggerButton, .cl-formFieldInfoText, .cl-internalHeaderTitle, .cl-internalHeaderSubtitle, .cl-profileItemList__itemTitle, .cl-profileItemList__itemSubtitle, .cl-badgeText, .cl-verificationText, button:not(.cl-button--primary):not(.cl-button--secondary):not(.cl-button--danger)) {
-  color: var(--text-color) !important; /* --text-color will be --text-color-dark here */
+  color: #f0f0f0 !important; /* Changed to direct hex value for dark mode text */
 }
 
 /* Specific overrides for User Profile text in RGB Mode */
