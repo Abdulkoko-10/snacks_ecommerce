@@ -1789,9 +1789,9 @@ html body div[id^='clerk-'][data-clerk-modal][role='dialog'] > .cl-userProfile-r
   color: #d1d1d1 !important; /* New, slightly dimmer value */
 }
 
-/* Specific overrides for User Profile text in RGB Mode (Diagnostic) */
+/* Specific overrides for User Profile text in RGB Mode */
 .rgb-mode .cl-userProfile-root :is(p, label, h1, h2, h3, h4, h5, h6, strong, span, div, legend, td, th, .cl-formFieldLabel, .cl-headerTitle, .cl-headerSubtitle, .cl-profileSection__titleText, .cl-identityPreviewText, .cl-accordionTriggerButton, .cl-formFieldInfoText, .cl-internalHeaderTitle, .cl-internalHeaderSubtitle, .cl-profileItemList__itemTitle, .cl-profileItemList__itemSubtitle, .cl-badgeText, .cl-verificationText, button:not(.cl-button--primary):not(.cl-button--secondary):not(.cl-button--danger)) {
-  color: #FF00FF !important; /* Fuchsia - a distinct debug color for CSS */
+  color: var(--text-color) !important; /* Reverted to use CSS variable */
   opacity: 1 !important;
   visibility: visible !important;
 }
