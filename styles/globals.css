@@ -26,6 +26,10 @@
   --glass-border-color: var(--glass-border-light);
   --glass-box-shadow-color: var(--glass-box-shadow-light);
   --product-card-hover-shadow: var(--product-card-hover-shadow-light);
+  --glass-highlight-color-light: rgba(255, 255, 255, 0.15);
+  --glass-highlight-color-dark: rgba(255, 255, 255, 0.1);
+  --glass-highlight-color-rgb: var(--glass-highlight-color-light);
+  --glass-highlight-color: var(--glass-highlight-color-light);
 
   /* RGB mode variables - initially set to light mode values */
   --text-color-rgb: var(--text-color-light);
@@ -74,6 +78,7 @@
   --glass-border-color: var(--glass-border-dark);
   --glass-box-shadow-color: var(--glass-box-shadow-dark);
   --product-card-hover-shadow: var(--product-card-hover-shadow-dark);
+  --glass-highlight-color: var(--glass-highlight-color-dark);
 }
 
 .rgb-mode {
@@ -86,6 +91,7 @@
   --product-card-hover-shadow: var(--product-card-hover-shadow-rgb);
   --primary-color: var(--primary-color-rgb); /* Ensure primary color is also themed */
   --secondary-color: var(--secondary-color-rgb); /* Ensure secondary color is also themed */
+  --glass-highlight-color: var(--glass-highlight-color-rgb);
 
   /* Mapping for new specific color variables */
   --plus-color: var(--plus-color-rgb);
@@ -247,11 +253,13 @@ a {
   position: absolute;
   top: calc(100% + 5px); /* Position below the button with a small gap */
   right: 0;
-  background-color: var(--secondary-background-color);
+  background: linear-gradient(180deg, var(--glass-highlight-color) 0%, transparent 100%), var(--glass-background-color);
   color: var(--text-color); /* Text color will be inherited by li */
   border: 1px solid var(--glass-border-color);
   border-radius: 8px;
-  box-shadow: 0 5px 15px var(--product-card-hover-shadow); /* Adjusted shadow */
+  box-shadow: 0 8px 32px 0 var(--glass-box-shadow-color);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   list-style: none;
   padding: 8px 0;
   margin: 0;
