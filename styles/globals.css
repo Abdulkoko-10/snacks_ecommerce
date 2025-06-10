@@ -31,6 +31,26 @@
   --glass-highlight-color-rgb: var(--glass-highlight-color-light);
   --glass-highlight-color: var(--glass-highlight-color-light);
 
+  --glass-sheen-color-light: rgba(255, 255, 255, 0.3);
+  --glass-sheen-color-dark: rgba(255, 255, 255, 0.15);
+  --glass-sheen-color-rgb: var(--glass-sheen-color-light); /* Default for RGB */
+  --glass-sheen-color: var(--glass-sheen-color-light);
+
+  --glass-edge-highlight-color-light: rgba(255, 255, 255, 0.4);
+  --glass-edge-highlight-color-dark: rgba(255, 255, 255, 0.2);
+  --glass-edge-highlight-color-rgb: var(--glass-edge-highlight-color-light); /* Default for RGB */
+  --glass-edge-highlight-color: var(--glass-edge-highlight-color-light);
+
+  --glass-inner-highlight-color-light: rgba(255, 255, 255, 0.25);
+  --glass-inner-highlight-color-dark: rgba(255, 255, 255, 0.1);
+  --glass-inner-highlight-color-rgb: var(--glass-inner-highlight-color-light); /* Default for RGB */
+  --glass-inner-highlight-color: var(--glass-inner-highlight-color-light);
+
+  --glass-inner-shadow-color-light: rgba(0, 0, 0, 0.05);
+  --glass-inner-shadow-color-dark: rgba(0, 0, 0, 0.1);
+  --glass-inner-shadow-color-rgb: var(--glass-inner-shadow-color-light); /* Default for RGB */
+  --glass-inner-shadow-color: var(--glass-inner-shadow-color-light);
+
   /* RGB mode variables - initially set to light mode values */
   --text-color-rgb: var(--text-color-light);
   --primary-background-color-rgb: var(--background-light);
@@ -79,6 +99,10 @@
   --glass-box-shadow-color: var(--glass-box-shadow-dark);
   --product-card-hover-shadow: var(--product-card-hover-shadow-dark);
   --glass-highlight-color: var(--glass-highlight-color-dark);
+  --glass-sheen-color: var(--glass-sheen-color-dark);
+  --glass-edge-highlight-color: var(--glass-edge-highlight-color-dark);
+  --glass-inner-highlight-color: var(--glass-inner-highlight-color-dark);
+  --glass-inner-shadow-color: var(--glass-inner-shadow-color-dark);
 }
 
 .rgb-mode {
@@ -92,6 +116,10 @@
   --primary-color: var(--primary-color-rgb); /* Ensure primary color is also themed */
   --secondary-color: var(--secondary-color-rgb); /* Ensure secondary color is also themed */
   --glass-highlight-color: var(--glass-highlight-color-rgb);
+  --glass-sheen-color: var(--glass-sheen-color-rgb);
+  --glass-edge-highlight-color: var(--glass-edge-highlight-color-rgb);
+  --glass-inner-highlight-color: var(--glass-inner-highlight-color-rgb);
+  --glass-inner-shadow-color: var(--glass-inner-shadow-color-rgb);
 
   /* Mapping for new specific color variables */
   --plus-color: var(--plus-color-rgb);
@@ -200,8 +228,8 @@ a {
 
 /* New Theme Icon Button Styles */
 .theme-icon-button {
-  background: linear-gradient(180deg, var(--glass-highlight-color) 0%, transparent 100%), var(--glass-background-color);
-  border: 1px solid var(--glass-border-color);
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
   color: var(--text-color);
   cursor: pointer;
   font-size: 22px; /* Match icon size used in Navbar.jsx */
@@ -261,13 +289,13 @@ a {
   position: absolute;
   top: calc(100% + 5px); /* Position below the button with a small gap */
   right: 0;
-  background: linear-gradient(180deg, var(--glass-highlight-color) 0%, transparent 100%), var(--glass-background-color);
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
   color: var(--text-color); /* Text color will be inherited by li */
-  border: 1px solid var(--glass-border-color);
-  border-radius: 8px;
-  box-shadow: 0 8px 32px 0 var(--glass-box-shadow-color);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-edge-highlight-color);
+  border-radius: 10px;
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   list-style: none;
   padding: 8px 0;
   margin: 0;
@@ -449,26 +477,26 @@ span.text-red {
 }
 
 .btn-add-to-cart-hover {
-  background: linear-gradient(180deg, var(--glass-highlight-color) 0%, transparent 100%), var(--glass-background-color);
-  border: 1px solid var(--glass-border-color);
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
   color: var(--text-color);
   border-radius: 10px; /* Consistent with .btn */
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 6px 20px -2px var(--glass-box-shadow-color);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color);
 }
 .btn-add-to-cart-hover:hover {
   /* Keep existing hover transform, or define a new glass-specific hover */
 }
 
 .btn-quick-view-hover {
-  background: linear-gradient(180deg, var(--glass-highlight-color) 0%, transparent 100%), var(--glass-background-color);
-  border: 1px solid var(--glass-border-color);
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
   color: var(--text-color);
   border-radius: 10px; /* Consistent with .btn */
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 6px 20px -2px var(--glass-box-shadow-color);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color);
 }
 .btn-quick-view-hover:hover {
   /* Keep existing hover transform, or define a new glass-specific hover */
@@ -529,13 +557,13 @@ span.text-red {
   font-weight: 600; /* Open Sans */
   cursor: pointer;
   z-index: 1;
-  background: linear-gradient(180deg, var(--glass-highlight-color) 0%, transparent 100%), var(--glass-background-color);
-  border: 1px solid var(--glass-border-color);
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
   color: var(--text-color);
   border-radius: 10px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 6px 20px -2px var(--glass-box-shadow-color);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color);
 }
 
 .hero-banner-container h3 { /* Smaller text in hero */
@@ -623,13 +651,13 @@ span.text-red {
   font-size: 1.1rem; /* Open Sans */
   font-weight: 600; /* Open Sans */
   cursor: pointer;
-  background: linear-gradient(180deg, var(--glass-highlight-color) 0%, transparent 100%), var(--glass-background-color);
-  border: 1px solid var(--glass-border-color);
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
   color: var(--text-color);
   border-radius: 10px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 6px 20px -2px var(--glass-box-shadow-color);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color);
 }
 .banner-desc .left h3 { /* Large text in footer banner */
   font-weight: 900;
@@ -758,12 +786,12 @@ span.text-red {
   display: flex;
   gap: 30px;
   padding: 20px; 
-  background: linear-gradient(180deg, var(--glass-highlight-color) 0%, transparent 100%), var(--glass-background-color);
-  border: 1px solid var(--glass-border-color);
-  border-radius: 15px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 8px 32px 0 var(--glass-box-shadow-color);
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  border-radius: 15px; /* Maintained */
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
   margin-bottom: 10px;
 }
 .product .cart-product-image {
@@ -814,8 +842,8 @@ span.text-red {
 .remove-item {
   font-size: 24px;
   cursor: pointer;
-  background: linear-gradient(180deg, var(--glass-highlight-color) 0%, transparent 100%), var(--glass-background-color);
-  border: 1px solid var(--glass-border-color);
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
   color: var(--text-color);
   border-radius: 8px;
   padding: 6px 8px;
@@ -847,10 +875,11 @@ span.text-red {
   margin-top: 10px;
   margin-top: 40px;
   text-transform: uppercase;
-  background: linear-gradient(180deg, var(--glass-highlight-color) 0%, transparent 100%), var(--glass-background-color);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 6px 20px -2px var(--glass-box-shadow-color);
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color); /* Updated border */
+  backdrop-filter: blur(12px); /* Updated backdrop-filter */
+  -webkit-backdrop-filter: blur(12px); /* Updated -webkit-backdrop-filter */
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color); /* Updated box-shadow */
   color: var(--text-color);
   cursor: pointer;
   transform: scale(1, 1);
@@ -964,13 +993,13 @@ span.text-red {
   width: 200px;
   transform: scale(1, 1);
   transition: transform 0.5s ease;
-  background: linear-gradient(180deg, var(--glass-highlight-color) 0%, transparent 100%), var(--glass-background-color);
-  border: 1px solid var(--glass-border-color);
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
   color: var(--text-color);
   border-radius: 10px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 6px 20px -2px var(--glass-box-shadow-color);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color);
 }
 .buttons .add-to-cart:hover {
   transform: scale(1.1, 1.1);
@@ -984,13 +1013,13 @@ span.text-red {
   cursor: pointer;
   transform: scale(1, 1);
   transition: transform 0.5s ease;
-  background: linear-gradient(180deg, var(--glass-highlight-color) 0%, transparent 100%), var(--glass-background-color);
-  border: 1px solid var(--glass-border-color);
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
   color: var(--text-color);
   border-radius: 10px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 6px 20px -2px var(--glass-box-shadow-color);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color);
 }
 .buttons .buy-now:hover {
   transform: scale(1.1, 1.1);
