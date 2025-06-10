@@ -3,7 +3,7 @@ import Link from "next/link";
 import { BsBagCheckFill } from "react-icons/bs";
 
 import { useStateContext } from "../context/StateContext";
-import { runRealistic } from "../lib/utills";
+import { runRealistic } from "../lib/utils";
 
 const Success = () => {
   const { setCartItems, setTotalPrice, setTotalQuantities } = useStateContext();
