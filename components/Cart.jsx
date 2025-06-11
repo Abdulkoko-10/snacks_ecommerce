@@ -87,7 +87,7 @@ const Cart = () => {
         }
       }}
     >
-      <div className="cart-container glassmorphism" style={{ padding: '20px', maxHeight: '70vh', overflowY: 'auto' }}>
+      <div className="cart-container liquid-glass" style={{ padding: '20px', maxHeight: '70vh', overflowY: 'auto' }}>
         <div className="cart-heading" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '20px' }}>
           <span className="heading" style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--text-color)' }}>Your Cart</span>
           <span className="cart-num-items" style={{ marginLeft: '10px', color: 'var(--text-color)' }}>({totalQuantities} items)</span>
@@ -111,7 +111,7 @@ const Cart = () => {
         <div className="product-container">
           {cartItems.length >= 1 &&
             cartItems.map((item) => (
-              <div className="product" key={item._id}>
+              <div className="product liquid-glass" key={item._id}>
                 {/* <img
                   src={urlFor(item.image[0])}
                   className="cart-product-image"

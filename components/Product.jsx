@@ -9,7 +9,7 @@ slug, price } }) => {
   return (
     <div>
       <Link href={`/product/${slug.current}`}>
-        <div className="product-card">
+        <div className="product-card liquid-glass">
           <img
             src={urlFor(image && image[0]).url()} // Add .url()
             alt={name} // Already using name for alt

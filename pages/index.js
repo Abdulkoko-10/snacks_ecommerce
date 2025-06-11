@@ -9,7 +9,7 @@ const Home = ({ products, bannerData }) => {
       {bannerData?.[0] && ( // Conditional rendering for safety
         <HeroBanner heroBanner={bannerData[0]} />
       )}
-      <div className="products-heading">
+      <div className="products-heading liquid-glass">
         <h2>Best Selling Products</h2>
         <p>Samosas of different Tastes</p>
       </div>

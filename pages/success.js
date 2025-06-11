@@ -18,7 +18,7 @@ const Success = () => {
 
   return (
     <div className="success-wrapper">
-      <div className="success">
+      <div className="success liquid-glass">
         <p className="icon">
           <BsBagCheckFill />
         </p>
