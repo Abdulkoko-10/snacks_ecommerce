@@ -31,6 +31,26 @@
   --glass-highlight-color-rgb: var(--glass-highlight-color-light);
   --glass-highlight-color: var(--glass-highlight-color-light);
 
+  --glass-sheen-color-light: rgba(255, 255, 255, 0.3);
+  --glass-sheen-color-dark: rgba(255, 255, 255, 0.15);
+  --glass-sheen-color-rgb: var(--glass-sheen-color-light); /* Default for RGB */
+  --glass-sheen-color: var(--glass-sheen-color-light);
+
+  --glass-edge-highlight-color-light: rgba(255, 255, 255, 0.4);
+  --glass-edge-highlight-color-dark: rgba(255, 255, 255, 0.2);
+  --glass-edge-highlight-color-rgb: var(--glass-edge-highlight-color-light); /* Default for RGB */
+  --glass-edge-highlight-color: var(--glass-edge-highlight-color-light);
+
+  --glass-inner-highlight-color-light: rgba(255, 255, 255, 0.25);
+  --glass-inner-highlight-color-dark: rgba(255, 255, 255, 0.1);
+  --glass-inner-highlight-color-rgb: var(--glass-inner-highlight-color-light); /* Default for RGB */
+  --glass-inner-highlight-color: var(--glass-inner-highlight-color-light);
+
+  --glass-inner-shadow-color-light: rgba(0, 0, 0, 0.05);
+  --glass-inner-shadow-color-dark: rgba(0, 0, 0, 0.1);
+  --glass-inner-shadow-color-rgb: var(--glass-inner-shadow-color-light); /* Default for RGB */
+  --glass-inner-shadow-color: var(--glass-inner-shadow-color-light);
+
   /* RGB mode variables - initially set to light mode values */
   --text-color-rgb: var(--text-color-light);
   --primary-background-color-rgb: var(--background-light);
@@ -79,6 +99,10 @@
   --glass-box-shadow-color: var(--glass-box-shadow-dark);
   --product-card-hover-shadow: var(--product-card-hover-shadow-dark);
   --glass-highlight-color: var(--glass-highlight-color-dark);
+  --glass-sheen-color: var(--glass-sheen-color-dark);
+  --glass-edge-highlight-color: var(--glass-edge-highlight-color-dark);
+  --glass-inner-highlight-color: var(--glass-inner-highlight-color-dark);
+  --glass-inner-shadow-color: var(--glass-inner-shadow-color-dark);
 }
 
 .rgb-mode {
@@ -92,6 +116,10 @@
   --primary-color: var(--primary-color-rgb); /* Ensure primary color is also themed */
   --secondary-color: var(--secondary-color-rgb); /* Ensure secondary color is also themed */
   --glass-highlight-color: var(--glass-highlight-color-rgb);
+  --glass-sheen-color: var(--glass-sheen-color-rgb);
+  --glass-edge-highlight-color: var(--glass-edge-highlight-color-rgb);
+  --glass-inner-highlight-color: var(--glass-inner-highlight-color-rgb);
+  --glass-inner-shadow-color: var(--glass-inner-shadow-color-rgb);
 
   /* Mapping for new specific color variables */
   --plus-color: var(--plus-color-rgb);
@@ -200,15 +228,19 @@ a {
 
 /* New Theme Icon Button Styles */
 .theme-icon-button {
-  background: transparent;
-  border: none;
-  color: var(--secondary-color); /* Match cart icon color */
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  color: var(--text-color);
   cursor: pointer;
   font-size: 22px; /* Match icon size used in Navbar.jsx */
   display: flex;
   align-items: center;
-  padding: 0;
+  padding: 8px;
   transition: transform 0.4s ease;
+  border-radius: 8px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px -2px var(--glass-box-shadow-color);
 }
 
 .theme-icon-button:hover {
@@ -236,13 +268,17 @@ a {
 .theme-ellipsis-button {
   background: transparent;
   border: none;
-  color: var(--secondary-color);
+  color: var(--secondary-color); /* Its original icon color */
   cursor: pointer;
   font-size: 22px;
   display: flex;
   align-items: center;
-  padding: 0 4px; /* Give a bit more space if needed */
+  padding: 0 4px; /* Its original padding */
   transition: transform 0.3s ease;
+  border-radius: 0; /* Reset border-radius */
+  backdrop-filter: none; /* Remove backdrop-filter */
+  -webkit-backdrop-filter: none; /* Remove -webkit-backdrop-filter */
+  box-shadow: none; /* Remove box-shadow */
 }
 
 .theme-ellipsis-button:hover {
@@ -253,13 +289,13 @@ a {
   position: absolute;
   top: calc(100% + 5px); /* Position below the button with a small gap */
   right: 0;
-  background: linear-gradient(180deg, var(--glass-highlight-color) 0%, transparent 100%), var(--glass-background-color);
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
   color: var(--text-color); /* Text color will be inherited by li */
-  border: 1px solid var(--glass-border-color);
-  border-radius: 8px;
-  box-shadow: 0 8px 32px 0 var(--glass-box-shadow-color);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-edge-highlight-color);
+  border-radius: 10px;
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   list-style: none;
   padding: 8px 0;
   margin: 0;
@@ -441,21 +477,29 @@ span.text-red {
 }
 
 .btn-add-to-cart-hover {
-  background-color: var(--primary-color);
-  color: var(--background-light);
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  color: var(--text-color);
+  border-radius: 10px; /* Consistent with .btn */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color);
 }
 .btn-add-to-cart-hover:hover {
-  background-color: var(--secondary-color); /* Darken on hover */
+  /* Keep existing hover transform, or define a new glass-specific hover */
 }
 
 .btn-quick-view-hover {
-  background-color: var(--secondary-background-color);
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
   color: var(--text-color);
-  border: 1px solid var(--glass-border-color);
+  border-radius: 10px; /* Consistent with .btn */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color);
 }
 .btn-quick-view-hover:hover {
-  background-color: var(--text-color);
-  color: var(--primary-background-color);
+  /* Keep existing hover transform, or define a new glass-specific hover */
 }
 
 
@@ -507,16 +551,19 @@ span.text-red {
   margin-bottom: 0.5rem;
 }
 .hero-banner-container button {
-  border-radius: 15px;
   padding: 12px 20px; /* Slightly larger button */
-  background-color: var(--primary-color);
-  color: var(--text-on-primary-color); /* UPDATED */
-  border: none;
   margin-top: 40px;
   font-size: 1.1rem; /* Open Sans */
   font-weight: 600; /* Open Sans */
   cursor: pointer;
   z-index: 1;
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  color: var(--text-color);
+  border-radius: 10px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color);
 }
 
 .hero-banner-container h3 { /* Smaller text in hero */
@@ -599,15 +646,18 @@ span.text-red {
   align-items: center; /* Align items vertically */
 }
 .banner-desc button {
-  border-radius: 15px;
   padding: 12px 20px; /* Adjusted padding */
-  background-color: var(--background-light);
-  color: var(--primary-color);
-  border: none;
   margin-top: 20px; /* Adjusted margin */
   font-size: 1.1rem; /* Open Sans */
   font-weight: 600; /* Open Sans */
   cursor: pointer;
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  color: var(--text-color);
+  border-radius: 10px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color);
 }
 .banner-desc .left h3 { /* Large text in footer banner */
   font-weight: 900;
@@ -736,15 +786,19 @@ span.text-red {
   display: flex;
   gap: 30px;
   padding: 20px; 
-  background-color: var(--secondary-background-color); 
-  border-radius: 10px;
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  border-radius: 15px; /* Maintained */
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
   margin-bottom: 10px;
 }
 .product .cart-product-image {
   width: 180px;
   height: 150px;
   border-radius: 15px;
-  background-color: var(--secondary-background-color); 
+  background-color: transparent;
 }
 .item-desc .flex {
   display: flex;
@@ -787,10 +841,15 @@ span.text-red {
 }
 .remove-item {
   font-size: 24px;
-  color: var(--primary-color);
   cursor: pointer;
-  background: transparent;
-  border: none;
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  color: var(--text-color);
+  border-radius: 8px;
+  padding: 6px 8px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px -2px var(--glass-box-shadow-color);
 }
 .cart-bottom {
   position: absolute;
@@ -809,15 +868,19 @@ span.text-red {
   width: 100%;
   max-width: 400px;
   padding: 12px 18px; /* Increased padding */
-  border-radius: 15px;
-  border: none;
+  border-radius: 10px;
+  border: 1px solid var(--glass-border-color);
   font-size: 1.1rem; /* Adjusted for Open Sans */
   font-weight: 600; /* Adjusted for Open Sans */
   margin-top: 10px;
   margin-top: 40px;
   text-transform: uppercase;
-  background-color: var(--primary-color);
-  color: var(--text-on-primary-color); /* UPDATED */
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color); /* Updated border */
+  backdrop-filter: blur(12px); /* Updated backdrop-filter */
+  -webkit-backdrop-filter: blur(12px); /* Updated -webkit-backdrop-filter */
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color); /* Updated box-shadow */
+  color: var(--text-color);
   cursor: pointer;
   transform: scale(1, 1);
   transition: transform 0.5s ease;
@@ -923,16 +986,20 @@ span.text-red {
 }
 .buttons .add-to-cart {
   padding: 12px 20px; /* Adjusted padding */
-  border: 1px solid var(--primary-color);
   margin-top: 40px;
   font-size: 1rem; /* Adjusted for Open Sans */
   font-weight: 600; /* Adjusted for Open Sans */
-  background-color: var(--primary-background-color); 
-  color: var(--text-color); /* MODIFIED: Ensure contrast with primary background */
   cursor: pointer;
   width: 200px;
   transform: scale(1, 1);
   transition: transform 0.5s ease;
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  color: var(--text-color);
+  border-radius: 10px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color);
 }
 .buttons .add-to-cart:hover {
   transform: scale(1.1, 1.1);
@@ -940,15 +1007,19 @@ span.text-red {
 .buttons .buy-now {
   width: 200px;
   padding: 12px 20px; /* Adjusted padding */
-  background-color: var(--primary-color);
-  color: var(--text-on-primary-color); /* MODIFIED: Ensure contrast with primary-color background */
-  border: none;
   margin-top: 40px;
   font-size: 1rem; /* Adjusted for Open Sans */
   font-weight: 600; /* Adjusted for Open Sans */
   cursor: pointer;
   transform: scale(1, 1);
   transition: transform 0.5s ease;
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  color: var(--text-color);
+  border-radius: 10px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color);
 }
 .buttons .buy-now:hover {
   transform: scale(1.1, 1.1);
@@ -960,16 +1031,19 @@ span.text-red {
 }
 .quantity-desc span {
   font-size: 1rem; /* Adjusted for Open Sans */
-  padding: 6px 12px;
+  padding: 4px 6px;
   cursor: pointer;
+  background: color-mix(in srgb, var(--glass-background-color) 50%, transparent);
+  border-radius: 4px;
 }
 .quantity-desc .minus {
-  border-right: 1px solid var(--secondary-color); 
+  /* border-right removed if full border is applied or if it looks odd with background */
   color: var(--primary-color);
 }
 .quantity-desc .num {
-  border-right: 1px solid var(--secondary-color); 
+  /* border-right removed */
   font-size: 1.2rem; /* Slightly larger for num */
+  color: var(--text-color);
 }
 .quantity-desc .plus {
   color: var(--plus-color); /* UPDATED */
