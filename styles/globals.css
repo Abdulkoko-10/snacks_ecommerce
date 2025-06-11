@@ -145,21 +145,21 @@
 html {
   background-color: transparent; /* Ensure html doesn't hide body's glass */
   width: 100%;
-  overflow-x: hidden;
+  /* overflow-x: hidden; */ /* Temporarily commented out */
 }
 
 body {
   background-color: transparent; /* Will be covered by the glass effect */
   background: var(--glass-background-color); /* Actual visual layer */
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   min-height: 100vh;
   position: relative; /* Or static, depending on needs, relative is safer */
   color: var(--text-color);
   font-family: 'Open Sans', sans-serif;
   line-height: 1.6;
   width: 100%;
-  overflow-x: hidden;
+  /* overflow-x: hidden; */ /* Temporarily commented out */
   margin: 0;
   padding: 0;
 }
@@ -233,8 +233,8 @@ a:hover {
   transition: background 0.3s ease-in-out;
   /* Glass styles directly applied */
   background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--glass-edge-highlight-color); /* Changed from full border to border-bottom */
   box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), 0 5px 15px -3px var(--glass-box-shadow-color); /* Adjusted shadow */
 }
@@ -271,8 +271,8 @@ a:hover {
   padding: 8px;
   transition: transform 0.4s ease, box-shadow 0.3s ease, background 0.3s ease; /* Added more transitions */
   border-radius: 10px; /* Slightly larger radius */
-  backdrop-filter: blur(10px); /* Adjusted blur */
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   box-shadow: inset 0 1px 0px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 4px 15px -3px var(--glass-box-shadow-color); /* Refined shadow */
 }
 
@@ -328,8 +328,8 @@ a:hover {
   border: 1px solid var(--glass-edge-highlight-color);
   border-radius: 12px; /* More rounded */
   box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 12px 40px -5px var(--glass-box-shadow-color); /* Enhanced shadow */
-  backdrop-filter: blur(16px); /* Stronger blur for dropdown */
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   list-style: none;
   padding: 10px 0; /* Adjusted padding */
   margin: 0;
@@ -466,8 +466,8 @@ span.text-red {
   padding: 15px;
   position: relative;
   overflow: hidden;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
   width: 100%; 
 }
@@ -511,8 +511,8 @@ span.text-red {
   transition: background-color 0.3s ease, color 0.3s ease;
   background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
   color: var(--text-color);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 6px 15px -4px var(--glass-box-shadow-color);
 }
 .btn-add-to-cart-hover:hover, .btn-quick-view-hover:hover {
@@ -561,8 +561,8 @@ span.text-red {
   height: 500px;
   line-height: 1.2;
   width: 100%;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
   color: var(--text-color); /* Ensure text within hero banner inherits correct color */
 }
@@ -585,8 +585,8 @@ span.text-red {
   border: 1px solid var(--glass-edge-highlight-color);
   color: var(--text-color);
   border-radius: 10px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color);
 }
 .hero-banner-container button:hover {
@@ -650,8 +650,8 @@ span.text-red {
   background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
   border: 1px solid var(--glass-edge-highlight-color);
   border-radius: 15px;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
   color: var(--text-color);
 }
@@ -679,8 +679,8 @@ span.text-red {
   color: var(--text-color); /* Updated from text-on-primary */
   width: 100%;
   margin-top: 100px;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
 }
 .banner-desc {
@@ -769,8 +769,8 @@ span.text-red {
   background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
      border: 1px solid var(--glass-edge-highlight-color);
      border-radius: 15px;
-     backdrop-filter: blur(14px);
-     -webkit-backdrop-filter: blur(14px);
+     backdrop-filter: blur(8px);
+     -webkit-backdrop-filter: blur(8px);
      box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
      position: relative;
   color: var(--text-color); 
@@ -793,8 +793,8 @@ span.text-red {
   background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
   border: 1px solid var(--glass-edge-highlight-color);
   border-radius: 15px;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
   color: var(--text-color);
 }
@@ -870,8 +870,8 @@ span.text-red {
   background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
   border: 1px solid var(--glass-edge-highlight-color);
      border-radius: 15px;
-     backdrop-filter: blur(14px);
-     -webkit-backdrop-filter: blur(14px);
+     backdrop-filter: blur(8px);
+     -webkit-backdrop-filter: blur(8px);
      box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
   margin-bottom: 10px;
   color: var(--text-color);
@@ -989,8 +989,8 @@ span.text-red {
   background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
   border: 1px solid var(--glass-edge-highlight-color);
   border-radius: 15px;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
   color: var(--text-color); /* Ensure text inside inherits correctly */
 }
@@ -1091,10 +1091,59 @@ span.text-red {
   margin-top: 1.5rem;
 }
 /* Buttons .add-to-cart and .buy-now will use .btn styles by default */
-.buttons .add-to-cart, .buttons .buy-now {
-  width: 200px; /* Maintained width */
-  margin-top: 0; /* Removed fixed margin, rely on .btn's or parent's gap */
+/* Specific styles for add-to-cart and buy-now buttons if they need to differ from generic .btn */
+/* Ensuring full glass effect for these specific buttons as per user request */
+
+.buttons .add-to-cart {
+  padding: 12px 20px;
+  margin-top: 40px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 200px;
+  transform: scale(1, 1);
+  transition: transform 0.5s ease, background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease;
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  color: var(--text-color);
+  border-radius: 10px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color);
+  position: relative;
+  z-index: 1;
 }
+.buttons .add-to-cart:hover {
+    transform: scale(1.05);
+    box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 30px -5px var(--glass-box-shadow-color);
+}
+
+.buttons .buy-now {
+  padding: 12px 20px;
+  margin-top: 40px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 200px;
+  transform: scale(1, 1);
+  transition: transform 0.5s ease, background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease;
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  color: var(--text-color);
+  border-radius: 10px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color);
+  position: relative;
+  z-index: 1;
+}
+.buttons .buy-now:hover {
+    transform: scale(1.05);
+    box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 30px -5px var(--glass-box-shadow-color);
+}
+
 .quantity-desc {
   border: 1px solid var(--glass-edge-highlight-color);
   padding: 6px;
@@ -1135,8 +1184,8 @@ span.text-red {
   background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
   border: 1px solid var(--glass-edge-highlight-color);
   border-radius: 15px;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
   color: var(--text-color);
 }
@@ -1175,8 +1224,8 @@ span.text-red {
   background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
   border: 1px solid var(--glass-edge-highlight-color);
   border-radius: 15px;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
   padding: 40px; /* Increased padding */
   display: flex;
@@ -1559,8 +1608,8 @@ span.text-red {
   background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
      border: 1px solid var(--glass-edge-highlight-color);
   border-radius: 15px;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
      color: var(--text-color);
 }
@@ -1594,8 +1643,8 @@ span.text-red {
      background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
      border: 1px solid var(--glass-edge-highlight-color);
      border-radius: 15px;
-     backdrop-filter: blur(14px);
-     -webkit-backdrop-filter: blur(14px);
+     backdrop-filter: blur(8px);
+     -webkit-backdrop-filter: blur(8px);
      box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
      color: var(--text-color);
 }
@@ -1653,8 +1702,8 @@ span.text-red {
      background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
      border: 1px solid var(--glass-edge-highlight-color);
      border-radius: 15px;
-     backdrop-filter: blur(14px);
-     -webkit-backdrop-filter: blur(14px);
+     backdrop-filter: blur(8px);
+     -webkit-backdrop-filter: blur(8px);
      box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
      color: var(--text-color);
 }
