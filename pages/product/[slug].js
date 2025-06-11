@@ -142,7 +142,7 @@ const ProductDetails = ({ product, products, reviews: initialReviews }) => {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdData) }}
         />
       </Head>
-      <div className="product-detail-container liquid-glass">
+      <div className="product-detail-container">
         <div>
           <div className="image-container">
             {image && image[index] && ( // Check if image and image[index] exist
@@ -240,7 +240,7 @@ const ProductDetails = ({ product, products, reviews: initialReviews }) => {
         )}
       </div>
 
-      <div className="maylike-products-wrapper liquid-glass">
+      <div className="maylike-products-wrapper">
         <h2>You may also like</h2>
         <Swiper
           className="you-may-also-like-swiper"

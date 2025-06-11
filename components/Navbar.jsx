@@ -219,7 +219,7 @@ const Navbar = () => {
   }
 
   return (
-    <div className={`navbar-container liquid-glass ${isScrolled ? 'scrolled-navbar' : ''}`}>
+    <div className={`navbar-container ${isScrolled ? 'scrolled-navbar' : ''}`}>
       <p className="logo">
         <Link href="/">Snacks</Link>
       </p>

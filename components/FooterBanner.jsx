@@ -9,7 +9,7 @@ discount, largeText1, largeText2, saleTime,
 smallText, midText, desc, product, buttonText, image
 } }) => {
   return (
-    <div className="footer-banner-container liquid-glass">
+    <div className="footer-banner-container">
       <div className="banner-desc">
         <div className="left">
           <p>{discount}</p>
