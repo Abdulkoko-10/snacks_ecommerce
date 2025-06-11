@@ -145,7 +145,7 @@
 html {
   background-color: transparent; /* Ensure html doesn't hide body's glass */
   width: 100%;
-  /* overflow-x: hidden; */ /* Temporarily commented out */
+  overflow-x: hidden; /* Re-enable to prevent horizontal scroll */
 }
 
 body {
@@ -159,7 +159,7 @@ body {
   font-family: 'Open Sans', sans-serif;
   line-height: 1.6;
   width: 100%;
-  /* overflow-x: hidden; */ /* Temporarily commented out */
+  overflow-x: hidden; /* Re-enable to prevent horizontal scroll */
   margin: 0;
   padding: 0;
 }
@@ -195,6 +195,12 @@ p {
 
 ::-webkit-scrollbar {
   width: 0px;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block; /* Helps prevent extra space beneath images */
 }
 
 a {
@@ -1188,6 +1194,7 @@ span.text-red {
   -webkit-backdrop-filter: blur(8px);
   box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
   color: var(--text-color);
+  overflow: hidden; /* Add this to contain potential Swiper overflow */
 }
 .maylike-products-wrapper h2 {
   text-align: center;
