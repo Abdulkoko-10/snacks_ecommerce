@@ -151,8 +151,6 @@ html {
 body {
   background-color: transparent; /* Will be covered by the glass effect */
   background: var(--glass-background-color); /* Actual visual layer */
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   min-height: 100vh;
   position: relative; /* Or static, depending on needs, relative is safer */
   color: var(--text-color);
