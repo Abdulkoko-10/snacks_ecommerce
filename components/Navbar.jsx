@@ -299,56 +299,7 @@ const Navbar = () => {
                         },
                         userButtonPopoverFooter: {
                           color: 'var(--text-color)'
-                        },
-                        userProfileModalContent: {  // Styles for the User Profile Modal (when "Manage Account" is clicked)
-                          background: 'radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color)',
-                          backdropFilter: 'blur(10px)',
-                          webkitBackdropFilter: 'blur(10px)',
-                          border: '1px solid var(--glass-edge-highlight-color)',
-                          boxShadow: 'inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color)',
-                          borderRadius: '12px',
-                          color: 'var(--text-color)' // Ensure default text color is applied
-                        },
-                        userProfileModalCard: { // The card within the modal, make it transparent as modalContent handles glass
-                          background: 'transparent',
-                          boxShadow: 'none',
-                          border: 'none'
-                        },
-                        formButtonPrimary: { // Primary buttons (e.g., "Save")
-                          backgroundColor: 'var(--clr-btn-primary-bg)',
-                          color: 'var(--clr-btn-primary-text)',
-                          '&:hover': {
-                            backgroundColor: 'var(--clr-btn-primary-hover-bg)',
-                          }
-                        },
-                        formFieldInput: { // Input fields
-                          backgroundColor: 'var(--secondary-background-color)',
-                          color: 'var(--text-color)',
-                          borderColor: 'var(--glass-edge-highlight-color)',
-                          '&:focus': {
-                            borderColor: 'var(--accent-color)',
-                            boxShadow: '0 0 0 1px var(--accent-color)',
-                          }
-                        },
-                        navbarButton: { // Navigation elements within User Profile (e.g., "Profile", "Security" tabs)
-                          color: 'var(--text-color)',
-                          '&:hover': {
-                            backgroundColor: 'var(--glass-inner-shadow-color)',
-                          },
-                        },
-                        navbarButton__active: { // Active tab
-                          color: 'var(--accent-color)',
-                          borderBottomColor: 'var(--accent-color)',
                         }
-                      },
-                      variables: {
-                        colorPrimary: 'var(--accent-color)',
-                        colorText: 'var(--text-color)',
-                        colorBackground: 'var(--glass-background-color)',
-                        colorInputBackground: 'var(--secondary-background-color)',
-                        colorInputText: 'var(--text-color)',
-                        colorAlphaShade: 'var(--text-color)',
-                        colorTextSecondary: 'var(--text-color)',
                       }
                     }}
                   />
