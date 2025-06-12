@@ -9,8 +9,10 @@ import {
   AiOutlineStar,
 } from "react-icons/ai";
 
-import { client, urlFor } from "../../lib/client";
-//import Image from 'next/image'; // Ensure Image is imported
+import { client, urlFor } from "../../lib/client"; // urlFor needed for JSON-LD
+import Image from 'next/image';
+import { useNextSanityImage } from 'next-sanity-image';
+import { client as sanityClientForHook } from "../../lib/client"; // For useNextSanityImage
 import Product from "../../components/Product";
 import { useStateContext } from "../../context/StateContext";
 import StarRating from '../../components/StarRating'; // Import StarRating
@@ -32,6 +34,11 @@ const ProductDetails = ({ product, products, reviews: initialReviews }) => {
   const [index, setIndex] = useState(0);
   const { decQty, incQty, qty, onAdd, setShowCart } = useStateContext();
   const router = useRouter(); // For constructing current page URL
+
+  const mainImageProps = useNextSanityImage(
+    sanityClientForHook,
+    image && image[index]
+  );
 
   const [isAddedFeedback, setIsAddedFeedback] = useState(false);
   const [isBuyNowFeedback, setIsBuyNowFeedback] = useState(false);
@@ -145,33 +152,35 @@ const ProductDetails = ({ product, products, reviews: initialReviews }) => {
       <div className="product-detail-container">
         <div>
           <div className="image-container">
-            {image && image[index] && ( // Check if image and image[index] exist
-              <img
-                src={urlFor(image[index]).url()}
+            {mainImageProps && (
+              <Image
+                {...mainImageProps}
                 alt={name}
-                width={400} // From CSS .product-detail-image
-                height={400} // From CSS .product-detail-image
                 className="product-detail-image"
-                priority // Main product image, likely LCP
+                layout="intrinsic"
+                priority
               />
             )}
           </div>
           <div className="small-images-container">
-            {image?.map((item, i) => (
-              item && ( // Ensure item exists before rendering Image
-                <img
-                  key={i}
-                  src={urlFor(item).url()}
-                  alt={`${name} - view ${i + 1}`}
-                  width={70} // From CSS .small-image
-                  height={70} // From CSS .small-image
-                  className={
-                    i === index ? "small-image selected-image" : "small-image"
-                  }
-                  onMouseEnter={() => setIndex(i)}
-                />
-              )
-            ))}
+            {image?.map((item, i) => {
+              // eslint-disable-next-line react-hooks/rules-of-hooks
+              const smallImageProps = useNextSanityImage(sanityClientForHook, item);
+              return (
+                item && smallImageProps && (
+                  <Image
+                    key={i}
+                    {...smallImageProps}
+                    alt={`${name} - view ${i + 1}`}
+                    className={
+                      i === index ? "small-image selected-image" : "small-image"
+                    }
+                    layout="intrinsic"
+                    onMouseEnter={() => setIndex(i)}
+                  />
+                )
+              );
+            })}
           </div>
         </div>
 

@@ -13,8 +13,11 @@ import { SwipeableDrawer } from '@mui/material';
 import { useUser, SignInButton } from '@clerk/nextjs';
 
 import { useStateContext } from "../context/StateContext";
-import { urlFor } from "../lib/client";
+// import { urlFor } from "../lib/client"; // No longer needed
 import getStripe from "../lib/getStripe";
+import Image from 'next/image';
+import { useNextSanityImage } from 'next-sanity-image';
+import { client as sanityClient } from '../lib/client';
 
 const Cart = () => {
   const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -110,24 +113,26 @@ const Cart = () => {
 
         <div className="product-container">
           {cartItems.length >= 1 &&
-            cartItems.map((item) => (
-              <div className="product" key={item._id}>
-                {/* <img
-                  src={urlFor(item.image[0])}
-                  className="cart-product-image"
-                /> */}
-                <img
-                  src={urlFor(item.image[0]).url()}
-                  alt={item.name}
-                  width={180} // from CSS .cart-product-image
-                  height={150} // from CSS .cart-product-image
-                  className="cart-product-image"
-                  // layout="responsive" // This might require parent to have defined aspect ratio or size
-                  // objectFit="cover" // If using layout="responsive" or "fill"
-                />
-                <div className="item-desc">
-                  <div className="flex top">
-                    <h5 style={{ color: 'var(--text-color)' }}>{item.name}</h5>
+            cartItems.map((item) => {
+              // eslint-disable-next-line react-hooks/rules-of-hooks
+              const imageProps = useNextSanityImage(
+                sanityClient,
+                item.image && item.image[0]
+              );
+
+              return (
+                <div className="product" key={item._id}>
+                  {imageProps && (
+                    <Image
+                      {...imageProps}
+                      alt={item.name}
+                      className="cart-product-image"
+                      layout="intrinsic"
+                    />
+                  )}
+                  <div className="item-desc">
+                    <div className="flex top">
+                      <h5 style={{ color: 'var(--text-color)' }}>{item.name}</h5>
                     <h4 style={{ color: 'var(--text-color)' }}>${item.price}</h4>
                   </div>
                   <div className="flex bottom">
