@@ -87,7 +87,7 @@ const Cart = () => {
         }
       }}
     >
-      <div className="cart-container glassmorphism" style={{ padding: '20px', maxHeight: '70vh', overflowY: 'auto' }}>
+      <div className="cart-container" style={{ padding: '20px', maxHeight: '70vh', overflowY: 'auto' }}>
         <div className="cart-heading" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '20px' }}>
           <span className="heading" style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--text-color)' }}>Your Cart</span>
           <span className="cart-num-items" style={{ marginLeft: '10px', color: 'var(--text-color)' }}>({totalQuantities} items)</span>
