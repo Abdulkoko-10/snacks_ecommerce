@@ -7,6 +7,79 @@ import { UserButton, SignInButton, SignedIn, SignedOut } from '@clerk/nextjs';
 import { Cart } from './';
 import { useStateContext } from '../context/StateContext';
 
+const userButtonAppearance = {
+  elements: {
+    userButtonPopoverCard: { // Styles the popover that appears when UserButton is clicked
+      background: 'radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color)',
+      backdropFilter: 'blur(10px)',
+      webkitBackdropFilter: 'blur(10px)',
+      border: '1px solid var(--glass-edge-highlight-color)',
+      boxShadow: 'inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color)',
+      borderRadius: '12px',
+    },
+    userButtonPopoverMain: { // Styles text and icons inside the popover
+      color: 'var(--text-color)',
+    },
+    userButtonPopoverActionsItemIcon: { // Icons in the popover action list
+        color: 'var(--text-color)',
+    },
+    userButtonPopoverActionsItemText: { // Text for actions in the popover
+        color: 'var(--text-color)',
+    },
+    userButtonPopoverFooter: { // Footer text in popover (if any)
+        color: 'var(--text-color)',
+    },
+    userProfileModalContent: {  // Styles for the User Profile Modal (when "Manage Account" is clicked)
+      background: 'radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color)',
+      backdropFilter: 'blur(10px)',
+      webkitBackdropFilter: 'blur(10px)',
+      border: '1px solid var(--glass-edge-highlight-color)',
+      boxShadow: 'inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color)',
+      borderRadius: '12px',
+    },
+    userProfileModalCard: { // The card within the modal, make it transparent as modalContent handles glass
+      background: 'transparent',
+      boxShadow: 'none',
+      border: 'none',
+    },
+    formButtonPrimary: { // Primary buttons (e.g., "Save")
+      backgroundColor: 'var(--clr-btn-primary-bg)',
+      color: 'var(--clr-btn-primary-text)',
+      '&:hover': {
+        backgroundColor: 'var(--clr-btn-primary-hover-bg)',
+      },
+    },
+    formFieldInput: { // Input fields
+      backgroundColor: 'var(--secondary-background-color)',
+      color: 'var(--text-color)',
+      borderColor: 'var(--glass-edge-highlight-color)',
+      '&:focus': {
+        borderColor: 'var(--accent-color)',
+        boxShadow: '0 0 0 1px var(--accent-color)',
+      }
+    },
+    navbarButton: { // Navigation elements within User Profile (e.g., "Profile", "Security" tabs)
+      color: 'var(--text-color)',
+      '&:hover': {
+        backgroundColor: 'var(--glass-inner-shadow-color)',
+      },
+    },
+    navbarButton__active: { // Active tab
+      color: 'var(--accent-color)',
+      borderBottomColor: 'var(--accent-color)',
+    }
+  },
+  variables: { // Clerk's global variables that affect User Profile components
+    colorPrimary: 'var(--accent-color)',
+    colorText: 'var(--text-color)',
+    colorBackground: 'var(--glass-background-color)',
+    colorInputBackground: 'var(--secondary-background-color)',
+    colorInputText: 'var(--text-color)',
+    colorAlphaShade: 'var(--text-color)',
+    colorTextSecondary: 'var(--text-color)',
+  }
+};
+
 // Helper to calculate contrast color (black or white)
 const calculateContrastColor = (hexColor) => {
   if (!hexColor) return '#000000'; // Default to black if color is invalid
@@ -272,6 +345,7 @@ const Navbar = () => {
                 <li className="user-button-li">
                   <UserButton
                     afterSignOutUrl="/"
+                    appearance={userButtonAppearance}
                   />
                 </li>
               </SignedIn>
