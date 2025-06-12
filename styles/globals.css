@@ -1,154 +1,173 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Quicksand:wght@500;700&display=swap');
 
+/* USER PROVIDED VARIABLES START */
 :root {
-  --primary-color: #f02d34;
-  --secondary-color: #324d67;
-  --text-color-light: #333;
-  --text-color-dark: #f0f0f0;
-  --background-light: #fff;
-  --background-dark: #1a1a1a;
-  --secondary-background-light: #dcdcdc;
-  --secondary-background-dark: #2a2a2a;
-  --glass-background-light: rgba(255, 255, 255, 0.25);
-  --glass-background-dark: rgba(40, 40, 40, 0.35);
-  --glass-border-light: rgba(255, 255, 255, 0.18);
-  --glass-border-dark: rgba(60, 60, 60, 0.28);
-  --glass-box-shadow-light: rgba(31, 38, 135, 0.37);
-  --glass-box-shadow-dark: rgba(0, 0, 0, 0.37);
-  --product-card-hover-shadow-light: rgba(0, 0, 0, 0.1);
-  --product-card-hover-shadow-dark: rgba(255, 255, 255, 0.15);
+  /* Core Palette */
+  --primary-color: #0D2B45; /* Deep Indigo */
+  --secondary-color: #203C56; /* Shadowed Steel */
+  --accent-color: #FFA500; /* Vibrant Orange */
 
-  /* Default to light mode */
-  --text-color: var(--text-color-light);
-  --primary-background-color: var(--background-light);
-  --secondary-background-color: var(--secondary-background-light);
-  --glass-background-color: var(--glass-background-light);
-  --glass-border-color: var(--glass-border-light);
-  --glass-box-shadow-color: var(--glass-box-shadow-light);
-  --product-card-hover-shadow: var(--product-card-hover-shadow-light);
-  --glass-highlight-color-light: rgba(255, 255, 255, 0.15);
-  --glass-highlight-color-dark: rgba(255, 255, 255, 0.1);
-  --glass-highlight-color-rgb: var(--glass-highlight-color-light);
-  --glass-highlight-color: var(--glass-highlight-color-light);
+  /* Text Colors */
+  --text-color-light: #F0F4F8; /* Off-White/Light Gray */
+  --text-color-dark: #1A1A1A; /* Near Black */
+  --text-on-primary-color: var(--text-color-light); /* For text on primary-color backgrounds */
+  --text-on-accent-color: var(--text-color-dark); /* For text on accent-color backgrounds */
 
-  --glass-sheen-color-light: rgba(255, 255, 255, 0.3);
-  --glass-sheen-color-dark: rgba(255, 255, 255, 0.15);
-  --glass-sheen-color-rgb: var(--glass-sheen-color-light); /* Default for RGB */
+  /* Background Colors */
+  --background-base-light: #FFFFFF; /* Pure White */
+  --background-base-dark: #081C2D; /* Very Dark Blue */
+  --secondary-background-light: #E0E7EF; /* Lightest Gray */
+  --secondary-background-dark: #122A3F; /* Dark Gray-Blue */
+
+  /* Glass Effect Colors - Light Theme */
+  --glass-background-color-light: rgba(200, 210, 225, 0.15); /* Slightly opaque light blue/gray */
+  --glass-sheen-color-light: rgba(230, 240, 255, 0.4); /* Lighter, more prominent sheen */
+  --glass-edge-highlight-color-light: rgba(220, 230, 245, 0.5); /* Clearer edge highlight */
+  --glass-inner-highlight-color-light: rgba(230, 240, 255, 0.2); /* Subtle inner top highlight */
+  --glass-inner-shadow-color-light: rgba(0, 10, 25, 0.1); /* Soft, darker inner bottom shadow */
+  --glass-box-shadow-color-light: rgba(13, 43, 69, 0.25); /* More defined, slightly colored shadow */
+
+  /* Glass Effect Colors - Dark Theme */
+  --glass-background-color-dark: rgba(10, 25, 40, 0.2); /* Slightly opaque dark blue */
+  --glass-sheen-color-dark: rgba(175, 200, 225, 0.15); /* Subtler, cooler sheen */
+  --glass-edge-highlight-color-dark: rgba(120, 150, 180, 0.3); /* Softer, darker edge */
+  --glass-inner-highlight-color-dark: rgba(175, 200, 225, 0.08); /* Very subtle inner top highlight */
+  --glass-inner-shadow-color-dark: rgba(0, 0, 0, 0.2); /* Darker inner bottom shadow */
+  --glass-box-shadow-color-dark: rgba(0, 10, 20, 0.3); /* Deeper, more pronounced shadow */
+
+  /* Glass Effect Colors - RGB Theme (defaults, JS will customize based on chosen color) */
+  --glass-background-color-rgb: var(--glass-background-color-light);
+  --glass-sheen-color-rgb: var(--glass-sheen-color-light);
+  --glass-edge-highlight-color-rgb: var(--glass-edge-highlight-color-light);
+  --glass-inner-highlight-color-rgb: var(--glass-inner-highlight-color-light);
+  --glass-inner-shadow-color-rgb: var(--glass-inner-shadow-color-light);
+  --glass-box-shadow-color-rgb: var(--glass-box-shadow-color-light);
+
+  /* General UI Variables (Defaults to Light Theme) */
+  --text-color: var(--text-color-dark); /* Default text for light theme is dark */
+  --primary-background-color: var(--background-base-light); /* Main page background */
+  --secondary-background-color: var(--secondary-background-light); /* Cards, sections */
+
+  --glass-background-color: var(--glass-background-color-light);
   --glass-sheen-color: var(--glass-sheen-color-light);
-
-  --glass-edge-highlight-color-light: rgba(255, 255, 255, 0.4);
-  --glass-edge-highlight-color-dark: rgba(255, 255, 255, 0.2);
-  --glass-edge-highlight-color-rgb: var(--glass-edge-highlight-color-light); /* Default for RGB */
   --glass-edge-highlight-color: var(--glass-edge-highlight-color-light);
-
-  --glass-inner-highlight-color-light: rgba(255, 255, 255, 0.25);
-  --glass-inner-highlight-color-dark: rgba(255, 255, 255, 0.1);
-  --glass-inner-highlight-color-rgb: var(--glass-inner-highlight-color-light); /* Default for RGB */
   --glass-inner-highlight-color: var(--glass-inner-highlight-color-light);
-
-  --glass-inner-shadow-color-light: rgba(0, 0, 0, 0.05);
-  --glass-inner-shadow-color-dark: rgba(0, 0, 0, 0.1);
-  --glass-inner-shadow-color-rgb: var(--glass-inner-shadow-color-light); /* Default for RGB */
   --glass-inner-shadow-color: var(--glass-inner-shadow-color-light);
+  --glass-box-shadow-color: var(--glass-box-shadow-color-light);
 
-  /* RGB mode variables - initially set to light mode values */
-  --text-color-rgb: var(--text-color-light);
-  --primary-background-color-rgb: var(--background-light);
-  --secondary-background-color-rgb: var(--secondary-background-light);
-  --glass-background-color-rgb: var(--glass-background-light);
-  --glass-border-color-rgb: var(--glass-border-light);
-  --glass-box-shadow-color-rgb: var(--glass-box-shadow-light);
-  --product-card-hover-shadow-rgb: var(--product-card-hover-shadow-light);
-  --primary-color-rgb: var(--primary-color); /* For elements like links, buttons that use primary color directly */
-  --secondary-color-rgb: var(--secondary-color); /* For elements that use secondary color directly */
+  /* Product Card Specific (can be aliased or specific) */
+  --product-card-hover-shadow: rgba(13, 43, 69, 0.35); /* Enhanced hover shadow for light theme */
 
-  /* New variables for specific hardcoded colors */
-  --plus-color: rgb(49, 168, 49);
-  --plus-color-rgb: var(--plus-color);
-  --success-icon-color: green;
-  --success-icon-color-rgb: var(--success-icon-color);
-  --success-message-color: #28a745; /* Same as --plus-color essentially */
-  --success-message-color-rgb: var(--success-message-color);
-
-  /* Variable for text on primary-colored backgrounds */
-  --text-on-primary-color: var(--background-light);
-
-  /* Scrolled Navbar Backgrounds */
-  --scrolled-navbar-bg-light: rgba(255, 255, 255, 0.85); /* Light theme scrolled background */
-  --scrolled-navbar-bg-dark: rgba(26, 26, 26, 0.85);   /* Dark theme scrolled background (using #1a1a1a) */
-  --scrolled-navbar-bg-rgb: rgba(50, 77, 103, 0.85); /* Fallback for RGB (using #324d67), will be updated by JS */
-
-  /* Navbar Height */
+  /* Navbar Specific */
   --navbar-height: 70px;
+  --scrolled-navbar-bg-light: rgba(200, 210, 225, 0.35); /* More opaque version of light glass */
+  --scrolled-navbar-bg-dark: rgba(10, 25, 40, 0.4);    /* More opaque version of dark glass */
+  --scrolled-navbar-bg-rgb: var(--scrolled-navbar-bg-light); /* JS will update this */
 
-  /* Button specific variables */
-  --primary-color-hover: #c0242a; /* Darker shade of #f02d34 */
-  --clr-btn-primary-bg: var(--primary-color);
-  --clr-btn-primary-text: var(--text-on-primary-color);
+  /* Button Specific */
+  --primary-color-hover: #FF8C00; /* Darker/alternate orange for hover */
+  --clr-btn-primary-bg: var(--accent-color);
+  --clr-btn-primary-text: var(--text-on-accent-color);
   --clr-btn-primary-hover-bg: var(--primary-color-hover);
+
+  /* Other UI Elements */
+  --plus-color: #28a745; /* Green for positive actions/icons */
+  --success-icon-color: var(--plus-color);
+  --success-message-color: var(--plus-color);
+  --plus-color-rgb: var(--plus-color); /* For RGB mode consistency if not themed by base */
+  --success-icon-color-rgb: var(--plus-color-rgb);
+  --success-message-color-rgb: var(--plus-color-rgb);
 }
 
 .dark-mode {
-  --text-on-primary-color: var(--background-light); /* Text on primary color (red) is still light in dark mode */
-  --text-color: var(--text-color-dark);
-  --primary-background-color: var(--background-dark);
+  --text-color: var(--text-color-light); /* Text for dark theme is light */
+  --primary-background-color: var(--background-base-dark);
   --secondary-background-color: var(--secondary-background-dark);
-  --secondary-color: var(--text-color-dark); /* FIX: Ensure logo is visible in dark mode */
-  --glass-background-color: var(--glass-background-dark);
-  --glass-border-color: var(--glass-border-dark);
-  --glass-box-shadow-color: var(--glass-box-shadow-dark);
-  --product-card-hover-shadow: var(--product-card-hover-shadow-dark);
-  --glass-highlight-color: var(--glass-highlight-color-dark);
+
+  --glass-background-color: var(--glass-background-color-dark);
   --glass-sheen-color: var(--glass-sheen-color-dark);
   --glass-edge-highlight-color: var(--glass-edge-highlight-color-dark);
   --glass-inner-highlight-color: var(--glass-inner-highlight-color-dark);
   --glass-inner-shadow-color: var(--glass-inner-shadow-color-dark);
+  --glass-box-shadow-color: var(--glass-box-shadow-color-dark);
+
+  --product-card-hover-shadow: rgba(0, 10, 20, 0.45); /* Enhanced hover shadow for dark theme */
+
+  /* Text on primary still uses light text, primary color is dark */
+  --text-on-primary-color: var(--text-color-light);
+  /* Accent color text remains consistent or can be themed if needed */
+  /* --text-on-accent-color: var(--text-color-dark); */
+
+  /* Button specific for dark mode if different from root */
+  /* --clr-btn-primary-bg: var(--accent-color); */
+  /* --clr-btn-primary-text: var(--text-on-accent-color); */
+  /* --clr-btn-primary-hover-bg: var(--primary-color-hover); */
 }
 
 .rgb-mode {
-  --text-color: var(--text-color-rgb);
-  --primary-background-color: var(--primary-background-color-rgb);
-  --secondary-background-color: var(--secondary-background-color-rgb);
+  /* JS will set these based on the chosen RGB color:
+     --primary-color-rgb, --secondary-color-rgb,
+     --text-color-rgb, --primary-background-color-rgb,
+     --secondary-background-color-rgb,
+     --glass-background-color-rgb, --glass-sheen-color-rgb,
+     --glass-edge-highlight-color-rgb, --glass-inner-highlight-color-rgb,
+     --glass-inner-shadow-color-rgb, --glass-box-shadow-color-rgb,
+     --text-on-primary-color-rgb (likely same as --text-color-rgb),
+     --text-on-accent-color-rgb (JS calculates contrast or uses a fixed one)
+  */
+  --primary-color: var(--primary-color-rgb, var(--primary-color));
+  --secondary-color: var(--secondary-color-rgb, var(--secondary-color));
+  --accent-color: var(--accent-color-rgb, var(--accent-color)); /* If accent is also dynamic */
+
+  --text-color: var(--text-color-rgb, var(--text-color-dark)); /* Default to dark text if RGB not set */
+  --primary-background-color: var(--primary-background-color-rgb, var(--background-base-light));
+  --secondary-background-color: var(--secondary-background-color-rgb, var(--secondary-background-light));
+
   --glass-background-color: var(--glass-background-color-rgb);
-  --glass-border-color: var(--glass-border-color-rgb);
-  --glass-box-shadow-color: var(--glass-box-shadow-color-rgb);
-  --product-card-hover-shadow: var(--product-card-hover-shadow-rgb);
-  --primary-color: var(--primary-color-rgb); /* Ensure primary color is also themed */
-  --secondary-color: var(--secondary-color-rgb); /* Ensure secondary color is also themed */
-  --glass-highlight-color: var(--glass-highlight-color-rgb);
   --glass-sheen-color: var(--glass-sheen-color-rgb);
   --glass-edge-highlight-color: var(--glass-edge-highlight-color-rgb);
   --glass-inner-highlight-color: var(--glass-inner-highlight-color-rgb);
   --glass-inner-shadow-color: var(--glass-inner-shadow-color-rgb);
-
-  /* Mapping for new specific color variables */
-  --plus-color: var(--plus-color-rgb);
-  --success-icon-color: var(--success-icon-color-rgb);
-  --success-message-color: var(--success-message-color-rgb);
+  --glass-box-shadow-color: var(--glass-box-shadow-color-rgb);
   
-  /* Text on primary-colored backgrounds should use the main text color of RGB theme (which is contrastColor) */
-  --text-on-primary-color: var(--text-color-rgb);
+  --product-card-hover-shadow: var(--glass-box-shadow-color-rgb); /* Or a slightly intensified version */
 
-  /* Button specific variables for RGB mode */
-  --clr-btn-primary-bg: var(--primary-color-rgb);
-  /* --clr-btn-primary-text is already correctly mapped via --text-on-primary-color */
-  /* For hover, ideally JS would set a --primary-color-rgb-hover. Using a fallback for now. */
-  --clr-btn-primary-hover-bg: var(--secondary-background-color-rgb); /* Fallback: using a generally darker RGB theme color */
+  --text-on-primary-color: var(--text-on-primary-color-rgb, var(--text-color-rgb));
+  --text-on-accent-color: var(--text-on-accent-color-rgb, var(--text-color-dark));
+
+  --clr-btn-primary-bg: var(--accent-color-rgb, var(--accent-color));
+  --clr-btn-primary-text: var(--text-on-accent-color-rgb, var(--text-on-accent-color));
+  --clr-btn-primary-hover-bg: var(--accent-color-hover-rgb, var(--primary-color-hover));
+}
+/* USER PROVIDED VARIABLES END */
+
+/* USER PROVIDED HTML/BODY STYLES START */
+html {
+  background-color: transparent; /* Ensure html doesn't hide body's glass */
+  width: 100%;
+  overflow-x: hidden; /* Re-enable to prevent horizontal scroll */
 }
 
-/* Apply theme to body by default, can be toggled */
 body {
-  background-color: var(--primary-background-color);
+  background-color: transparent; /* Will be covered by the glass effect */
+  background: var(--glass-background-color); /* Actual visual layer */
+  min-height: 100vh;
+  position: relative; /* Or static, depending on needs, relative is safer */
   color: var(--text-color);
   font-family: 'Open Sans', sans-serif;
   line-height: 1.6;
+  width: 100%;
+  overflow-x: hidden; /* Re-enable to prevent horizontal scroll */
+  margin: 0;
+  padding: 0;
 }
+/* USER PROVIDED HTML/BODY STYLES END */
 
 html,
 body,
 * {
-  padding: 0;
-  margin: 0;
+  padding: 0; /* This is already set, body rule above is for reinforcement */
+  margin: 0; /* This is already set, body rule above is for reinforcement */
   font-family: 'Open Sans', sans-serif; /* Base font for all elements */
   box-sizing: border-box;
 }
@@ -176,20 +195,40 @@ p {
   width: 0px;
 }
 
+img {
+  max-width: 100%;
+  height: auto;
+  display: block; /* Helps prevent extra space beneath images */
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block; /* Helps prevent extra space beneath images */
+}
+
 a {
-  color: var(--primary-color);
+  color: var(--accent-color); /* Updated to use accent color for links */
   text-decoration: none;
+}
+a:hover {
+  color: var(--primary-color-hover); /* Updated for hover */
 }
 
 .main-container {
   max-width: 1400px;
-  margin: auto;
-  width: 100%;
+  margin: 0 auto; /* Critical for centering */
+  width: 100%; /* Ensures it doesn't shrink unnecessarily */
+  padding-left: 15px; /* Add some padding for content safety */
+  padding-right: 15px; /* Add some padding for content safety */
+  /* background-color: var(--primary-background-color); /* Removed, body provides glass */
 }
 .layout {
   padding: calc(var(--navbar-height) + 20px) 20px 20px 20px;
+  /* background: transparent; /* Ensure layout doesn't obscure body glass */
 }
 
+/* USER PROVIDED NAVBAR CONTAINER STYLES START */
 .navbar-container {
   display: flex;
   justify-content: space-between;
@@ -198,132 +237,136 @@ a {
   top: 0;
   left: 0;
   width: 100%;
-  padding: 10px 25px; /* Adjusted padding to maintain horizontal spacing for content */
-  margin: 0; /* Removed previous margins */
-  z-index: 10051; /* Above cart-wrapper */
-  /* glassmorphism class is applied in JSX, handling background and related properties */
+  padding: 10px 25px;
+  margin: 0;
+  z-index: 10051;
   transition: background 0.3s ease-in-out;
+  /* Glass styles directly applied */
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--glass-edge-highlight-color); /* Changed from full border to border-bottom */
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), 0 5px 15px -3px var(--glass-box-shadow-color); /* Adjusted shadow */
 }
+/* USER PROVIDED NAVBAR CONTAINER STYLES END */
 
 .scrolled-navbar {
-  background: var(--scrolled-navbar-bg-light) !important;
-  /* Other glassmorphism properties like backdrop-filter, border, box-shadow are preserved
-     as they are applied by the .glassmorphism class already on the element.
-     This class specifically overrides the background for the scrolled state. */
+  /* Uses variables that change based on theme for the second part of background */
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--scrolled-navbar-bg-light) !important;
 }
 
 .dark-mode .scrolled-navbar {
-  background: var(--scrolled-navbar-bg-dark) !important;
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--scrolled-navbar-bg-dark) !important;
 }
 
 .rgb-mode .scrolled-navbar {
-  background: var(--scrolled-navbar-bg-rgb) !important;
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--scrolled-navbar-bg-rgb) !important;
 }
 
 .nav-items-right {
   display: flex;
   align-items: center;
-  gap: 16px; /* Adjust gap as needed */
+  gap: 16px;
 }
 
-/* New Theme Icon Button Styles */
+/* USER PROVIDED THEME ICON BUTTON STYLES START */
 .theme-icon-button {
   background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
   border: 1px solid var(--glass-edge-highlight-color);
   color: var(--text-color);
   cursor: pointer;
-  font-size: 22px; /* Match icon size used in Navbar.jsx */
+  font-size: 22px;
   display: flex;
   align-items: center;
   padding: 8px;
-  transition: transform 0.4s ease;
-  border-radius: 8px;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 4px 12px -2px var(--glass-box-shadow-color);
+  transition: transform 0.4s ease, box-shadow 0.3s ease, background 0.3s ease; /* Added more transitions */
+  border-radius: 10px; /* Slightly larger radius */
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: inset 0 1px 0px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 4px 15px -3px var(--glass-box-shadow-color); /* Refined shadow */
 }
 
 .theme-icon-button:hover {
-  transform: scale(1.1, 1.1); /* Consistent hover effect */
+  transform: scale(1.1);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 6px 20px -3px var(--glass-box-shadow-color); /* Enhanced hover shadow */
 }
+/* USER PROVIDED THEME ICON BUTTON STYLES END */
 
-/* New RGB Color Picker Styles */
 .rgb-color-picker {
-  margin-left: 8px; /* Space from the theme icon button */
-  height: 26px; /* Slightly taller to better show color */
+  margin-left: 8px;
+  height: 26px;
   width: 35px;
-  border: 1px solid var(--secondary-color); /* Theme-aware border */
-  padding: 2px; /* Small padding to show color swatch clearly */
+  border: 1px solid var(--glass-edge-highlight-color); /* Themed border */
+  padding: 2px;
   background-color: transparent;
   cursor: pointer;
-  vertical-align: middle; /* Align with button if needed */
+  vertical-align: middle;
 }
 
-/* Theme Menu (Ellipsis) Styles */
 .theme-menu-container {
   position: relative;
-  display: inline-block; /* Or flex if needed in the parent */
+  display: inline-block;
 }
 
 .theme-ellipsis-button {
   background: transparent;
   border: none;
-  color: var(--secondary-color); /* Its original icon color */
+  color: var(--text-color); /* Updated to use main text color */
   cursor: pointer;
   font-size: 22px;
   display: flex;
   align-items: center;
-  padding: 0 4px; /* Its original padding */
+  padding: 0 4px;
   transition: transform 0.3s ease;
-  border-radius: 0; /* Reset border-radius */
-  backdrop-filter: none; /* Remove backdrop-filter */
-  -webkit-backdrop-filter: none; /* Remove -webkit-backdrop-filter */
-  box-shadow: none; /* Remove box-shadow */
+  border-radius: 0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
 }
 
 .theme-ellipsis-button:hover {
   transform: scale(1.1);
 }
 
+/* USER PROVIDED THEME DROPDOWN MENU STYLES START */
 .theme-dropdown-menu {
   position: absolute;
-  top: calc(100% + 5px); /* Position below the button with a small gap */
+  top: calc(100% + 8px); /* Slightly more gap */
   right: 0;
   background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
-  color: var(--text-color); /* Text color will be inherited by li */
+  color: var(--text-color);
   border: 1px solid var(--glass-edge-highlight-color);
-  border-radius: 10px;
-  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  border-radius: 12px; /* More rounded */
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 12px 40px -5px var(--glass-box-shadow-color); /* Enhanced shadow */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   list-style: none;
-  padding: 8px 0;
+  padding: 10px 0; /* Adjusted padding */
   margin: 0;
-  min-width: 160px; /* Slightly wider */
-  z-index: 200; /* Ensure it's above other elements */
-  overflow: hidden; /* Ensures border-radius clips li hover states - RESTORED */
+  min-width: 180px; /* Wider */
+  z-index: 10052; /* Ensure it's above navbar items if needed */
+  overflow: hidden;
 }
+/* USER PROVIDED THEME DROPDOWN MENU STYLES END */
 
 .theme-dropdown-menu li {
-  padding: 10px 20px; /* More padding for easier clicking */
+  padding: 12px 24px; /* Increased padding */
   cursor: pointer;
-  font-size: 0.9rem; /* Slightly smaller for menu items */
-  transition: background-color 0.2s ease-in-out;
+  font-size: 0.95rem; /* Slightly larger */
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out; /* Added color transition */
   white-space: nowrap;
 }
 
 .theme-dropdown-menu li:hover {
-  background-color: var(--primary-color); /* Use primary color for hover */
-  color: var(--text-on-primary-color); /* Ensure text on primary is visible */
+  background-color: var(--accent-color);
+  color: var(--text-on-accent-color);
 }
 
-
-/* Basic Theme Toggle Switch Styles */
 .theme-switch {
   position: relative;
   display: inline-block;
-  width: 50px; /* Smaller width */
-  height: 24px; /* Smaller height */
+  width: 50px;
+  height: 24px;
 }
 
 .theme-switch input {
@@ -339,57 +382,56 @@ a {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ccc;
+  background-color: var(--secondary-background-color); /* Themed */
   transition: .4s;
-  border-radius: 24px; /* Keep it rounded */
+  border-radius: 24px;
 }
 
 .slider:before {
   position: absolute;
   content: "";
-  height: 18px; /* Smaller circle */
-  width: 18px;  /* Smaller circle */
-  left: 3px;    /* Adjust position */
-  bottom: 3px;  /* Adjust position */
-  background-color: white;
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: var(--background-base-light); /* Usually white or light */
   transition: .4s;
   border-radius: 50%;
 }
 
 input:checked + .slider {
-  background-color: var(--primary-color);
+  background-color: var(--accent-color); /* Use accent color */
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px var(--primary-color);
+  box-shadow: 0 0 1px var(--accent-color);
 }
 
 input:checked + .slider:before {
-  transform: translateX(26px); /* Adjust translation distance */
+  transform: translateX(26px);
 }
-/* End Theme Toggle Switch Styles */
 
 .marquee-text {
-  font-family: 'Quicksand', sans-serif; /* Use heading font */
-  font-size: 2rem; /* Adjusted size */
+  font-family: 'Quicksand', sans-serif;
+  font-size: 2rem;
   font-weight: 700;
   margin: 60px 0px;
   color: var(--primary-color);
 }
 
 span.text-red {
-  -webkit-text-stroke: 1px var(--primary-color);
+  -webkit-text-stroke: 1px var(--accent-color); /* Use accent */
   margin-left: 6px;
 }
 .logo {
   font-family: 'Quicksand', sans-serif;
-  color: var(--secondary-color);
+  color: var(--text-color); /* Use themed text color */
   font-size: 24px;
   font-weight: 700;
 }
 .cart-icon {
   font-size: 25px;
-  color: var(--secondary-color); /* Was gray */
+  color: var(--text-color); /* Use themed text color */
   cursor: pointer;
   position: relative;
   transition: transform 0.4s ease;
@@ -402,9 +444,9 @@ span.text-red {
 .cart-item-qty {
   position: absolute;
   right: -8px;
-  font-size: 0.75rem; /* Adjusted for Open Sans */
-  color: var(--text-on-primary-color); /* UPDATED */
-  background-color: var(--primary-color);
+  font-size: 0.75rem;
+  color: var(--text-on-accent-color);
+  background-color: var(--accent-color);
   width: 18px;
   height: 18px;
   border-radius: 50%;
@@ -415,33 +457,36 @@ span.text-red {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 15px; /* Mobile: gap: 15px; */
-  margin-top: 20px; /* Mobile: margin-top: 20px; */
+  gap: 20px; /* Adjusted gap */
+  margin-top: 20px;
   width: 100%;
+  padding: 20px; /* Add padding to the container */
+  /* background: transparent; /* Ensure it doesn't hide body glass */
 }
+
+/* USER PROVIDED PRODUCT CARD STYLES START */
 .product-card {
   cursor: pointer;
   transform: scale(1, 1);
-  transition: transform 0.5s ease;
-  color: var(--secondary-color);
-  background-color: var(--primary-background-color);
-  border: 1px solid var(--glass-border-color);
-  border-radius: 15px;
-  padding: 15px; /* Mobile: padding: 15px; */
-  position: relative; /* For positioning hover buttons */
-  overflow: hidden; /* To contain hover buttons if they animate from outside */
-
-  /* Sizing to mimic mobile (full width) */
+  transition: transform 0.5s ease, box-shadow 0.5s ease, background 0.5s ease; /* Added transitions for new properties */
+  color: var(--text-color); /* Ensure text inside card uses theme text color */
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  border-radius: 15px; /* Maintained */
+  padding: 15px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
   width: 100%; 
-  /* Removed flex: 0 1 250px; */
-  /* No explicit max-width for now, to see full effect of width: 100% */
 }
 .product-card:hover {
-  transform: scale(1.03); /* Subtler zoom */
-  box-shadow: 0 10px 20px var(--product-card-hover-shadow); /* More pronounced shadow */
+  transform: scale(1.03);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 12px 40px -5px var(--glass-box-shadow-color); /* Enhanced hover shadow */
 }
+/* USER PROVIDED PRODUCT CARD STYLES END */
 
-/* Placeholder buttons container on product card */
 .product-card-hover-buttons {
   position: absolute;
   bottom: 0;
@@ -451,7 +496,7 @@ span.text-red {
   flex-direction: column;
   gap: 8px;
   padding: 15px;
-  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%); /* Subtle gradient for text readability */
+  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%); /* Slightly darker gradient */
   opacity: 0;
   visibility: hidden;
   transform: translateY(20px);
@@ -471,111 +516,106 @@ span.text-red {
   font-size: 0.9rem;
   font-weight: 600;
   border-radius: 8px;
-  border: none;
+  border: 1px solid var(--glass-edge-highlight-color); /* Added border */
   cursor: pointer;
   transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.btn-add-to-cart-hover {
   background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
-  border: 1px solid var(--glass-edge-highlight-color);
   color: var(--text-color);
-  border-radius: 10px; /* Consistent with .btn */
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 6px 15px -4px var(--glass-box-shadow-color);
 }
-.btn-add-to-cart-hover:hover {
-  /* Keep existing hover transform, or define a new glass-specific hover */
+.btn-add-to-cart-hover:hover, .btn-quick-view-hover:hover {
+  background-color: var(--accent-color); /* Use accent color for hover */
+  color: var(--text-on-accent-color);
+  border-color: var(--accent-color);
 }
-
-.btn-quick-view-hover {
-  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
-  border: 1px solid var(--glass-edge-highlight-color);
-  color: var(--text-color);
-  border-radius: 10px; /* Consistent with .btn */
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color);
-}
-.btn-quick-view-hover:hover {
-  /* Keep existing hover transform, or define a new glass-specific hover */
-}
-
 
 .product-image {
-  border-radius: 15px;
+  border-radius: 10px; /* Match card's inner rounding */
   background-color: var(--secondary-background-color);
   transform: scale(1, 1);
   transition: transform 0.5s ease;
-  /* Base properties from original responsive work, still relevant */
   width: 100%; 
   height: auto; 
   object-fit: cover; 
-  /* Set max-height to mobile's value */
-  max-height: 180px; /* Mobile: max-height: 180px; */
+  max-height: 180px;
 }
 
 .product-name {
   font-family: 'Open Sans', sans-serif;
   font-weight: 600;
-  font-size: 0.85rem; /* Mobile: font-size: 0.85rem; */
+  font-size: 0.85rem;
   color: var(--text-color);
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
   line-height: 1.4;
-  overflow-wrap: break-word; /* Ensure text wraps */
+  overflow-wrap: break-word;
 }
 .product-price {
   font-family: 'Open Sans', sans-serif;
   font-weight: 700;
-  font-size: 0.95rem; /* Mobile: font-size: 0.95rem; */
+  font-size: 0.95rem;
   margin-top: 6px;
   color: var(--text-color);
-  overflow-wrap: break-word; /* Ensure text wraps */
+  overflow-wrap: break-word;
 }
 
+/* USER PROVIDED HERO BANNER STYLES START */
 .hero-banner-container {
-  padding: 100px 40px; /* Reverted to original padding */
-  background-color: var(--secondary-background-color);
+  padding: 100px 40px;
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
   border-radius: 15px;
   position: relative;
   height: 500px;
   line-height: 1.2;
   width: 100%;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
+  color: var(--text-color); /* Ensure text within hero banner inherits correct color */
 }
+/* USER PROVIDED HERO BANNER STYLES END */
+
 .hero-banner-container .beats-solo {
   font-size: 1.25rem; 
-  font-weight: 500; /* Quicksand */
+  font-weight: 500;
   color: var(--text-color);
   margin-bottom: 0.5rem;
 }
-.hero-banner-container button {
-  padding: 12px 20px; /* Slightly larger button */
+.hero-banner-container button { /* This is a .btn like style already */
+  padding: 12px 20px;
   margin-top: 40px;
-  font-size: 1.1rem; /* Open Sans */
-  font-weight: 600; /* Open Sans */
+  font-size: 1.1rem;
+  font-weight: 600;
   cursor: pointer;
-  z-index: 1;
+  z-index: 1; /* Keep button above other elements if needed */
   background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
   border: 1px solid var(--glass-edge-highlight-color);
   color: var(--text-color);
   border-radius: 10px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color);
 }
+.hero-banner-container button:hover {
+    transform: scale(1.05); /* Consistent hover */
+    background-color: var(--accent-color);
+    color: var(--text-on-accent-color);
+}
 
-.hero-banner-container h3 { /* Smaller text in hero */
-  font-size: 2.5rem; /* Quicksand */
+
+.hero-banner-container h3 {
+  font-size: 2.5rem;
   margin-top: 0.5rem;
   margin-bottom: 1rem;
   color: var(--text-color);
   line-height: 1.2;
 }
-.hero-banner-container h1 { /* Large text in hero */
-  color: var(--primary-background-color);
-  font-size: 6em; /* Quicksand */
+.hero-banner-container h1 {
+  color: var(--primary-color); /* Changed from primary-background to primary-color for better contrast on glass */
+  font-size: 6em;
   margin-left: -10px;
   text-transform: uppercase;
   line-height: 1;
@@ -586,6 +626,7 @@ span.text-red {
   right: 20%;
   width: 450px;
   height: 450px;
+  /* Consider object-fit if image aspect ratio varies */
 }
 
 .desc {
@@ -593,20 +634,20 @@ span.text-red {
   right: 10%;
   bottom: 5%;
   width: 300px;
-  line-height: 1.5; /* Increased line height for desc */
+  line-height: 1.5;
   display: flex;
   flex-direction: column;
-  color: var(--secondary-color);
+  color: var(--text-color); /* Updated from secondary-color */
 }
 .desc p {
   color: var(--text-color);
-  font-weight: 400; /* Regular for Open Sans */
+  font-weight: 400;
   text-align: end;
-  font-size: 0.95rem; /* Slightly smaller */
+  font-size: 0.95rem;
 }
 .desc h5 {
   margin-bottom: 12px;
-  font-weight: 700; /* Quicksand */
+  font-weight: 700;
   font-size: 1.1rem;
   color: var(--text-color);
   align-self: flex-end;
@@ -614,42 +655,54 @@ span.text-red {
 .products-heading {
   text-align: center;
   margin: 60px 0px 40px;
-  color: var(--secondary-color);
+  padding: 20px; /* Add padding for glass effect */
+  /* Glass styles directly - if it's a separate panel */
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  border-radius: 15px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
+  color: var(--text-color);
 }
 .products-heading h2 {
-  color: var(--text-color);
+  color: var(--text-color); /* Was secondary, now direct text color */
 }
 .products-heading p {
   font-size: 1.1rem;
   font-weight: 400;
   line-height: 1.6;
-  color: var(--text-color);
+  color: var(--text-color); /* Was secondary, now direct text color */
   max-width: 600px;
   margin: 0 auto 1.5rem auto;
 }
 .footer-banner-container {
-  padding: 100px 40px;
-  background-color: var(--primary-color);
+  padding: 80px 40px; /* Adjusted padding */
+  /* background-color: var(--primary-color); /* Replaced by glass */
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
   border-radius: 15px;
   position: relative;
-  height: auto; /* Auto height based on content */
-  min-height: 350px; /* Minimum height */
-  line-height: 1.3; /* Adjusted line-height for banner */
-  color: var(--text-on-primary-color); /* UPDATED */
+  height: auto;
+  min-height: 350px;
+  line-height: 1.3;
+  color: var(--text-color); /* Updated from text-on-primary */
   width: 100%;
-  margin-top: 100px; /* Adjusted margin */
-  padding: 80px 40px; /* Adjusted padding */
+  margin-top: 100px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
 }
 .banner-desc {
   display: flex;
   justify-content: space-between;
-  align-items: center; /* Align items vertically */
+  align-items: center;
 }
-.banner-desc button {
-  padding: 12px 20px; /* Adjusted padding */
-  margin-top: 20px; /* Adjusted margin */
-  font-size: 1.1rem; /* Open Sans */
-  font-weight: 600; /* Open Sans */
+.banner-desc button { /* This is a .btn like style */
+  padding: 12px 20px;
+  margin-top: 20px;
+  font-size: 1.1rem;
+  font-weight: 600;
   cursor: pointer;
   background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
   border: 1px solid var(--glass-edge-highlight-color);
@@ -659,14 +712,20 @@ span.text-red {
   -webkit-backdrop-filter: blur(12px);
   box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color);
 }
-.banner-desc .left h3 { /* Large text in footer banner */
+.banner-desc button:hover {
+    transform: scale(1.05);
+    background-color: var(--accent-color);
+    color: var(--text-on-accent-color);
+}
+
+.banner-desc .left h3 {
   font-weight: 900;
   margin-left: 25px;
-  font-size: 3.5rem; /* Quicksand */
+  font-size: 3.5rem;
 }
 .banner-desc .left p {
   margin: 18px 0;
-  font-size: 1.1rem; /* Open Sans */
+  font-size: 1.1rem;
   line-height: 1.6;
 }
 .footer-banner-image {
@@ -678,61 +737,89 @@ span.text-red {
 }
 .banner-desc .right {
   line-height: 1.4;
-  text-align: right; /* Align text to the right in this section */
+  text-align: right;
 }
-.banner-desc .right h3 { /* "Summer Sale" etc. */
+.banner-desc .right h3 {
   font-weight: 800;
-  font-size: 2.5rem; /* Quicksand */
+  font-size: 2.5rem;
 }
-.banner-desc .right p { /* Short description for sale */
-  font-size: 1.1rem; /* Open Sans */
+.banner-desc .right p {
+  font-size: 1.1rem;
   line-height: 1.6;
   margin-top: 0.5rem;
 }
-.banner-desc .right .company-desc { /* Smallest text */
-  font-size: 0.9rem; /* Open Sans */
+.banner-desc .right .company-desc {
+  font-size: 0.9rem;
   font-weight: 400;
   line-height: 1.5;
   margin-top: 1rem;
 }
 .cart-wrapper {
   width: 100vw;
-  background: rgba(0, 0, 0, 0.5); /* This overlay can remain dark */
+  background: rgba(0, 0, 0, 0.3); /* Darker, less transparent overlay */
+  backdrop-filter: blur(5px); /* Add blur to the overlay itself */
+  -webkit-backdrop-filter: blur(5px);
   position: fixed;
   right: 0;
   top: 0;
   z-index: 10050;
-  transition: all 1s ease-in-out;
+  transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out; /* Smoother transition */
+  /* Logic for visibility will be in JS (e.g. adding a class) */
+  opacity: 0;
+  visibility: hidden;
 }
+.cart-wrapper.active { /* Example class to show cart */
+  opacity: 1;
+  visibility: visible;
+}
+
 .cart-container {
   height: 100vh;
-  width: 100vw;
-  background-color: var(--primary-background-color); /* Was white */
-  position: relative;
+  width: 100vw; /* Will be overridden by SwipeableDrawer's PaperProps for width */
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+     border: 1px solid var(--glass-edge-highlight-color);
+     border-radius: 15px;
+     backdrop-filter: blur(8px);
+     -webkit-backdrop-filter: blur(8px);
+     box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
+     position: relative;
   color: var(--text-color); 
-  padding: 30px 15px; /* Consolidated padding, this was the effective one */
+  padding: 30px 15px;
+     /* SwipeableDrawer may override some of these (e.g. border-radius on specific corners) */
 }
 
 .footer-container {
-  color: var(--secondary-color); 
+  /* color: var(--secondary-color); /* Replaced by glass */
   text-align: center;
   margin-top: 30px; 
   padding: 40px 20px; 
-  font-weight: 400; /* Adjusted for Open Sans */
+  font-weight: 400;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px; /* Increased gap */
+  gap: 15px;
   justify-content: center;
+  /* Glass styles */
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  border-radius: 15px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
+  color: var(--text-color);
 }
 .footer-container .icons {
   font-size: 30px;
   display: flex;
   gap: 10px;
-  color: var(--text-color); 
+  color: var(--text-color); /* Ensure icons use themed text color */
+}
+.footer-container .icons svg:hover { /* Example for icon hover */
+    color: var(--accent-color);
+    transform: scale(1.1);
 }
 .footer-container p {
-  font-size: 0.95rem; /* Smaller text for footer */
+  font-size: 0.95rem;
 }
 .cart-heading {
   display: flex;
@@ -745,7 +832,7 @@ span.text-red {
   border: none;
   background-color: transparent;
   color: var(--text-color); 
-  margin-bottom: 1rem; /* Added margin */
+  margin-bottom: 1rem;
 }
 
 .cart-heading .heading {
@@ -754,7 +841,7 @@ span.text-red {
 }
 .cart-num-items {
   margin-left: 10px;
-  color: var(--primary-color);
+  color: var(--accent-color); /* Use accent for item count */
   font-size: 0.9rem; 
 }
 .empty-cart {
@@ -768,61 +855,68 @@ span.text-red {
   color: var(--text-color);
   margin-bottom: 1rem;
 }
-.empty-cart .btn { /* Style button in empty cart */
+.empty-cart .btn {
   margin-top: 20px;
 }
-.cancel {
+.cancel { /* General cancel icon/button */
   cursor: pointer;
-  color: var(--primary-color); 
+  color: var(--accent-color); /* Use accent for cancel actions */
+  transition: transform 0.2s ease;
 }
-.product-container {
+.cancel:hover {
+    transform: scale(1.1);
+}
+.product-container { /* This is for items within the cart */
   margin-top: 15px;
   overflow: auto;
-  max-height: 70vh;
-  padding: 20px 10px;
-  background-color: var(--primary-background-color); 
+  max-height: calc(70vh - 150px); /* Adjust based on header/footer in cart */
+  padding: 10px 5px; /* Reduced padding slightly */
+  background-color: transparent; /* Ensure it doesn't hide cart-container glass */
 }
-.product {
+.product { /* Individual product item in cart */
   display: flex;
-  gap: 30px;
-  padding: 20px; 
+     gap: 20px;
+     padding: 15px;
   background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
   border: 1px solid var(--glass-edge-highlight-color);
-  border-radius: 15px; /* Maintained */
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
+     border-radius: 15px;
+     backdrop-filter: blur(8px);
+     -webkit-backdrop-filter: blur(8px);
+     box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
   margin-bottom: 10px;
+  color: var(--text-color);
 }
 .product .cart-product-image {
-  width: 180px;
-  height: 150px;
-  border-radius: 15px;
-  background-color: transparent;
+  width: 150px; /* Adjusted size */
+  height: 120px; /* Adjusted size */
+  border-radius: 8px; /* Consistent rounding */
+  background-color: var(--secondary-background-color); /* Fallback if image is transparent */
+  object-fit: cover; /* Ensure image covers the area */
 }
 .item-desc .flex {
   display: flex;
   justify-content: space-between;
-  width: 350px;
-  color: var(--secondary-color); 
+  width: 100%; /* Allow it to fill space */
+  color: var(--text-color);
   font-family: 'Quicksand', sans-serif;
   overflow: hidden;
 }
 .item-desc .bottom {
-  margin-top: 30px; 
+  margin-top: auto; /* Push to bottom if item-desc is flex column */
+  padding-top: 10px; /* Space above quantity/remove */
 }
-.flex h5 { /* Product name in cart */
+.flex h5 {
   font-family: 'Quicksand', sans-serif;
-  font-size: 1.2rem; 
+  font-size: 1.1rem; /* Adjusted */
   font-weight: 700;
   color: var(--text-color);
-  line-height: 1.4; /* Added line height */
+  line-height: 1.4;
   word-break: break-word;
   overflow-wrap: break-word;
 }
-.flex h4 { /* Product price in cart */
+.flex h4 { /* Price */
   font-family: 'Open Sans', sans-serif;
-  font-size: 1.1rem; 
+  font-size: 1rem; /* Adjusted */
   font-weight: 600;
   color: var(--text-color);
   word-break: break-word;
@@ -839,74 +933,90 @@ span.text-red {
   font-weight: 700;
   color: var(--text-color);
 }
-.remove-item {
-  font-size: 24px;
+.remove-item { /* Remove item button in cart */
+  font-size: 22px; /* Slightly smaller */
   cursor: pointer;
-  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
-  border: 1px solid var(--glass-edge-highlight-color);
-  color: var(--text-color);
-  border-radius: 8px;
+  background: transparent; /* Simpler remove button */
+  border: none;
+  color: var(--accent-color); /* Use accent color */
   padding: 6px 8px;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 4px 12px -2px var(--glass-box-shadow-color);
+  border-radius: 8px;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+.remove-item:hover {
+    color: var(--primary-color-hover); /* Darker accent on hover */
+    transform: scale(1.1);
 }
 .cart-bottom {
-  position: absolute;
-  bottom: 12px;
-  right: 5px;
-  width: 100%;
-  padding: 30px 65px;
-  background-color: var(--primary-background-color); /* Ensure cart bottom bg adapts */
+  position: absolute; /* Stick to bottom of cart-container */
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px; /* Consistent padding */
+  background: radial-gradient(ellipse at 50% 100%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color); /* Sheen from bottom for footer bar */
+  border-top: 1px solid var(--glass-edge-highlight-color);
+  box-shadow: 0 -5px 20px -5px var(--glass-box-shadow-color);
+  backdrop-filter: blur(16px); /* Match dropdown blur */
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .btn-container {
-  width: 400px;
+  width: 100%; /* Full width */
   margin: auto;
 }
 .btn {
   width: 100%;
   max-width: 400px;
-  padding: 12px 18px; /* Increased padding */
+  padding: 12px 18px;
   border-radius: 10px;
-  border: 1px solid var(--glass-border-color);
-  font-size: 1.1rem; /* Adjusted for Open Sans */
-  font-weight: 600; /* Adjusted for Open Sans */
-  margin-top: 10px;
-  margin-top: 40px;
+  font-size: 1.1rem;
+  font-weight: 600;
   text-transform: uppercase;
-  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
-  border: 1px solid var(--glass-edge-highlight-color); /* Updated border */
-  backdrop-filter: blur(12px); /* Updated backdrop-filter */
-  -webkit-backdrop-filter: blur(12px); /* Updated -webkit-backdrop-filter */
-  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color); /* Updated box-shadow */
-  color: var(--text-color);
   cursor: pointer;
   transform: scale(1, 1);
-  transition: transform 0.5s ease;
+  /* Standard button styling */
+  background-color: var(--clr-btn-primary-bg);
+  color: var(--clr-btn-primary-text);
+  border: 1px solid var(--clr-btn-primary-bg);
+  transition: transform 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 12px -2px var(--glass-box-shadow-color);
+  /* Removed margin-top to make it more generic */
 }
 .btn:hover {
-  transform: scale(1.1, 1.1);
+  transform: scale(1.03);
+  background-color: var(--clr-btn-primary-hover-bg);
+  border-color: var(--clr-btn-primary-hover-bg);
+  color: var(--clr-btn-primary-text);
+  box-shadow: 0 6px 18px -4px var(--glass-box-shadow-color);
 }
 .product-detail-container {
   display: flex;
-  gap: 40px; /* Slightly reduced gap */
-  margin: 60px auto; 
-  padding: 20px; /* Added padding around container */
+  gap: 30px; /* Adjusted gap */
+  margin: 40px auto; /* Adjusted margin */
+  padding: 30px; /* Increased padding for glass effect */
   max-width: 1200px; 
-  color: var(--secondary-color); 
+  /* Glass styles */
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  border-radius: 15px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
+  color: var(--text-color); /* Ensure text inside inherits correctly */
 }
 
 .product-detail-image {
-  border-radius: 15px;
-  background-color: var(--secondary-background-color); /* Was #ebebeb */
+  border-radius: 10px; /* Match inner card rounding */
+  background-color: var(--secondary-background-color);
   width: 400px;
   height: 400px;
   cursor: pointer;
   transition: 0.3s ease-in-out;
+  object-fit: cover; /* Ensure image covers area */
 }
 .product-detail-image:hover {
-  background-color: var(--primary-color); /* Keep hover effect distinct */
+  /* background-color: var(--primary-color); /* Removed to avoid conflict with glass */
+  opacity: 0.85; /* Slight opacity change on hover */
 }
 .small-images-container {
   display: flex;
@@ -915,43 +1025,50 @@ span.text-red {
 }
 .small-image {
   border-radius: 8px;
-  background-color: var(--secondary-background-color); /* Was #ebebeb */
+  background-color: var(--secondary-background-color);
   width: 70px;
   height: 70px;
   cursor: pointer;
+  border: 1px solid transparent; /* Add border for selected state */
+  transition: border-color 0.3s ease, opacity 0.3s ease;
+  object-fit: cover;
 }
-
+.small-image:hover {
+    opacity: 0.7;
+}
 .selected-image {
-  background-color: var(--primary-color);
+  /* background-color: var(--primary-color); /* Replaced by border */
+  border-color: var(--accent-color);
+  opacity: 1;
 }
-.reviews {
-  color: var(--primary-color);
+.reviews { /* Star ratings and review count text */
+  color: var(--accent-color); /* Use accent for stars */
   margin-top: 10px;
   display: flex;
   gap: 5px;
   align-items: center;
   font-family: 'Open Sans', sans-serif;
-  margin-bottom: 1rem; /* Added bottom margin */
+  margin-bottom: 1rem;
 }
 
-.product-detail-desc h4 { /* "Details:", "Quantity:" labels */
+.product-detail-desc h4 {
   font-family: 'Quicksand', sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
-  margin-top: 10px; /* Reduced margin from 20px */
+  margin-top: 10px;
   margin-bottom: 0.5rem;
   color: var(--text-color);
 }
-.product-detail-desc p { /* Product description text */
+.product-detail-desc p {
   font-family: 'Open Sans', sans-serif;
   line-height: 1.7; 
   margin-top: 10px;
   margin-bottom: 1.5rem; 
   color: var(--text-color);
-  font-size: 1rem; /* Ensure base size for description */
+  font-size: 1rem;
 }
-.reviews p { /* Text next to review stars */
-  color: var(--secondary-color); 
+.reviews p { /* (x Reviews) text */
+  color: var(--text-color); /* Use main text color */
   margin-top: 0px;
   font-size: 0.9rem;
 }
@@ -961,16 +1078,15 @@ span.text-red {
   font-size: 2rem; 
   margin-top: 20px; 
   margin-bottom: 1rem; 
-  color: var(--primary-color);
+  color: var(--accent-color); /* Price in accent color */
 }
-.price .old-price,
-.product-price .old-price, 
 .price .old-price { 
-  color: var(--secondary-color); 
+  color: var(--text-color); /* Old price uses main text color, less prominent */
+  opacity: 0.7; /* Make it less prominent */
   text-decoration: line-through;
-  font-weight: 400; /* Lighter for old price */
-  font-size: 1.2rem; /* Smaller than current price */
-  margin-left: 0.5rem; /* Space it from new price if they are inline */
+  font-weight: 400;
+  font-size: 1.2rem;
+  margin-left: 0.5rem;
 }
 .product-detail-desc .quantity {
   display: flex;
@@ -981,38 +1097,48 @@ span.text-red {
 }
 .product-detail-desc .buttons {
   display: flex;
-  gap: 30px;
-  margin-top: 1.5rem; /* Added margin top */
+  gap: 20px; /* Reduced gap */
+  margin-top: 1.5rem;
 }
+/* Buttons .add-to-cart and .buy-now will use .btn styles by default */
+/* Specific styles for add-to-cart and buy-now buttons if they need to differ from generic .btn */
+/* Ensuring full glass effect for these specific buttons as per user request */
+
 .buttons .add-to-cart {
-  padding: 12px 20px; /* Adjusted padding */
+  padding: 12px 20px;
   margin-top: 40px;
-  font-size: 1rem; /* Adjusted for Open Sans */
-  font-weight: 600; /* Adjusted for Open Sans */
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
   width: 200px;
   transform: scale(1, 1);
-  transition: transform 0.5s ease;
+  transition: transform 0.5s ease, background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease;
   background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
   border: 1px solid var(--glass-edge-highlight-color);
   color: var(--text-color);
   border-radius: 10px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color);
+  position: relative;
+  z-index: 1;
 }
 .buttons .add-to-cart:hover {
-  transform: scale(1.1, 1.1);
+    transform: scale(1.05);
+    box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 30px -5px var(--glass-box-shadow-color);
 }
+
 .buttons .buy-now {
-  width: 200px;
-  padding: 12px 20px; /* Adjusted padding */
+  padding: 12px 20px;
   margin-top: 40px;
-  font-size: 1rem; /* Adjusted for Open Sans */
-  font-weight: 600; /* Adjusted for Open Sans */
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
+  width: 200px;
   transform: scale(1, 1);
-  transition: transform 0.5s ease;
+  transition: transform 0.5s ease, background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease;
   background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
   border: 1px solid var(--glass-edge-highlight-color);
   color: var(--text-color);
@@ -1020,122 +1146,118 @@ span.text-red {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color);
+  position: relative;
+  z-index: 1;
 }
 .buttons .buy-now:hover {
-  transform: scale(1.1, 1.1);
+    transform: scale(1.05);
+    box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 30px -5px var(--glass-box-shadow-color);
 }
+
 .quantity-desc {
-  border: 1px solid var(--secondary-color); 
+  border: 1px solid var(--glass-edge-highlight-color);
   padding: 6px;
   color: var(--text-color);
+  border-radius: 8px; /* Rounded */
+  display: flex; /* Align items nicely */
+  align-items: center;
 }
 .quantity-desc span {
-  font-size: 1rem; /* Adjusted for Open Sans */
-  padding: 4px 6px;
+  font-size: 1rem;
+  padding: 6px 10px; /* Adjusted padding */
   cursor: pointer;
-  background: color-mix(in srgb, var(--glass-background-color) 50%, transparent);
+  background: transparent; /* Remove individual backgrounds */
   border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+.quantity-desc span:hover {
+    background-color: var(--glass-inner-shadow-color); /* Subtle hover */
 }
 .quantity-desc .minus {
-  /* border-right removed if full border is applied or if it looks odd with background */
-  color: var(--primary-color);
+  color: var(--accent-color); /* Accent for minus */
 }
 .quantity-desc .num {
-  /* border-right removed */
-  font-size: 1.2rem; /* Slightly larger for num */
+  font-size: 1.2rem;
   color: var(--text-color);
+  padding: 6px 12px; /* More horizontal padding for number */
+  border-left: 1px solid var(--glass-edge-highlight-color);
+  border-right: 1px solid var(--glass-edge-highlight-color);
 }
 .quantity-desc .plus {
-  color: var(--plus-color); /* UPDATED */
+  color: var(--plus-color);
 }
 
 .maylike-products-wrapper {
-  margin-top: 100px; /* Adjusted margin */
-  padding: 0 20px; /* Add horizontal padding */
+  margin-top: 80px; /* Adjusted margin */
+  padding: 30px; /* Add padding for glass effect */
+  /* Glass styles */
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  border-radius: 15px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
+  color: var(--text-color);
+  /* overflow: hidden; */ /* Removed to test if it helps with page widening */
 }
 .maylike-products-wrapper h2 {
   text-align: center;
-  margin: 0 auto 40px auto; /* Centered and adjusted margin */
-  color: var(--secondary-color); 
-  /* Uses h2 default styling from above */
+  margin: 0 auto 30px auto; /* Adjusted margin */
+  color: var(--text-color); /* Was secondary, now direct text color */
 }
-.maylike-products-container {
+.maylike-products-container { /* This is the Swiper container */
   display: flex;
   justify-content: center;
-  gap: 25px; 
-  margin-top: 30px; 
-}
-
-/* Styles for cart sidebar on mobile devices */
-@media screen and (max-width: 600px) {
-  .cart-wrapper {
-    width: 100vw; /* Or 100% */
-    height: 100vh; /* Or 100% */
-    position: fixed; /* Or absolute if preferred and works with parent */
-    top: 0;
-    left: 0;
-    background: rgba(0, 0, 0, 0.75); /* Darker overlay for focus */
-    z-index: 10050; /* Ensure it's above other content, matches existing */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* transition: all 0.5s ease-in-out; /* Optional: refined transition */
-  }
-
-  .cart-container {
-    width: 90%; /* Or a fixed width like 300px, 320px etc. */
-    max-width: 400px; /* Ensure it doesn't get too wide on larger "mobile" screens */
-    height: auto; /* Adjust height based on content, or a percentage like 80vh */
-    max-height: 90vh; /* Prevent it from taking the entire screen height if content is long */
-    float: none; /* Override existing float */
-    position: relative; /* Ensure it sits correctly within the flex container */
-    /* padding: 20px; /* Adjusted padding, existing mobile padding is 20px 10px */
-    border-radius: 10px; /* Optional: for a more modal-like appearance */
-    /* overflow-y: auto; /* Ensure content scrolls if it exceeds max-height */
-  }
-
-  /* Ensure cart content like product list scrolls if cart-container has fixed height */
-  .product-container { /* This is .cart-container > .product-container */
-    max-height: calc(90vh - 200px); /* Example: Adjust based on other elements in cart-container */
-    /* The 200px is an estimate for heading, total, button etc. Needs to be adjusted. */
-  }
+  gap: 20px;
+  margin-top: 20px;
 }
 
 .max-qty {
   font-weight: 500;
-  color: var(--primary-color);
+  color: var(--accent-color); /* Use accent */
 }
 .success-wrapper,
 .cancel-wrapper {
-  background-color: var(--primary-background-color); /* Was white */
-  min-height: 60vh;
+  background-color: transparent; /* Body provides glass background */
+  min-height: calc(100vh - var(--navbar-height) - 20px); /* Adjust for navbar and some padding */
+  padding: 20px; /* Add padding */
+  display: flex; /* Center content */
+  align-items: center;
+  justify-content: center;
   color: var(--text-color);
 }
 .success,
-.cancel {
-  width: 1000px;
+.cancel { /* This is the inner card for success/cancel messages */
+  width: 100%; /* Full width on mobile */
+  max-width: 600px; /* Max width on larger screens */
   margin: auto;
-  margin-top: 160px;
-  background-color: var(--secondary-background-color); /* Was #dcdcdc */
-  padding: 50px;
+  /* background-color: var(--secondary-background-color); /* Replaced by glass */
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
   border-radius: 15px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
+  padding: 40px; /* Increased padding */
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  text-align: center; /* Center text */
 }
 
 .success .icon {
-  color: var(--success-icon-color); /* UPDATED */
-  font-size: 40px;
+  color: var(--success-icon-color);
+  font-size: 50px; /* Larger icon */
+  margin-bottom: 15px; /* Space below icon */
 }
-.success h2 {
+.success h1 { /* Changed from h2 to h1 for semantic correctness of page title */
   text-transform: capitalize;
-  margin-top: 15px 0px;
-  font-weight: 900;
-  font-size: 40px;
-  color: var(--secondary-color); 
-  /* Uses h2 default from above */
+  margin-top: 0; /* Removed top margin as icon has bottom margin */
+  margin-bottom: 15px; /* Space below heading */
+  font-weight: 700; /* Adjusted weight */
+  font-size: 2.5rem; /* Adjusted size */
+  color: var(--text-color);
 }
 .success .email-msg {
   font-size: 1rem; 
@@ -1148,31 +1270,37 @@ span.text-red {
   font-size: 1.2rem; 
   font-weight: 600;
   line-height: 1.6;
+  margin-bottom: 1.5rem; /* Add margin */
 }
 .success .description {
   font-size: 1rem; 
   font-weight: 400; 
   text-align: center;
-  margin: 10px auto;
-  margin-top: 20px; 
+  margin: 10px auto 20px auto; /* Adjusted margin */
   max-width: 500px; 
   line-height: 1.6;
 }
 .success .description .email {
   margin-left: 5px;
-  color: var(--primary-color);
+  color: var(--accent-color); /* Email link in accent color */
+  font-weight: 600; /* Make it stand out */
+}
+.success .btn, .cancel .btn { /* Ensure buttons in success/cancel pages also use .btn styles */
+    margin-top: 20px;
 }
 .product-max-qty {
   margin-top: 10px;
-  color: var(--text-color);
+  color: var(--accent-color); /* Use accent for warnings */
+  font-weight: 500;
 }
 
+/* Responsive adjustments for product cards, etc. */
 @media screen and (max-width: 800px) {
-  :root {
-    --navbar-height: 60px; /* Override navbar height for mobile */
-    --scrolled-navbar-bg-light: rgba(255, 255, 255, 0.7); /* More transparent for mobile */
-    --scrolled-navbar-bg-dark: rgba(26, 26, 26, 0.7);   /* More transparent for mobile */
-    --scrolled-navbar-bg-rgb: rgba(50, 77, 103, 0.7); /* More transparent fallback for mobile */
+  :root { /* These overrides are fine as they are specific to mobile viewport */
+    --navbar-height: 60px;
+    --scrolled-navbar-bg-light: rgba(200, 210, 225, 0.5); /* More transparent for mobile scroll */
+    --scrolled-navbar-bg-dark: rgba(10, 25, 40, 0.6);
+    --scrolled-navbar-bg-rgb: rgba(var(--rgb-color-chosen, 200, 210, 225), 0.5); /* JS should set --rgb-color-chosen */
   }
 
   h1 { font-size: 2rem; } 
@@ -1183,37 +1311,36 @@ span.text-red {
   h6 { font-size: 1rem; }
 
   .layout {
-    padding: 15px;
+    padding: calc(var(--navbar-height) + 15px) 15px 15px 15px; /* Adjusted padding */
   }
   .navbar-container {
-    padding: 8px 15px; /* Reduced vertical and horizontal padding for mobile */
-    margin: 0; /* Ensure margin is 0 for fixed navbar */
+    padding: 8px 15px;
   }
    .logo {
     font-size: 20px;
   }
 
   .hero-banner-container {
-    padding: 60px 20px; /* Adjusted padding for mobile */
-    height: auto; /* Auto height for mobile */
-    min-height: 400px; /* Min height for mobile */
+    padding: 60px 20px;
+    height: auto;
+    min-height: 400px;
   }
   .hero-banner-image {
     width: 70%;
-    height: auto; /* Auto height for image */
-    max-height: 250px; /* Max height for image */
-    top: 10%; /* Adjust position */
-    right: 5%; /* Adjust position */
+    height: auto;
+    max-height: 250px;
+    top: 10%;
+    right: 5%;
   }
   .footer-banner-container {
-    padding: 40px 20px; /* Adjusted padding for mobile */
-    height: auto; /* Auto height for mobile */
-    min-height: 400px; /* Min height for mobile */
+    padding: 40px 20px;
+    height: auto;
+    min-height: 400px;
     margin-top: 80px;
   }
   .footer-banner-image {
     width: 60%;
-    left: 20%; /* Adjust for better centering if needed */
+    left: 20%;
     top: 5%;
     height: auto;
     max-height: 200px;
@@ -1221,7 +1348,7 @@ span.text-red {
   .banner-desc {
     flex-wrap: wrap;
     gap: 20px;
-    text-align: center; /* Center text for banner desc on mobile */
+    text-align: center;
   }
    .banner-desc .left, .banner-desc .right {
     text-align: center;
@@ -1233,7 +1360,7 @@ span.text-red {
     font-size: 2.5rem; 
   }
   .banner-desc .left p {
-    margin: 10px 0; /* Adjusted margin */
+    margin: 10px 0;
     font-size: 1rem; 
   }
   .banner-desc .right h3 {
@@ -1245,28 +1372,24 @@ span.text-red {
   .banner-desc .right .company-desc {
     font-size: 0.8rem; 
   }
-  .hero-banner-container {
-    line-height: 1.3;
-  }
   .hero-banner-container h1 {
     font-size: 2.8rem; 
-    margin-left: 0; /* Remove negative margin */
-    text-align: center; /* Center hero text */
+    margin-left: 0;
+    text-align: center;
   }
   .hero-banner-container h3 {
     font-size: 1.8rem; 
-    text-align: center; /* Center hero text */
+    text-align: center;
   }
   .hero-banner-container button {
-    margin-top: 30px; /* Adjusted margin */
-    z-index: 1;
+    margin-top: 30px;
     font-size: 1rem; 
   }
   .desc {
-    position: static; /* Static for mobile flow */
-    width: 90%; /* Adjust width for mobile */
-    margin: 20px auto 0 auto; /* Center and add margin */
-    text-align: center; /* Center desc text */
+    position: static;
+    width: 90%;
+    margin: 20px auto 0 auto;
+    text-align: center;
   }
   .desc p {
     font-size: 0.9rem;
@@ -1274,21 +1397,23 @@ span.text-red {
   }
   .desc h5 {
     font-size: 1rem;
-    align-self: center; /* Center heading in desc */
+    align-self: center;
   }
 
   .products-heading {
     margin: 40px 0px 30px;
+    padding: 15px; /* Adjust padding for mobile */
   }
   .products-heading p {
     font-size: 1rem;
   }
-  .product-card {
-    width: calc(50% - 10px); /* Two cards per row */
+  .product-card { /* For 2-column layout on medium screens */
+    flex: 0 1 calc(50% - 10px); /* Adjust for gap */
+    width: auto; /* Override width:100% from base .product-card */
     padding: 10px;
-    max-width: none; /* Allow cards to correctly take up 50% width */
+    max-width: none;
   }
-  .product-image { /* Specific adjustment for this breakpoint */
+  .product-image {
     max-height: 200px;
   }
   .product-name {
@@ -1297,48 +1422,48 @@ span.text-red {
   .product-price {
     font-size: 1rem; 
   }
-
+}
   /* Further adjustments for very small screens */
-  @media screen and (max-width: 480px) {
+@media screen and (max-width: 480px) {
     .products-container {
-      gap: 15px; /* Reduce gap for single column */
+      gap: 15px;
       margin-top: 20px;
+      padding: 10px; /* Adjust container padding */
     }
-    .product-card {
-      width: 100%; /* Full width for single card per row */
-      padding: 15px; /* Adjust padding if needed */
+    .product-card { /* Single column on very small screens */
+      flex: 0 1 100%;
+      width: 100%;
+      padding: 15px;
     }
-    .product-image { /* Specific adjustment for this breakpoint */
+    .product-image {
       max-height: 180px; 
     }
     .product-name {
-      font-size: 0.85rem; /* Slightly smaller for very small screens */
+      font-size: 0.85rem;
     }
     .product-price {
-      font-size: 0.95rem; /* Slightly smaller for very small screens */
+      font-size: 0.95rem;
     }
     .product-card-hover-buttons {
-      padding: 10px; /* Adjust padding for smaller cards */
+      padding: 10px;
     }
     .product-card-hover-buttons button {
-      font-size: 0.8rem; /* Smaller buttons */
+      font-size: 0.8rem;
       padding: 6px 8px;
     }
+}
 
-    /* Adjustments for "You may also like" track on very small screens */
-    /* Removed min-width for .maylike-products-container .product-card as it's handled by product-card width:100% and general product-card styling */
-  }
-
+@media screen and (max-width: 800px) { /* Continue adjustments for 800px */
   .product-detail-container {
     flex-wrap: wrap;
-    gap: 20px; /* Adjusted gap for mobile */
-    margin: 20px auto; /* Adjusted margin for mobile */
-    padding: 15px; /* Added padding */
+    gap: 20px;
+    margin: 20px auto;
+    padding: 15px;
   }
   .product-detail-container .product-detail-image {
-    width: 100%; /* Full width image */
-    height: auto; /* Auto height */
-    max-height: 300px; /* Max height */
+    width: 100%;
+    height: auto;
+    max-height: 300px;
   }
   .product-detail-desc h4 {
     font-size: 1.1rem;
@@ -1350,53 +1475,62 @@ span.text-red {
     font-size: 1.5rem;
   }
   .product-detail-desc .buttons {
-    flex-direction: column; /* Stack buttons on mobile */
+    flex-direction: column;
     gap: 15px;
   }
   .buttons .add-to-cart, .buttons .buy-now {
-    width: 100%; /* Full width buttons */
-    margin-top: 15px; /* Adjusted margin */
+    width: 100%;
+    margin-top: 15px;
     font-size: 0.9rem;
   }
 
-  .cart-container {
-    width: 100%; /* Full width cart on mobile */
-    padding: 20px 10px; /* Adjusted padding */
-    float: none; /* Prevent floating on mobile to fix clipping */
+  .cart-container { /* Cart specific for mobile */
+    width: 100%;
+    padding: 20px 10px;
+    float: none;
+    border-left: none; /* No side border if full width/bottom sheet */
+    border-radius: 20px 20px 0 0; /* If it slides from bottom */
   }
   .cart-heading {
-    margin-top: 20px; /* Adjusted margin */
+    margin-top: 10px; /* Reduced margin */
     font-size: 1rem;
   }
-  .product-container {
+  .product-container { /* Cart items list */
     margin-top: 10px;
+    max-height: calc(80vh - 180px); /* Adjust max height for cart */
   }
-  .product {
-    padding: 15px 10px; /* Adjusted padding */
-    gap: 15px; /* Adjusted gap for mobile */
-    flex-direction: column; /* Stack cart items */
-    align-items: center; /* Center items */
+  .product { /* Cart item */
+    padding: 10px;
+    gap: 10px;
+    flex-direction: column;
+    align-items: center;
   }
   .product .cart-product-image {
-    width: 50%; /* Larger image in stacked view */
+    width: 60%; /* Adjust image size in cart */
+    max-width: 150px; /* Max size */
     height: auto;
   }
   .item-desc .flex {
-    width: 100%; /* Full width for item desc */
-    text-align: center; /* Center text */
-    flex-direction: column; /* Stack name/price */
+    width: 100%;
+    text-align: center;
+    flex-direction: column;
     gap: 5px;
   }
   .item-desc .bottom {
-    margin-top: 15px; /* Adjusted margin */
+    margin-top: 15px;
+    width: 100%; /* Ensure quantity controls take full width */
+    display: flex;
+    justify-content: space-around; /* Space out quantity and remove */
+    align-items: center;
   }
   .cart-bottom {
-    position: static; /* Static for mobile flow */
-    padding: 20px; /* Adjusted padding */
+    position: relative; /* Changed from absolute for mobile flow */
+    padding: 15px;
+    border-radius: 0 0 20px 20px; /* If cart has rounded top */
   }
-  .btn-container { /* For cart pay button */
+  .btn-container {
     width: 100%;
-    padding: 0 10px; /* Add padding to btn container */
+    padding: 0 10px;
   }
 
   .total h3 {
@@ -1404,52 +1538,52 @@ span.text-red {
   }
   .success-wrapper,
   .cancel-wrapper {
-    min-height: 69vh;
-    padding: 20px; /* Added padding */
+    min-height: calc(100vh - var(--navbar-height)); /* Full available height */
+    padding: 15px;
   }
   .success,
   .cancel {
-    width: 100%; /* Full width */
-    max-width: 370px; /* Constrain width */
-    margin-top: 60px; /* Adjusted margin */
-    padding: 20px;
+    width: 100%;
+    max-width: 370px;
+    margin-top: 0; /* Removed fixed margin for flex centering */
+    padding: 25px; /* Adjusted padding */
   }
-  .success {
-    height: auto; /* Auto height */
-    min-height: 300px; /* Min height */
+  .success h1 { /* Was h2 */
+    font-size: 1.8rem; /* Adjusted size */
   }
-  .success h2 {
-    font-size: 1.5rem; 
+  .maylike-products-wrapper {
+    padding: 20px; /* Adjust padding */
+    margin-top: 60px; /* Adjust margin */
   }
   .maylike-products-wrapper h2 {
     font-size: 1.5rem;
-    margin: 30px 20px;
+    margin: 0 auto 20px auto; /* Adjusted margin */
   }
-  .maylike-products-container {
-    flex-direction: column; /* Stack "you may also like" items */
+  .maylike-products-container { /* Swiper */
+    flex-direction: column;
     align-items: center;
     gap: 15px;
     margin-top: 20px;
   }
 }
 
+/* Desktop and larger screen adjustments (complementing mobile-first) */
 @media screen and (min-width: 801px) {
   .products-container {
-    gap: 30px;
+    gap: 25px; /* Slightly larger gap for desktop */
     margin-top: 40px;
+    padding: 20px 0; /* Remove horizontal padding if main-container handles it */
   }
 
   .product-card {
-    flex: 0 1 calc(33.333% - 20px);
-    padding: 20px;
-    width: auto;
-    max-width: none;
+    flex: 0 1 calc(33.333% - 20px); /* 3 cards per row, accounting for gap */
+    width: auto; /* Ensure flex-basis takes precedence over base width:100% */
+    /* max-width: none; /* No max-width needed with flex */
+    padding: 20px; /* Larger padding for desktop cards */
   }
 
   .product-image {
-    max-height: 280px;
-    width: 100%;
-    object-fit: cover;
+    max-height: 280px; /* Larger images on desktop */
   }
 
   .product-name {
@@ -1463,59 +1597,67 @@ span.text-red {
   }
 }
 
-.glassmorphism {
+.glassmorphism { /* This is the OLD class, may be unused now */
   background: var(--glass-background-color);
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px); /* For Safari */
+  -webkit-backdrop-filter: blur(10px);
   border-radius: 10px;
   border: 1px solid var(--glass-border-color);
   box-shadow: 0 8px 32px 0 var(--glass-box-shadow-color);
 }
 
 .added-feedback {
-  background-color: #28a745 !important; /* Green color for success */
-  color: white !important;
-  pointer-events: none; /* Disable clicks while feedback is shown */
+  background-color: var(--plus-color) !important;
+  color: var(--text-on-accent-color) !important; /* Assuming plus color is like accent */
+  pointer-events: none;
 }
 
 /* Review Section Styles */
 .reviews-section {
   margin-top: 40px;
-  padding: 20px;
-  border-top: 1px solid var(--glass-border-color); /* Separator */
+     padding: 30px;
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+     border: 1px solid var(--glass-edge-highlight-color);
+  border-radius: 15px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
+     color: var(--text-color);
 }
 
-/* StarRating Component */
 .star-rating {
   display: flex;
   align-items: center;
-  gap: 2px; /* Small gap between stars */
+  gap: 2px;
 }
-.star-icon svg { /* Target SVG within if icons are direct children */
-  color: var(--primary-color); /* Or a specific star color variable */
+.star-icon svg {
+  color: var(--accent-color);
 }
 
-/* ReviewList Component */
 .review-list-container {
   margin-bottom: 30px;
 }
 
 .review-list-title, .review-form-title {
   font-family: 'Quicksand', sans-serif;
-  font-size: 1.8rem; /* h3 size */
+  font-size: 1.8rem;
   font-weight: 700;
   color: var(--text-color);
   margin-bottom: 20px;
   padding-bottom: 10px;
-  border-bottom: 1px solid var(--glass-border-color);
+  border-bottom: 1px solid var(--glass-edge-highlight-color); /* Themed border */
 }
 
 .review-item {
-  background-color: var(--secondary-background-color);
-  padding: 15px;
-  border-radius: 8px;
-  margin-bottom: 15px;
-  box-shadow: 0 2px 4px var(--product-card-hover-shadow); /* Use existing variable for subtle shadow */
+     padding: 20px;
+     margin-bottom: 20px;
+     background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+     border: 1px solid var(--glass-edge-highlight-color);
+     border-radius: 15px;
+     backdrop-filter: blur(8px);
+     -webkit-backdrop-filter: blur(8px);
+     box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
+     color: var(--text-color);
 }
 
 .review-item-header {
@@ -1535,12 +1677,13 @@ span.text-red {
 .review-date {
   font-family: 'Open Sans', sans-serif;
   font-size: 0.85rem;
-  color: var(--secondary-color);
+  color: var(--text-color);
+  opacity: 0.7; /* Make date less prominent */
 }
 
 .review-title {
   font-family: 'Quicksand', sans-serif;
-  font-size: 1.2rem; /* h5 size */
+  font-size: 1.2rem;
   font-weight: 500;
   margin-top: 8px;
   margin-bottom: 5px;
@@ -1552,24 +1695,28 @@ span.text-red {
   font-size: 1rem;
   line-height: 1.6;
   color: var(--text-color);
-  margin-bottom: 0; /* Remove default p margin if inside review item */
+  margin-bottom: 0;
 }
 
 .no-reviews-message {
   font-family: 'Open Sans', sans-serif;
   font-style: italic;
-  color: var(--secondary-color);
+  color: var(--text-color);
+  opacity: 0.8;
   padding: 20px 0;
   text-align: center;
 }
 
-/* ReviewForm Component */
 .review-form-container {
-  background-color: var(--secondary-background-color);
   padding: 25px;
-  border-radius: 8px;
   margin-top: 20px;
-  box-shadow: 0 4px 8px var(--product-card-hover-shadow);
+     background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+     border: 1px solid var(--glass-edge-highlight-color);
+     border-radius: 15px;
+     backdrop-filter: blur(8px);
+     -webkit-backdrop-filter: blur(8px);
+     box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
+     color: var(--text-color);
 }
 
 .form-group {
@@ -1588,129 +1735,124 @@ span.text-red {
 .form-group input[type="text"],
 .form-group textarea {
   width: 100%;
-  padding: 10px 12px;
-  border-radius: 5px;
-  border: 1px solid var(--glass-border-color);
-  background-color: var(--primary-background-color);
+  padding: 12px 15px; /* Increased padding */
+  border-radius: 8px; /* More rounding */
+  border: 1px solid var(--glass-edge-highlight-color); /* Themed border */
+  background-color: var(--primary-background-color); /* Match main background */
   color: var(--text-color);
   font-family: 'Open Sans', sans-serif;
   font-size: 1rem;
-  transition: border-color 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Added box-shadow transition */
 }
 
 .form-group input[type="text"]:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb, 240, 45, 52), 0.3); /* Define --primary-color-rgb or adjust */
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px var(--accent-color-rgb, rgba(255, 165, 0, 0.3)); /* Use accent color for focus ring */
 }
 
 .form-group textarea {
   resize: vertical;
-  min-height: 100px;
+  min-height: 120px; /* Increased min-height */
 }
 
 .submission-message {
-  padding: 10px;
-  border-radius: 5px;
+  padding: 12px; /* Increased padding */
+  border-radius: 8px;
   margin-top: 15px;
   font-family: 'Open Sans', sans-serif;
   text-align: center;
+  border-width: 1px;
+  border-style: solid;
 }
 
 .error-message {
-  background-color: rgba(240, 45, 52, 0.1); /* Light red */
-  color: var(--primary-color); /* Already uses a themeable variable */
-  border: 1px solid var(--primary-color); /* Already uses a themeable variable */
+  background-color: rgba(255, 0, 0, 0.1); /* Standard error red */
+  color: #D8000C; /* Darker red for text */
+  border-color: #D8000C;
 }
 
 .success-message {
-  background-color: rgba(40, 167, 69, 0.1); /* Light green */
-  color: var(--success-message-color); /* UPDATED */
-  border: 1px solid var(--success-message-color); /* UPDATED */
+  background-color: rgba(var(--plus-color-rgb-values, 40, 167, 69), 0.1); /* Use RGB values from plus-color */
+  color: var(--plus-color);
+  border-color: var(--plus-color);
 }
 
 .btn-submit-review {
-  /* Uses .btn styling, but can add specific overrides if needed */
-  margin-top: 10px; /* Remove default large margin from .btn if only used here */
+  margin-top: 10px;
 }
 .btn-submit-review:disabled {
-  background-color: var(--secondary-color);
+  background-color: var(--secondary-color); /* Use secondary color for disabled */
+  opacity: 0.7;
   cursor: not-allowed;
+  border-color: var(--secondary-color);
 }
 
 .btn-toggle-review-form {
-  /* Uses .btn styling by default */
-  display: block; /* Make it block to center it easily */
-  margin: 20px auto; /* Center the button */
-  min-width: 200px; /* Give it a decent width */
+  display: block;
+  margin: 30px auto; /* Increased margin */
+  min-width: 220px; /* Wider button */
 }
 
-/* Adjustments for .reviews on product detail page */
 .product-detail-desc .reviews {
   display: flex;
   align-items: center;
-  gap: 8px; /* Gap between stars and text */
-  margin-bottom: 15px; /* More space below reviews summary */
+  gap: 8px;
+  margin-bottom: 15px;
 }
 .product-detail-desc .reviews p {
-  margin-bottom: 0; /* Remove default p margin here */
-  font-size: 0.95rem; /* Consistent size */
+  margin-bottom: 0;
+  font-size: 0.95rem;
 }
 
-/* Swiper Carousel Custom Styles for "You may also like" */
 .you-may-also-like-swiper {
-  padding-bottom: 50px; /* Increased space for pagination dots below buttons */
-  position: relative; /* Needed for absolute positioning of nav buttons if not using default Swiper placement */
+  padding-bottom: 50px;
+  position: relative;
 }
 
-/* Ensure slides correctly size their content (Product Cards) */
 .you-may-also-like-swiper .swiper-slide {
   display: flex;
   justify-content: center;
-  align-items: stretch; /* Make slides equal height if cards vary */
-  height: auto; /* Allow slide to grow with card content */
+  align-items: stretch;
+  height: auto;
 }
 
 .you-may-also-like-swiper .swiper-slide .product-card {
-  width: 100%; /* Make product card take full width of the slide */
-  margin: 0; /* Remove any margin from product card itself if it interferes */
-  height: 100%; /* Make product card take full height of the slide */
+  width: 100%;
+  margin: 0;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-
-/* Navigation Buttons Styling */
 .you-may-also-like-swiper .swiper-button-prev,
 .you-may-also-like-swiper .swiper-button-next {
-  --swiper-navigation-color: var(--primary-color);
-  --swiper-navigation-size: 28px; /* Default is 44px, makes arrows smaller */
-  
-  /* Custom background and shape for buttons */
+  --swiper-navigation-color: var(--accent-color); /* Use accent color */
+  --swiper-navigation-size: 28px;
   background-color: var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color); /* Add border */
   border-radius: 50%;
-  width: calc(var(--swiper-navigation-size) + 16px); /* Arrow size + padding */
-  height: calc(var(--swiper-navigation-size) + 16px);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  width: calc(var(--swiper-navigation-size) + 20px); /* Increased padding */
+  height: calc(var(--swiper-navigation-size) + 20px);
+  box-shadow: 0 2px 8px -2px var(--glass-box-shadow-color); /* Themed shadow */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .you-may-also-like-swiper .swiper-button-prev:hover,
 .you-may-also-like-swiper .swiper-button-next:hover {
-  background-color: var(--secondary-background-color); /* Slightly more opaque on hover */
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  background-color: var(--secondary-background-color);
+  border-color: var(--glass-inner-highlight-color); /* Lighter border on hover */
+  box-shadow: 0 4px 12px -2px var(--glass-box-shadow-color);
 }
 
-/* Adjust default ::after pseudo-element if custom icons are not used */
 .you-may-also-like-swiper .swiper-button-prev::after,
 .you-may-also-like-swiper .swiper-button-next::after {
   font-size: var(--swiper-navigation-size);
   font-weight: bold;
 }
 
-/* Positioning navigation buttons slightly more inwards */
 .you-may-also-like-swiper .swiper-button-prev {
   left: 10px;
 }
@@ -1719,25 +1861,22 @@ span.text-red {
   right: 10px;
 }
 
-/* Pagination Dots Styling */
 .you-may-also-like-swiper .swiper-pagination {
-  position: absolute; /* Ensure it's positioned relative to swiper container */
-  /* bottom: 10px; */ /* Default Swiper variable --swiper-pagination-bottom might be 0 or negative - adjusted by vertical-gap */
+  position: absolute;
   left: 0;
   width: 100%;
-  --swiper-pagination-color: var(--primary-color); /* Active dot color */
-  --swiper-pagination-bullet-inactive-color: var(--secondary-color); /* Inactive dot color */
+  --swiper-pagination-color: var(--accent-color);
+  --swiper-pagination-bullet-inactive-color: var(--text-color);
   --swiper-pagination-bullet-inactive-opacity: 0.3;
   --swiper-pagination-bullet-size: 8px;
   --swiper-pagination-bullet-horizontal-gap: 5px;
-  --swiper-pagination-bullet-vertical-gap: 20px; /* Space from slides */
+  --swiper-pagination-bullet-vertical-gap: 20px;
 }
 
-/* Responsive adjustments for smaller screens */
-@media screen and (max-width: 767px) { /* Target tablets and phones */
+@media screen and (max-width: 767px) {
   .you-may-also-like-swiper .swiper-button-prev,
   .you-may-also-like-swiper .swiper-button-next {
-    --swiper-navigation-size: 22px; /* Even smaller arrows */
+    --swiper-navigation-size: 22px;
     width: calc(var(--swiper-navigation-size) + 12px);
     height: calc(var(--swiper-navigation-size) + 12px);
   }
@@ -1748,220 +1887,370 @@ span.text-red {
     right: 5px;
   }
   .you-may-also-like-swiper {
-    padding-bottom: 40px; /* Adjust if pagination dots need more/less space */
+    padding-bottom: 40px;
   }
   .you-may-also-like-swiper .swiper-pagination {
-    bottom: 5px; /* Closer to the bottom edge on mobile */
+    bottom: 5px;
      --swiper-pagination-bullet-vertical-gap: 15px;
   }
 }
 
-@media screen and (max-width: 480px) {
-  /* On very small screens, hide navigation buttons if they clutter the UI */
-  /* For this project, we'll keep them but ensure they don't overlap too much */
-  .you-may-also-like-swiper .swiper-button-prev {
-    /* left: -5px; /* Example: move further out if needed */
-  }
-  .you-may-also-like-swiper .swiper-button-next {
-    /* right: -5px; /* Example: move further out if needed */
-  }
-}
-
 /* Tooltip styles */
+.tooltip-container { /* Added for positioning context */
+  position: relative;
+  display: inline-block;
+}
 .tooltip-container:hover .tooltip-text {
   visibility: visible;
   opacity: 1;
 }
+.tooltip-text {
+  visibility: hidden;
+  width: max-content; /* Adjust width to content */
+  max-width: 200px; /* Max width for tooltip */
+  background-color: var(--secondary-background-color);
+  color: var(--text-color);
+  text-align: center;
+  border-radius: 8px;
+  padding: 8px 12px; /* Adjusted padding */
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%); /* Center tooltip */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  box-shadow: 0 2px 8px -2px var(--glass-box-shadow-color); /* Themed shadow */
+  border: 1px solid var(--glass-edge-highlight-color); /* Add border */
+}
+.tooltip-text::after { /* Optional: Tooltip arrow */
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--secondary-background-color) transparent transparent transparent;
+}
 
 /* Locked button style */
 .btn-locked {
-  background-color: #cccccc;
-  color: #666666;
-  border-color: #aaaaaa; /* Or match background */
+  background: var(--secondary-background-color) !important; /* Themed disabled background */
+  color: var(--text-color) !important;
+  opacity: 0.6 !important; /* Adjust opacity */
+  border-color: var(--glass-edge-highlight-color) !important; /* Themed border */
   cursor: not-allowed;
-  opacity: 0.7;
 }
 
 .btn-locked:hover,
 .btn-locked:active {
-  background-color: #cccccc !important; /* Maintain inactive appearance */
-  color: #666666 !important;
-  /* Add any other properties that need to be overridden from the default .btn styles */
-  box-shadow: none !important; /* Example: remove shadow if .btn has one */
-  transform: scale(1, 1) !important; /* Prevent hover scale effect from .btn:hover */
+  background: var(--secondary-background-color) !important;
+  color: var(--text-color) !important;
+  opacity: 0.6 !important;
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color) !important; /* Maintain base shadow */
+  transform: scale(1) !important;
 }
+
 
 /* Styles for the UserButton list item in the theme dropdown */
 .theme-dropdown-menu li.user-button-li {
-  padding: 5px; /* Reduced padding to better fit the UserButton */
+  padding: 5px 10px; /* Adjusted padding */
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 40px; /* Ensure a minimum height for consistency, adjust as needed */
+  min-height: 40px;
 }
-
-/* Adjusted styles for UserButton list item to be more accommodating */
-.theme-dropdown-menu li.user-button-li {
-    padding: 2px !important; /* Reduced padding to give more space to UserButton */
-    min-height: auto !important; /* Let UserButton's intrinsic height work */
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    /* Ensure UserButton itself is visible if it has weird default display from Clerk */
-    & > div { /* Assuming UserButton renders in a div */
-        display: flex !important; /* Or block, depending on UserButton's structure */
-        align-items: center !important;
-        justify-content: center !important;
-    }
-}
-
-/* Optional: Override hover for the UserButton li if it interferes with UserButton's own UI */
 .theme-dropdown-menu li.user-button-li:hover {
-  background-color: transparent !important; /* Remove parent li hover effect, ensure UserButton hover takes precedence */
+  background-color: transparent !important;
 }
 
 /* Clerk UserButton / UserProfile Modal Theming Overrides */
-/* Apply glassmorphism to the main User Profile modal/card */
-/* Common Clerk class for the root of the user profile modal/page might be .cl-userProfileRoot */
-/* The card itself within that might be .cl-card or a more specific .cl-userProfile-card */
-.cl-userProfileRoot .cl-card, /* More specific if UserProfile uses a nested card */
-.cl-userProfileSheet .cl-card, /* For sheet-style user profiles */
-.cl-userProfileModalContent .cl-card, /* If modal content has a card */
-body > .cl-modal-root .cl-modal-content /* General modal, if UserButton opens a generic modal */ {
-  background: var(--glass-background-color) !important;
+
+/* 1. Ensure Main Modal and Card are Glass Themed */
+.cl-userProfileRoot .cl-card,
+.cl-userProfileSheet .cl-card, /* Variation for different display modes */
+.cl-userProfileModalContent .cl-card, /* More specific card selector */
+body > .cl-modal-root .cl-modal-content { /* Overall modal shell */
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color) !important;
   backdrop-filter: blur(10px) !important;
-  -webkit-backdrop-filter: blur(10px) !important; /* For Safari */
-  border: 1px solid var(--glass-border-color) !important;
-  box-shadow: 0 8px 32px 0 var(--glass-box-shadow-color) !important;
-  border-radius: 10px !important; /* Consistent border radius */
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid var(--glass-edge-highlight-color) !important;
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color) !important;
+  border-radius: 12px !important;
+  color: var(--text-color) !important; /* Ensure text within the card also inherits */
 }
 
-/* Text elements within the User Profile modal */
-.cl-userProfileRoot h1,
-.cl-userProfileRoot h2,
-.cl-userProfileRoot p,
-.cl-userProfileRoot label,
-.cl-userProfileRoot div, /* General divs that might contain text */
+/* Ensure the modal itself (if different from content) is transparent if card is glass */
+.cl-userProfileRoot .cl-modalContent { /* UserProfile specific modal content area */
+    background-color: transparent !important;
+}
+body > .cl-modal-root .cl-modal-backdrop { /* General modal backdrop */
+    background-color: rgba(0,0,0,0.3) !important; /* Keep a subtle backdrop */
+    backdrop-filter: blur(3px) !important; /* Slightly blur backdrop for depth */
+    -webkit-backdrop-filter: blur(3px) !important;
+}
+
+/* 6. Ensure Transparent Internal Sections (Applied early for broad impact) */
+.cl-userProfileRoot .cl-internal-card, /* Covers many internal content blocks */
+.cl-userProfileRoot .cl-navbar, /* Navigation bar within UserProfile */
+.cl-userProfileRoot .cl-profileSidebar, /* Sidebar specific container */
+.cl-userProfileRoot .cl-profileSection, /* Sections like "Profile", "Security" */
+.cl-userProfileRoot .cl-profilePage, /* Specific page content wrapper */
+.cl-userProfileRoot .cl-pageContent, /* General page content area */
+.cl-userProfileRoot .cl-scrollableContent, /* If content is scrollable */
+.cl-userProfileRoot .cl-accordionContent, /* Content within accordions */
+.cl-userProfileRoot .cl-profileSectionContent, /* Specific content area of a section */
+.cl-userProfileRoot .cl-form /* General form container */ {
+  background-color: transparent !important;
+  border: none !important; /* Remove default borders from these internal elements */
+  box-shadow: none !important; /* Remove default shadows from these internal elements */
+}
+
+/* 2. Theme Text Elements */
+.cl-userProfileRoot h1, .cl-userProfileRoot .cl-headerTitle,
+.cl-userProfileRoot h2, .cl-userProfileRoot .cl-headerSubtitle, /* Treat subtitles as h2 for styling */
+.cl-userProfileRoot p, .cl-userProfileRoot .cl-formFieldHintText, .cl-userProfileRoot .cl-formFieldInfoText, .cl-userProfileRoot .cl-footerActionText,
+.cl-userProfileRoot label, .cl-userProfileRoot .cl-formFieldLabel,
+.cl-userProfileRoot div, /* General divs, be careful with too broad selectors if issues arise */
 .cl-userProfileRoot span, /* General spans */
-.cl-userProfileRoot a, /* Links */
-.cl-userProfileRoot li,
-.cl-userProfileRoot button, /* Text on non-primary buttons */
-.cl-modalContent h1, /* For generic modal text */
-.cl-modalContent p,
-.cl-modalContent label {
+.cl-userProfileRoot li, /* List items */
+.cl-userProfileRoot .cl-identityPreviewText, /* Email/phone preview texts */
+.cl-userProfileRoot .cl-selectButtonText, /* Text in select buttons */
+.cl-userProfileRoot .cl-profileSectionTitleText, /* Text in section titles */
+.cl-userProfileRoot .cl-profileSectionSubtitleText, /* Text in section subtitles */
+.cl-userProfileRoot .cl-accordionTitle, /* Text in accordion titles */
+.cl-userProfileRoot .cl-badgeText, /* Text in badges */
+.cl-modalContent h1, .cl-modalContent p, .cl-modalContent label, /* Fallbacks for general modal text */
+.cl-userProfileRoot .cl-formHeaderTitle, .cl-userProfileRoot .cl-formHeaderSubtitle { /* Form specific headers */
   color: var(--text-color) !important;
 }
+.cl-userProfileRoot a, .cl-userProfileRoot .cl-footerActionLink, .cl-userProfileRoot .cl-link { /* Links */
+  color: var(--accent-color) !important;
+  text-decoration: none !important;
+}
+.cl-userProfileRoot a:hover, .cl-userProfileRoot .cl-footerActionLink:hover, .cl-userProfileRoot .cl-link:hover {
+  color: var(--primary-color-hover) !important; /* Or a specific accent hover */
+}
 
-/* Input fields text color (already handled by appearance.variables.colorInputText but good as a fallback) */
+/* 3. Theme Input Fields */
 .cl-userProfileRoot input,
-.cl-modalContent input {
+.cl-userProfileRoot textarea,
+.cl-userProfileRoot select, /* Basic select styling */
+.cl-userProfileRoot .cl-formFieldInput, /* Clerk's specific input class */
+.cl-userProfileRoot .cl-phoneInputBox, /* Phone input specific */
+.cl-userProfileRoot .cl-selectButton, /* Select as a button */
+.cl-modalContent input, .cl-modalContent textarea { /* Fallbacks for general modal inputs */
   color: var(--text-color) !important;
-  background-color: var(--secondary-background-color) !important; /* Ensure input background is also themed */
+  background-color: var(--secondary-background-color) !important;
   border: 1px solid var(--glass-border-color) !important;
+  border-radius: 8px !important;
+  padding: 10px 14px !important; /* Ensure consistent padding */
+  box-shadow: none !important; /* Remove default inner shadows from Clerk */
 }
-
+.cl-userProfileRoot input::placeholder,
+.cl-userProfileRoot textarea::placeholder {
+    color: var(--text-color) !important;
+    opacity: 0.6 !important;
+}
 .cl-userProfileRoot input:focus,
-.cl-modalContent input:focus {
-  border-color: var(--primary-color) !important;
-  box-shadow: 0 0 0 1px var(--primary-color) !important;
+.cl-userProfileRoot textarea:focus,
+.cl-userProfileRoot select:focus,
+.cl-userProfileRoot .cl-formFieldInput:focus,
+.cl-userProfileRoot .cl-phoneInputBox:focus,
+.cl-modalContent input:focus, .cl-modalContent textarea:focus {
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 0 2px var(--accent-color-rgb, rgba(255, 165, 0, 0.3)) !important;
+  outline: none !important; /* Remove default browser outline */
+}
+/* Select options container if applicable */
+.cl-userProfileRoot .cl-selectOptionsContainer {
+    background-color: var(--secondary-background-color) !important;
+    border: 1px solid var(--glass-border-color) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 15px -3px var(--glass-box-shadow-color) !important;
+}
+.cl-userProfileRoot .cl-selectOption {
+    color: var(--text-color) !important;
+    padding: 10px 14px !important;
+}
+.cl-userProfileRoot .cl-selectOption:hover {
+    background-color: var(--accent-color) !important;
+    color: var(--text-on-accent-color) !important;
+}
+.cl-userProfileRoot .cl-selectOption__selected {
+    background-color: var(--primary-color) !important; /* Or a muted accent */
+    color: var(--text-on-primary-color) !important;
 }
 
 
-/* Primary buttons within the User Profile modal */
-/* Clerk uses various classes for buttons, .cl-button, .cl-formButtonPrimary, .cl-profileSectionPrimaryButton etc. */
+/* 4. Theme Buttons */
+/* Primary Buttons */
 .cl-userProfileRoot .cl-button.cl-button--primary,
-.cl-userProfileRoot .cl-formButtonPrimary,
-.cl-userProfileRoot .cl-profileSectionPrimaryButton, /* Common in profile sections */
-.cl-modalContent .cl-button.cl-button--primary {
+.cl-userProfileRoot .cl-formButtonPrimary, /* Common form primary button */
+.cl-userProfileRoot .cl-profileSectionPrimaryButton, /* Buttons like "Set as primary" in profile sections */
+.cl-modalContent .cl-button.cl-button--primary { /* Fallback for general modal */
   background-color: var(--clr-btn-primary-bg) !important;
   color: var(--clr-btn-primary-text) !important;
-  font-size: 0.875rem !important; /* Consistent font size */
-  text-transform: normal-case !important; /* Consistent text case */
+  border: 1px solid transparent !important;
+  border-radius: 8px !important;
+  padding: 10px 18px !important;
+  font-size: 0.95rem !important;
+  text-transform: none !important;
+  box-shadow: 0 2px 8px -2px var(--glass-box-shadow-color) !important; /* Subtle shadow */
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease !important;
 }
-
 .cl-userProfileRoot .cl-button.cl-button--primary:hover,
 .cl-userProfileRoot .cl-formButtonPrimary:hover,
 .cl-userProfileRoot .cl-profileSectionPrimaryButton:hover,
 .cl-modalContent .cl-button.cl-button--primary:hover {
   background-color: var(--clr-btn-primary-hover-bg) !important;
+  color: var(--clr-btn-primary-text) !important; /* Ensure text color remains if bg changes significantly */
+  box-shadow: 0 4px 12px -3px var(--glass-box-shadow-color) !important; /* Enhanced shadow */
+  transform: translateY(-1px) !important; /* Slight lift */
 }
 
-/* Styling for other elements like navigation tabs/links if present */
-.cl-userProfileRoot .cl-navbarButton { /* Navigation buttons in user profile */
+/* Secondary/Outline Buttons (example, might need specific Clerk classes) */
+.cl-userProfileRoot .cl-button.cl-button--secondary, /* If Clerk uses this class for outline/secondary */
+.cl-userProfileRoot .cl-formButtonSecondary,
+.cl-userProfileRoot .cl-profileSectionSecondaryButton,
+.cl-userProfileRoot .cl-socialButtonsBlockButton { /* "Continue with X" buttons */
+  background-color: transparent !important;
   color: var(--text-color) !important;
+  border: 1px solid var(--glass-border-color) !important;
+  border-radius: 8px !important;
+  padding: 10px 18px !important;
+  font-size: 0.95rem !important;
+  text-transform: none !important;
+  box-shadow: none !important;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease !important;
+}
+.cl-userProfileRoot .cl-button.cl-button--secondary:hover,
+.cl-userProfileRoot .cl-formButtonSecondary:hover,
+.cl-userProfileRoot .cl-profileSectionSecondaryButton:hover,
+.cl-userProfileRoot .cl-socialButtonsBlockButton:hover {
+  background-color: var(--glass-inner-shadow-color) !important; /* Subtle glass hover */
+  color: var(--accent-color) !important;
+  border-color: var(--accent-color) !important;
+}
+
+/* Destructive Buttons (example, using .cl-button--danger if available) */
+.cl-userProfileRoot .cl-button.cl-button--danger,
+.cl-userProfileRoot .cl-formButtonDanger, /* Assuming this class if exists */
+.cl-userProfileRoot .cl-deleteButton, /* More specific if exists for delete actions */
+.cl-userProfileRoot .cl-actionDelete /* Common pattern for delete actions */ {
+  background-color: var(--danger-color, #dc3545) !important; /* Use a defined danger color or fallback */
+  color: var(--text-color-light) !important; /* Typically light text on danger bg */
+  border: 1px solid transparent !important;
+  border-radius: 8px !important;
+  padding: 10px 18px !important;
+  font-size: 0.95rem !important;
+}
+.cl-userProfileRoot .cl-button.cl-button--danger:hover,
+.cl-userProfileRoot .cl-formButtonDanger:hover,
+.cl-userProfileRoot .cl-deleteButton:hover,
+.cl-userProfileRoot .cl-actionDelete:hover {
+  background-color: var(--danger-color-hover, #c82333) !important; /* Darker danger color */
+}
+
+/* 5. Theme Navigation/Tabs within UserProfile */
+.cl-userProfileRoot .cl-navbarButton, /* Main nav buttons */
+.cl-userProfileRoot .cl-profileSidebarNavigationButton /* Sidebar specific nav buttons */ {
+  color: var(--text-color) !important;
+  background-color: transparent !important;
+  border-radius: 8px !important;
+  border: none !important; /* Remove default borders */
+  padding: 10px 16px !important; /* Adjusted padding */
+  font-size: 1rem !important; /* Ensure readable font size */
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease !important;
+  text-align: left !important; /* Ensure text aligns left for sidebar items */
+  margin-bottom: 4px !important; /* Add some spacing between nav items */
 }
 .cl-userProfileRoot .cl-navbarButton:hover,
+.cl-userProfileRoot .cl-profileSidebarNavigationButton:hover {
+  color: var(--accent-color) !important;
+  background-color: var(--glass-inner-shadow-color) !important;
+  box-shadow: none !important; /* Remove any hover shadow if not desired for these */
+}
 .cl-userProfileRoot .cl-navbarButton__active,
-.cl-userProfileRoot .cl-profileSidebarNavigationButton__active { /* Another possible active class for sidebar nav */
-  color: var(--primary-color) !important;
-  background-color: var(--glass-border-color) !important; /* Subtle background for active/hover */
-  border-bottom-color: var(--primary-color) !important; /* For tab-like active indicators */
+.cl-userProfileRoot .cl-profileSidebarNavigationButton__active {
+  color: var(--accent-color) !important;
+  background-color: var(--glass-background-color-light) !important;
+  box-shadow: inset 3px 0 0 0 var(--accent-color) !important; /* Active indicator on the left */
+  font-weight: 600 !important; /* Make active tab text bolder */
+}
+.dark-mode .cl-userProfileRoot .cl-navbarButton__active,
+.dark-mode .cl-userProfileRoot .cl-profileSidebarNavigationButton__active {
+  background-color: var(--glass-background-color-dark) !important;
+  box-shadow: inset 3px 0 0 0 var(--accent-color) !important; /* Ensure active indicator is visible */
+}
+.rgb-mode .cl-userProfileRoot .cl-navbarButton__active,
+.rgb-mode .cl-userProfileRoot .cl-profileSidebarNavigationButton__active {
+  background-color: var(--glass-background-color-rgb) !important; /* Assuming JS sets this */
+  box-shadow: inset 3px 0 0 0 var(--accent-color) !important;
 }
 
-/* Ensure inner card elements specific to UserProfile are transparent if they exist */
-.cl-userProfileRoot .cl-internal-card {
-    background-color: transparent !important;
+/* Additional specific elements that might need theming */
+.cl-userProfileRoot .cl-dividerLine, .cl-userProfileRoot .cl-dividerText {
+    color: var(--text-color) !important;
+    opacity: 0.5 !important;
+}
+.cl-userProfileRoot .cl-dividerLine {
+    background-color: var(--glass-border-color) !important;
 }
 
-/* Ensure the tab navigation bar itself is transparent */
-.cl-userProfileRoot .cl-navbar,
-.cl-userProfileRoot .cl-profileSidebar { /* If sidebar navigation is used */
-    background-color: transparent !important;
+.cl-userProfileRoot .cl-badge { /* e.g. "Primary" badge for email/phone */
+    background-color: var(--accent-color) !important;
+    color: var(--text-on-accent-color) !important;
+    border-radius: 6px !important;
+    padding: 3px 8px !important;
+    font-size: 0.8rem !important;
+    border: none !important;
 }
 
-/* Ensure content panes for tabs/sections are transparent */
-.cl-userProfileRoot .cl-profileSection, /* Common class for sections like "Profile", "Security" */
-.cl-userProfileRoot .cl-profilePage, /* Sometimes used for the content of a page/tab */
-.cl-userProfileRoot .cl-pageContent, /* General content area within a page */
-.cl-userProfileRoot .cl-scrollableContent /* If content is scrollable */ {
-    background-color: transparent !important;
+/* Ensure icons also inherit text color or a specific icon color */
+.cl-userProfileRoot .cl-icon {
+    color: var(--text-color) !important; /* Or var(--accent-color) if preferred for icons */
+}
+.cl-userProfileRoot .cl-navbarButton .cl-icon, /* Icons within nav buttons */
+.cl-userProfileRoot .cl-profileSidebarNavigationButton .cl-icon {
+    margin-right: 12px !important; /* Space between icon and text in nav */
 }
 
 
-/* Fallback for modal backdrop if Clerk renders one separately and it's not covered by userProfileCard's glassmorphism */
-/* .cl-modal-backdrop {
-  background-color: rgba(0, 0, 0, 0.3) !important; /* Example: a subtle dark overlay */
-  /* backdrop-filter: blur(2px) !important; /* Optional: slight blur on backdrop too */
-/* } */
-
-
-/* Force glassmorphism on Sign-In/Sign-Up cards (Phase 2 for SignIn/SignUp) */
 .cl-signIn-root .cl-card,
 .cl-signUp-root .cl-card {
   background: var(--glass-background-color) !important;
-  backdrop-filter: blur(10px) !important;
-  -webkit-backdrop-filter: blur(10px) !important;
-  border: 1px solid var(--glass-border-color) !important;
-  box-shadow: 0 8px 32px 0 var(--glass-box-shadow-color) !important;
-  border-radius: 10px !important; /* Or your theme's border-radius */
+  backdrop-filter: blur(12px) !important; /* Adjusted blur */
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid var(--glass-edge-highlight-color) !important; /* Use new var */
+  box-shadow: 0 8px 32px 0 var(--glass-box-shadow-color) !important; /* Use new var */
+  border-radius: 12px !important; /* Adjusted radius */
 }
 
-/* Ensure text elements inside Sign-In/Sign-Up have correct theme color */
 .cl-signIn-root .cl-card h1,
-.cl-signIn-root .cl-card h2, /* Added h2 for subtitles */
+.cl-signIn-root .cl-card h2,
 .cl-signIn-root .cl-card p,
 .cl-signIn-root .cl-card label,
-.cl-signIn-root .cl-card div, /* General divs for text */
+.cl-signIn-root .cl-card div,
 .cl-signUp-root .cl-card h1,
-.cl-signUp-root .cl-card h2, /* Added h2 for subtitles */
+.cl-signUp-root .cl-card h2,
 .cl-signUp-root .cl-card p,
 .cl-signUp-root .cl-card label,
-.cl-signUp-root .cl-card div { /* General divs for text */
+.cl-signUp-root .cl-card div {
   color: var(--text-color) !important;
 }
 
-/* Ensure body of the Sign-In/Sign-Up card (if it's a separate element) also gets themed background */
-.cl-signIn-root .cl-internal-card, /* Common class for an inner card area */
+.cl-signIn-root .cl-internal-card,
 .cl-signUp-root .cl-internal-card {
-    background-color: transparent !important; /* Make it transparent if the outer card has glassmorphism */
+    background-color: transparent !important;
 }
 
-/* Additional overrides for links and other specific elements within SignIn/SignUp if needed */
 .cl-signIn-root .cl-card a,
 .cl-signUp-root .cl-card a {
-  color: var(--primary-color) !important;
+  color: var(--accent-color) !important; /* Use accent color */
 }
 .cl-signIn-root .cl-card a:hover,
 .cl-signUp-root .cl-card a:hover {
-  color: var(--primary-color-hover) !important;
+  color: var(--primary-color-hover) !important; /* Use accent hover */
 }
