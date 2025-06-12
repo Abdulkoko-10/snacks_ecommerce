@@ -121,9 +121,10 @@ const Cart = () => {
               );
 
               return (
-                <div className="product" key={item._id}>
-                  {imageProps && (
-                    <Image
+                <React.Fragment key={item._id}>
+                  <div className="product"> {/* Removed key={item._id} from here */}
+                    {imageProps && (
+                      <Image
                       {...imageProps}
                       alt={item.name}
                       className="cart-product-image"
@@ -169,7 +170,7 @@ const Cart = () => {
                     </button>
                   </div>
                 </div>
-              </div>
+              </React.Fragment>
             ))}
         </div>
         {cartItems.length >= 1 && (
