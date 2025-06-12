@@ -5,6 +5,7 @@ export default function Document() {
     <Html lang="en">
       <Head />
       <body>
+        <div id="navbar-portal-root"></div>
         <Main />
         <NextScript />
       </body>

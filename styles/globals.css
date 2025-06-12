@@ -203,6 +203,12 @@ img {
   display: block; /* Helps prevent extra space beneath images */
 }
 
+img {
+  max-width: 100%;
+  height: auto;
+  display: block; /* Helps prevent extra space beneath images */
+}
+
 a {
   color: var(--accent-color); /* Updated to use accent color for links */
   text-decoration: none;
@@ -1194,7 +1200,7 @@ span.text-red {
   -webkit-backdrop-filter: blur(8px);
   box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
   color: var(--text-color);
-  overflow: hidden; /* Add this to contain potential Swiper overflow */
+  /* overflow: hidden; */ /* Removed to test if it helps with page widening */
 }
 .maylike-products-wrapper h2 {
   text-align: center;
