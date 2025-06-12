@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { AiOutlineShopping } from 'react-icons/ai';
 import { FiSun, FiMoon, FiDroplet, FiMoreHorizontal } from 'react-icons/fi'; // Import Feather icons
 import { UserButton, SignInButton, SignedIn, SignedOut } from '@clerk/nextjs';
-import { userProfileOnlyAppearance } from '../lib/clerkAppearance';
 
 import { Cart } from './';
 import { useStateContext } from '../context/StateContext';
@@ -273,7 +272,6 @@ const Navbar = () => {
                 <li className="user-button-li">
                   <UserButton
                     afterSignOutUrl="/"
-                    userProfileProps={{ appearance: userProfileOnlyAppearance }}
                   />
                 </li>
               </SignedIn>

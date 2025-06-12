@@ -11,7 +11,7 @@ export default function App({ Component, pageProps }) {
     variables: {
       // General
       colorPrimary: "var(--primary-color)",
-      colorBackground: "var(--primary-background-color)",
+      colorBackground: "transparent",
       colorText: "var(--text-color)",
       colorInputBackground: "var(--secondary-background-color)",
       colorInputText: "var(--text-color)",
@@ -29,16 +29,14 @@ export default function App({ Component, pageProps }) {
       // You might need to inspect Clerk components to find the exact variables they use if not covered by globals
     },
     elements: {
-      card: { // This is the main container for the sign-in/up form
+      card: {
         backgroundColor: "var(--glass-background-color)",
         borderColor: "var(--glass-border-color)",
-        boxShadow: "0 8px 32px 0 var(--glass-box-shadow-color)",
-        borderRadius: "10px", // Consistent with .glassmorphism class
+        boxShadow: "inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color)",
+        borderRadius: "12px",
       },
-      modalContent: { // modalContent often wraps the card
-        backgroundColor: "transparent", // Make it transparent if card is already glassmorphism
-        // borderColor: "var(--glass-border-color)", // card will handle its own border
-        // boxShadow: "none", // card will handle its own shadow
+      modalContent: {
+        backgroundColor: "transparent",
       },
       modalBackdrop: "rgba(0, 0, 0, 0.5)", // Standard semi-transparent dark backdrop
       formButtonPrimary: {
@@ -124,7 +122,7 @@ export default function App({ Component, pageProps }) {
   return (
     <ClerkProvider
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-      // appearance={clerkAppearance}
+      appearance={clerkAppearance}
     >
       <StateContext>
         <Layout>
