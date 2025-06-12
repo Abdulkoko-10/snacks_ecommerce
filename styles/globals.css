@@ -1966,102 +1966,255 @@ span.text-red {
 }
 
 /* Clerk UserButton / UserProfile Modal Theming Overrides */
-/* This section should largely remain as is, as it's theming external components,
-   but ensure variable names like --glass-background-color, --text-color etc.
-   are consistent with the newly defined root variables. */
 
+/* 1. Ensure Main Modal and Card are Glass Themed */
 .cl-userProfileRoot .cl-card,
-.cl-userProfileSheet .cl-card,
-.cl-userProfileModalContent .cl-card,
-body > .cl-modal-root .cl-modal-content {
+.cl-userProfileSheet .cl-card, /* Variation for different display modes */
+.cl-userProfileModalContent .cl-card, /* More specific card selector */
+body > .cl-modal-root .cl-modal-content { /* Overall modal shell */
   background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color) !important;
   backdrop-filter: blur(10px) !important;
   -webkit-backdrop-filter: blur(10px) !important;
-  border: 1px solid var(--glass-edge-highlight-color) !important; /* Use new var */
+  border: 1px solid var(--glass-edge-highlight-color) !important;
   box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color) !important;
-  border-radius: 12px !important; /* Adjusted radius */
+  border-radius: 12px !important;
+  color: var(--text-color) !important; /* Ensure text within the card also inherits */
 }
 
-.cl-userProfileRoot h1,
-.cl-userProfileRoot h2,
-.cl-userProfileRoot p,
-.cl-userProfileRoot label,
-.cl-userProfileRoot div,
-.cl-userProfileRoot span,
-.cl-userProfileRoot a,
-.cl-userProfileRoot li,
-.cl-userProfileRoot button,
-.cl-modalContent h1,
-.cl-modalContent p,
-.cl-modalContent label {
+/* Ensure the modal itself (if different from content) is transparent if card is glass */
+.cl-userProfileRoot .cl-modalContent { /* UserProfile specific modal content area */
+    background-color: transparent !important;
+}
+body > .cl-modal-root .cl-modal-backdrop { /* General modal backdrop */
+    background-color: rgba(0,0,0,0.3) !important; /* Keep a subtle backdrop */
+    backdrop-filter: blur(3px) !important; /* Slightly blur backdrop for depth */
+    -webkit-backdrop-filter: blur(3px) !important;
+}
+
+/* 6. Ensure Transparent Internal Sections (Applied early for broad impact) */
+.cl-userProfileRoot .cl-internal-card, /* Covers many internal content blocks */
+.cl-userProfileRoot .cl-navbar, /* Navigation bar within UserProfile */
+.cl-userProfileRoot .cl-profileSidebar, /* Sidebar specific container */
+.cl-userProfileRoot .cl-profileSection, /* Sections like "Profile", "Security" */
+.cl-userProfileRoot .cl-profilePage, /* Specific page content wrapper */
+.cl-userProfileRoot .cl-pageContent, /* General page content area */
+.cl-userProfileRoot .cl-scrollableContent, /* If content is scrollable */
+.cl-userProfileRoot .cl-accordionContent, /* Content within accordions */
+.cl-userProfileRoot .cl-profileSectionContent, /* Specific content area of a section */
+.cl-userProfileRoot .cl-form /* General form container */ {
+  background-color: transparent !important;
+  border: none !important; /* Remove default borders from these internal elements */
+  box-shadow: none !important; /* Remove default shadows from these internal elements */
+}
+
+/* 2. Theme Text Elements */
+.cl-userProfileRoot h1, .cl-userProfileRoot .cl-headerTitle,
+.cl-userProfileRoot h2, .cl-userProfileRoot .cl-headerSubtitle, /* Treat subtitles as h2 for styling */
+.cl-userProfileRoot p, .cl-userProfileRoot .cl-formFieldHintText, .cl-userProfileRoot .cl-formFieldInfoText, .cl-userProfileRoot .cl-footerActionText,
+.cl-userProfileRoot label, .cl-userProfileRoot .cl-formFieldLabel,
+.cl-userProfileRoot div, /* General divs, be careful with too broad selectors if issues arise */
+.cl-userProfileRoot span, /* General spans */
+.cl-userProfileRoot li, /* List items */
+.cl-userProfileRoot .cl-identityPreviewText, /* Email/phone preview texts */
+.cl-userProfileRoot .cl-selectButtonText, /* Text in select buttons */
+.cl-userProfileRoot .cl-profileSectionTitleText, /* Text in section titles */
+.cl-userProfileRoot .cl-profileSectionSubtitleText, /* Text in section subtitles */
+.cl-userProfileRoot .cl-accordionTitle, /* Text in accordion titles */
+.cl-userProfileRoot .cl-badgeText, /* Text in badges */
+.cl-modalContent h1, .cl-modalContent p, .cl-modalContent label, /* Fallbacks for general modal text */
+.cl-userProfileRoot .cl-formHeaderTitle, .cl-userProfileRoot .cl-formHeaderSubtitle { /* Form specific headers */
   color: var(--text-color) !important;
 }
+.cl-userProfileRoot a, .cl-userProfileRoot .cl-footerActionLink, .cl-userProfileRoot .cl-link { /* Links */
+  color: var(--accent-color) !important;
+  text-decoration: none !important;
+}
+.cl-userProfileRoot a:hover, .cl-userProfileRoot .cl-footerActionLink:hover, .cl-userProfileRoot .cl-link:hover {
+  color: var(--primary-color-hover) !important; /* Or a specific accent hover */
+}
 
+/* 3. Theme Input Fields */
 .cl-userProfileRoot input,
-.cl-modalContent input {
+.cl-userProfileRoot textarea,
+.cl-userProfileRoot select, /* Basic select styling */
+.cl-userProfileRoot .cl-formFieldInput, /* Clerk's specific input class */
+.cl-userProfileRoot .cl-phoneInputBox, /* Phone input specific */
+.cl-userProfileRoot .cl-selectButton, /* Select as a button */
+.cl-modalContent input, .cl-modalContent textarea { /* Fallbacks for general modal inputs */
   color: var(--text-color) !important;
   background-color: var(--secondary-background-color) !important;
-  border: 1px solid var(--glass-edge-highlight-color) !important; /* Use new var */
-  border-radius: 8px !important; /* Added border-radius */
+  border: 1px solid var(--glass-border-color) !important;
+  border-radius: 8px !important;
+  padding: 10px 14px !important; /* Ensure consistent padding */
+  box-shadow: none !important; /* Remove default inner shadows from Clerk */
 }
-
+.cl-userProfileRoot input::placeholder,
+.cl-userProfileRoot textarea::placeholder {
+    color: var(--text-color) !important;
+    opacity: 0.6 !important;
+}
 .cl-userProfileRoot input:focus,
-.cl-modalContent input:focus {
-  border-color: var(--accent-color) !important; /* Use accent for focus */
-  box-shadow: 0 0 0 2px var(--accent-color-rgb, rgba(255, 165, 0, 0.3)) !important; /* Use accent for focus ring */
+.cl-userProfileRoot textarea:focus,
+.cl-userProfileRoot select:focus,
+.cl-userProfileRoot .cl-formFieldInput:focus,
+.cl-userProfileRoot .cl-phoneInputBox:focus,
+.cl-modalContent input:focus, .cl-modalContent textarea:focus {
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 0 2px var(--accent-color-rgb, rgba(255, 165, 0, 0.3)) !important;
+  outline: none !important; /* Remove default browser outline */
+}
+/* Select options container if applicable */
+.cl-userProfileRoot .cl-selectOptionsContainer {
+    background-color: var(--secondary-background-color) !important;
+    border: 1px solid var(--glass-border-color) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 15px -3px var(--glass-box-shadow-color) !important;
+}
+.cl-userProfileRoot .cl-selectOption {
+    color: var(--text-color) !important;
+    padding: 10px 14px !important;
+}
+.cl-userProfileRoot .cl-selectOption:hover {
+    background-color: var(--accent-color) !important;
+    color: var(--text-on-accent-color) !important;
+}
+.cl-userProfileRoot .cl-selectOption__selected {
+    background-color: var(--primary-color) !important; /* Or a muted accent */
+    color: var(--text-on-primary-color) !important;
 }
 
+
+/* 4. Theme Buttons */
+/* Primary Buttons */
 .cl-userProfileRoot .cl-button.cl-button--primary,
-.cl-userProfileRoot .cl-formButtonPrimary,
-.cl-userProfileRoot .cl-profileSectionPrimaryButton,
-.cl-modalContent .cl-button.cl-button--primary {
+.cl-userProfileRoot .cl-formButtonPrimary, /* Common form primary button */
+.cl-userProfileRoot .cl-profileSectionPrimaryButton, /* Buttons like "Set as primary" in profile sections */
+.cl-modalContent .cl-button.cl-button--primary { /* Fallback for general modal */
   background-color: var(--clr-btn-primary-bg) !important;
   color: var(--clr-btn-primary-text) !important;
-  font-size: 0.95rem !important; /* Slightly larger */
-  text-transform: none !important; /* Changed from normal-case */
-  border-radius: 8px !important; /* Added border-radius */
-  padding: 10px 18px !important; /* Adjusted padding */
-  border: 1px solid transparent !important; /* Ensure no conflicting border */
+  border: 1px solid transparent !important;
+  border-radius: 8px !important;
+  padding: 10px 18px !important;
+  font-size: 0.95rem !important;
+  text-transform: none !important;
+  box-shadow: 0 2px 8px -2px var(--glass-box-shadow-color) !important; /* Subtle shadow */
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease !important;
 }
-
 .cl-userProfileRoot .cl-button.cl-button--primary:hover,
 .cl-userProfileRoot .cl-formButtonPrimary:hover,
 .cl-userProfileRoot .cl-profileSectionPrimaryButton:hover,
 .cl-modalContent .cl-button.cl-button--primary:hover {
   background-color: var(--clr-btn-primary-hover-bg) !important;
-  box-shadow: 0 2px 8px -2px var(--glass-box-shadow-color) !important; /* Add subtle shadow on hover */
+  color: var(--clr-btn-primary-text) !important; /* Ensure text color remains if bg changes significantly */
+  box-shadow: 0 4px 12px -3px var(--glass-box-shadow-color) !important; /* Enhanced shadow */
+  transform: translateY(-1px) !important; /* Slight lift */
 }
 
-.cl-userProfileRoot .cl-navbarButton {
+/* Secondary/Outline Buttons (example, might need specific Clerk classes) */
+.cl-userProfileRoot .cl-button.cl-button--secondary, /* If Clerk uses this class for outline/secondary */
+.cl-userProfileRoot .cl-formButtonSecondary,
+.cl-userProfileRoot .cl-profileSectionSecondaryButton,
+.cl-userProfileRoot .cl-socialButtonsBlockButton { /* "Continue with X" buttons */
+  background-color: transparent !important;
   color: var(--text-color) !important;
-  border-radius: 8px !important; /* Add rounding */
-  transition: background-color 0.2s ease, color 0.2s ease !important;
+  border: 1px solid var(--glass-border-color) !important;
+  border-radius: 8px !important;
+  padding: 10px 18px !important;
+  font-size: 0.95rem !important;
+  text-transform: none !important;
+  box-shadow: none !important;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease !important;
 }
-.cl-userProfileRoot .cl-navbarButton:hover {
+.cl-userProfileRoot .cl-button.cl-button--secondary:hover,
+.cl-userProfileRoot .cl-formButtonSecondary:hover,
+.cl-userProfileRoot .cl-profileSectionSecondaryButton:hover,
+.cl-userProfileRoot .cl-socialButtonsBlockButton:hover {
+  background-color: var(--glass-inner-shadow-color) !important; /* Subtle glass hover */
   color: var(--accent-color) !important;
-  background-color: var(--glass-inner-shadow-color) !important; /* Subtle bg for hover */
+  border-color: var(--accent-color) !important;
+}
+
+/* Destructive Buttons (example, using .cl-button--danger if available) */
+.cl-userProfileRoot .cl-button.cl-button--danger,
+.cl-userProfileRoot .cl-formButtonDanger, /* Assuming this class if exists */
+.cl-userProfileRoot .cl-deleteButton, /* More specific if exists for delete actions */
+.cl-userProfileRoot .cl-actionDelete /* Common pattern for delete actions */ {
+  background-color: var(--danger-color, #dc3545) !important; /* Use a defined danger color or fallback */
+  color: var(--text-color-light) !important; /* Typically light text on danger bg */
+  border: 1px solid transparent !important;
+  border-radius: 8px !important;
+  padding: 10px 18px !important;
+  font-size: 0.95rem !important;
+}
+.cl-userProfileRoot .cl-button.cl-button--danger:hover,
+.cl-userProfileRoot .cl-formButtonDanger:hover,
+.cl-userProfileRoot .cl-deleteButton:hover,
+.cl-userProfileRoot .cl-actionDelete:hover {
+  background-color: var(--danger-color-hover, #c82333) !important; /* Darker danger color */
+}
+
+/* 5. Theme Navigation/Tabs within UserProfile */
+.cl-userProfileRoot .cl-navbarButton, /* Main nav buttons */
+.cl-userProfileRoot .cl-profileSidebarNavigationButton /* Sidebar specific nav buttons */ {
+  color: var(--text-color) !important;
+  background-color: transparent !important;
+  border-radius: 8px !important;
+  border: none !important; /* Remove default borders */
+  padding: 10px 16px !important; /* Adjusted padding */
+  font-size: 1rem !important; /* Ensure readable font size */
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease !important;
+  text-align: left !important; /* Ensure text aligns left for sidebar items */
+  margin-bottom: 4px !important; /* Add some spacing between nav items */
+}
+.cl-userProfileRoot .cl-navbarButton:hover,
+.cl-userProfileRoot .cl-profileSidebarNavigationButton:hover {
+  color: var(--accent-color) !important;
+  background-color: var(--glass-inner-shadow-color) !important;
+  box-shadow: none !important; /* Remove any hover shadow if not desired for these */
 }
 .cl-userProfileRoot .cl-navbarButton__active,
 .cl-userProfileRoot .cl-profileSidebarNavigationButton__active {
   color: var(--accent-color) !important;
-  background-color: var(--glass-background-color-light) !important; /* Active tab background */
-  border-bottom-color: var(--accent-color) !important;
-  box-shadow: 0 2px 5px -2px var(--glass-box-shadow-color) !important; /* Add shadow to active tab */
+  background-color: var(--glass-background-color-light) !important;
+  box-shadow: inset 3px 0 0 0 var(--accent-color) !important; /* Active indicator on the left */
+  font-weight: 600 !important; /* Make active tab text bolder */
 }
 .dark-mode .cl-userProfileRoot .cl-navbarButton__active,
 .dark-mode .cl-userProfileRoot .cl-profileSidebarNavigationButton__active {
-    background-color: var(--glass-background-color-dark) !important;
+  background-color: var(--glass-background-color-dark) !important;
+  box-shadow: inset 3px 0 0 0 var(--accent-color) !important; /* Ensure active indicator is visible */
+}
+.rgb-mode .cl-userProfileRoot .cl-navbarButton__active,
+.rgb-mode .cl-userProfileRoot .cl-profileSidebarNavigationButton__active {
+  background-color: var(--glass-background-color-rgb) !important; /* Assuming JS sets this */
+  box-shadow: inset 3px 0 0 0 var(--accent-color) !important;
 }
 
+/* Additional specific elements that might need theming */
+.cl-userProfileRoot .cl-dividerLine, .cl-userProfileRoot .cl-dividerText {
+    color: var(--text-color) !important;
+    opacity: 0.5 !important;
+}
+.cl-userProfileRoot .cl-dividerLine {
+    background-color: var(--glass-border-color) !important;
+}
 
-.cl-userProfileRoot .cl-internal-card,
-.cl-userProfileRoot .cl-navbar,
-.cl-userProfileRoot .cl-profileSidebar,
-.cl-userProfileRoot .cl-profileSection,
-.cl-userProfileRoot .cl-profilePage,
-.cl-userProfileRoot .cl-pageContent,
-.cl-userProfileRoot .cl-scrollableContent {
-    background-color: transparent !important;
+.cl-userProfileRoot .cl-badge { /* e.g. "Primary" badge for email/phone */
+    background-color: var(--accent-color) !important;
+    color: var(--text-on-accent-color) !important;
+    border-radius: 6px !important;
+    padding: 3px 8px !important;
+    font-size: 0.8rem !important;
+    border: none !important;
+}
+
+/* Ensure icons also inherit text color or a specific icon color */
+.cl-userProfileRoot .cl-icon {
+    color: var(--text-color) !important; /* Or var(--accent-color) if preferred for icons */
+}
+.cl-userProfileRoot .cl-navbarButton .cl-icon, /* Icons within nav buttons */
+.cl-userProfileRoot .cl-profileSidebarNavigationButton .cl-icon {
+    margin-right: 12px !important; /* Space between icon and text in nav */
 }
 
 
