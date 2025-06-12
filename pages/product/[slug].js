@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Head from 'next/head'; // Import Head
 import { useRouter } from 'next/router'; // To get current path for URL
+import Image from 'next/image'; // Ensure Image is imported
 
 import {
   AiOutlineMinus,
@@ -10,7 +11,6 @@ import {
 } from "react-icons/ai";
 
 import { client, urlFor } from "../../lib/client";
-//import Image from 'next/image'; // Ensure Image is imported
 import Product from "../../components/Product";
 import { useStateContext } from "../../context/StateContext";
 import StarRating from '../../components/StarRating'; // Import StarRating
@@ -146,7 +146,7 @@ const ProductDetails = ({ product, products, reviews: initialReviews }) => {
         <div>
           <div className="image-container">
             {image && image[index] && ( // Check if image and image[index] exist
-              <img
+              <Image
                 src={urlFor(image[index]).url()}
                 alt={name}
                 width={400} // From CSS .product-detail-image
@@ -159,7 +159,7 @@ const ProductDetails = ({ product, products, reviews: initialReviews }) => {
           <div className="small-images-container">
             {image?.map((item, i) => (
               item && ( // Ensure item exists before rendering Image
-                <img
+                <Image
                   key={i}
                   src={urlFor(item).url()}
                   alt={`${name} - view ${i + 1}`}
@@ -297,26 +297,30 @@ export const getStaticPaths = async () => {
 // which takes in an object containing a property of 'params' with a property of 'slug'
 export const getStaticProps = async ({ params: { slug } }) => {
   // Create a query for the product with the given slug
-  const query = `*[_type == "product" && slug.
-  current == '${slug}'][0]`;
-  const productsQuery = `*[_type == "product"]`;
-  
-  // Query for approved reviews for this product
-  const reviewsQuery = `*[_type == "review" && product._ref == ^._id && approved == true] | order(createdAt desc)`;
-
+  const query = `*[_type == "product" && slug.current == '${slug}'][0]`;
   // Fetch the product with the given slug
-  // We need to fetch the product first to get its _id for the reviewsQuery
   const product = await client.fetch(query);
 
   let reviews = [];
+  let products = []; // For "You may also like"
+
   if (product && product._id) {
-    // Now fetch reviews using the product's _id, passing productId as a parameter
+    // Fetch reviews for the current product
     const reviewsDataQuery = `*[_type == "review" && product._ref == $productId && approved == true] | order(createdAt desc)`;
     reviews = await client.fetch(reviewsDataQuery, { productId: product._id });
+
+    // Fetch "You may also like" products (4 other products, excluding the current one)
+    const currentProductId = product._id;
+    const productsQuery = `*[_type == "product" && _id != $currentProductId] | order(_createdAt desc) [0...4]`;
+    products = await client.fetch(productsQuery, { currentProductId });
+  } else {
+    // Fallback: If product is not found, fetch any 4 products for "You may also like"
+    // This case should ideally not be hit frequently with fallback: 'blocking'
+    const productsQuery = `*[_type == "product"] | order(_createdAt desc) [0...4]`;
+    products = await client.fetch(productsQuery);
+    // 'product' will be null or undefined, and 'reviews' will be empty.
+    // The page component should handle the case where 'product' is not available.
   }
-  
-  // Fetch all products (for "You may also like" section)
-  const products = await client.fetch(productsQuery);
 
   return {
     props: { products, product, reviews },

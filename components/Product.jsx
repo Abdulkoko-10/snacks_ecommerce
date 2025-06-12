@@ -1,18 +1,23 @@
 import React from 'react';
 import Link from 'next/link';
-// import Image from 'next/image'; // Import next/image
+import Image from 'next/image'; // Import next/image
 
 import { urlFor } from '../lib/client';
 
 const Product = ({ product: {image, name, 
 slug, price } }) => {
+  // Ensure image and image[0] exist before calling urlFor
+  const imageUrl = image && image[0] ? urlFor(image[0]).url() : '/placeholder.png'; // Fallback if no image
+
   return (
     <div>
       <Link href={`/product/${slug.current}`}>
         <div className="product-card">
-          <img
-            src={urlFor(image && image[0]).url()} // Add .url()
+          <Image
+            src={imageUrl}
             alt={name} // Already using name for alt
+            width={250} // Placeholder, adjust based on actual CSS/design
+            height={250} // Placeholder, adjust based on actual CSS/design
             className="product-image"
           />
           <p className="product-name">{name}</p>

@@ -30,7 +30,7 @@ export default async function handler(req, res) {
 
       // Create a new client instance configured for writes
       const writeClient = baseClient.withConfig({
-        token: process.env.NEXT_PUBLIC_SANITY_TOKEN,
+        token: process.env.SANITY_API_WRITE_TOKEN, // Use server-side token for writes
         useCdn: false, // Ensure CDN is false for writes
         // projectId and dataset are inherited from baseClient
       });
