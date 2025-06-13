@@ -25,14 +25,19 @@ const DynamicReviewForm = dynamic(() => import('../../components/ReviewForm'), {
   ssr: false,
 });
 
-// Swiper imports
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, A11y } from 'swiper/modules';
+const DynamicMayLikeProducts = dynamic(() => import('../../components/MayLikeProducts'), {
+  ssr: false,
+  // Optional: loading: () => <p>Loading suggestions...</p>
+});
 
-// Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
+// Swiper imports (REMOVED - now in MayLikeProducts.jsx)
+// import { Swiper, SwiperSlide } from 'swiper/react';
+// import { Navigation, Pagination, A11y } from 'swiper/modules';
+
+// Import Swiper styles (REMOVED - now in MayLikeProducts.jsx)
+// import 'swiper/css';
+// import 'swiper/css/navigation';
+// import 'swiper/css/pagination';
 import useSWR from 'swr';
 
 // Fetcher function for SWR
@@ -283,34 +288,8 @@ const ProductDetails = ({ product, products }) => {
         )}
       </div>
 
-      <div className="maylike-products-wrapper">
-        <h2>You may also like</h2>
-        <Swiper
-          className="you-may-also-like-swiper"
-          modules={[Navigation, Pagination, A11y]}
-          spaceBetween={10} // Default spaceBetween, overridden by breakpoints
-          slidesPerView={1} // Default slidesPerView, overridden by breakpoints
-          navigation
-          pagination={{ clickable: true }}
-          loop={true}
-          breakpoints={{
-            // when window width is >= 320px
-            320: { slidesPerView: 1, spaceBetween: 10 },
-            // when window width is >= 480px
-            480: { slidesPerView: 1, spaceBetween: 15 }, // Changed to 1 slide
-            // when window width is >= 768px
-            768: { slidesPerView: 1, spaceBetween: 15 }, // Changed to 1 slide
-            // when window width is >= 1024px
-            1024: { slidesPerView: 1, spaceBetween: 15 }, // Changed to 1 slide
-          }}
-        >
-          {products?.map((item) => (
-            <SwiperSlide key={item._id}>
-              <Product product={item} />
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </div>
+      {/* "You may also like" section now dynamically imported */}
+      <DynamicMayLikeProducts products={products} />
     </div>
   );
 };
