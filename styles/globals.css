@@ -567,11 +567,11 @@ span.text-red {
   background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
   border: 1px solid var(--glass-edge-highlight-color);
   border-radius: 15px;
-  /* position: relative; */ /* No longer needed for absolute image positioning */
-  display: flex; /* Flex container */
-  align-items: center; /* Vertically align items */
-  justify-content: space-between; /* Space between content and image */
-  gap: 20px; /* Gap between content and image */
+  position: relative; /* Ensure this is present for absolute positioning of children */
+  /* display: flex; */ /* Removed */
+  /* align-items: center; */ /* Removed */
+  /* justify-content: space-between; */ /* Removed */
+  /* gap: 20px; */ /* Removed */
   height: 500px;
   line-height: 1.2;
   width: 100%;
@@ -583,8 +583,9 @@ span.text-red {
 /* USER PROVIDED HERO BANNER STYLES END */
 
 .hero-banner-content { /* New class for text content */
-  flex: 2 1 60%; /* Takes more space, can shrink/grow */
+  /* flex: 2 1 60%; */ /* Removed flex property */
   /* Additional styling if needed, e.g., text alignment for its children if not handled individually */
+  /* This class might not be strictly necessary if image is absolutely positioned relative to hero-banner-container */
 }
 
 .hero-banner-container .beats-solo {
@@ -630,23 +631,23 @@ span.text-red {
   line-height: 1;
 }
 .hero-banner-image-container { /* Container for the image */
-  flex: 1 1 35%; /* Takes less space, adjust basis as needed */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%; /* Ensure it can fill height if image is smaller */
+  /* flex: 1 1 35%; */ /* Removed flex property */
+  /* display: flex; */ /* Removed flex property */
+  /* justify-content: center; */ /* Removed flex property */
+  /* align-items: center; */ /* Removed flex property */
+  /* height: 100%; */ /* No longer a flex item, height will be auto or determined by image */
+  /* This container might not need specific styles if .hero-banner-image is absolute */
 }
 .hero-banner-image {
-  /* position: absolute; */ /* Removed */
-  /* top: 0%; */ /* Removed */
-  /* right: 20%; */ /* Removed */
-  /* width: 450px; */ /* Now controlled by container or its own props */
-  /* height: 450px; */ /* Now controlled by container or its own props */
-  max-width: 100%; /* Ensure it doesn't overflow container */
-  max-height: 100%; /* Ensure it doesn't overflow container */
-  height: auto;
-  object-fit: contain; /* Or cover, depending on design */
-  border-radius: 10px; /* Added border-radius */
+  position: absolute;
+  top: 0%;
+  right: 15%; /* Adjusted from 20% to pull it slightly left */
+  width: 450px;
+  height: 450px;
+  max-width: 450px; /* Ensure it doesn't get too large */
+  max-height: 450px; /* Ensure it doesn't get too large */
+  object-fit: contain;
+  border-radius: 10px;
 }
 
 .desc {
@@ -1355,35 +1356,35 @@ span.text-red {
     padding: 60px 20px;
     height: auto;
     min-height: 400px;
+    /* Ensure .hero-banner-container remains relative for mobile absolute positioning */
   }
-  .hero-banner-container { /* Mobile adjustments */
-    flex-direction: column; /* Stack content and image */
-    align-items: center; /* Center items in column */
-    height: auto; /* Adjust height for stacked content */
-    padding: 60px 20px; /* Existing mobile padding */
-  }
+  /* .hero-banner-container { */ /* Mobile adjustments - flex properties removed, padding and height auto are good */
+    /* flex-direction: column; */ /* Removed */
+    /* align-items: center; */ /* Removed */
+    /* height: auto; */ /* Keep */
+    /* padding: 60px 20px; */ /* Keep */
+  /* } */
   .hero-banner-content { /* Mobile adjustments for content */
-    width: 100%;
+    /* width: 100%; */ /* Should be block by default */
     text-align: center; /* Center text if not already handled by children */
-    order: 2; /* Image first, then content */
+    /* order: 2; */ /* Removed */
   }
   .hero-banner-image-container { /* Mobile adjustments for image container */
-    width: 80%; /* Control size of image area */
-    /* height: auto; */ /* Let image define height */
-    margin: 0 auto 20px auto; /* Center and add space below */
-    order: 1; /* Image first */
-    /* max-height: 250px; /* Max height for the image container */
+    /* width: 80%; */ /* Not needed if image is absolute */
+    /* margin: 0 auto 20px auto; */ /* Not needed */
+    /* order: 1; */ /* Removed */
   }
   .hero-banner-image {
-    /* width: 70%; */ /* Now 100% of its container */
-    width: 100%;
-    height: auto;
-    max-height: 250px; /* Existing mobile max-height */
-    /* top: 10%; */ /* Removed */
-    /* right: 5%; */ /* Removed */
-    object-fit: contain; /* Ensure whole image is visible */
+    position: absolute; /* Ensure absolute positioning on mobile */
+    top: 8%;
+    right: 8%;
+    width: 260px;
+    height: auto; /* Allow height to scale with width */
+    max-height: 260px;
+    object-fit: contain;
+    /* border-radius: 10px; */ /* Already set in base style */
   }
-  .desc { /* Mobile adjustments for desc, already good but ensure it's within centered content */
+  .desc { /* Mobile adjustments for desc */
     margin: 20px auto 0 auto; /* Keep it centered */
     /* text-align: center; /* Already set */
   }
@@ -1407,7 +1408,7 @@ span.text-red {
   .footer-banner-image-container { /* Mobile adjustments for the container */
     width: 100%; /* Take full width when stacking */
     /* order: -1; /* Example: if you want image to appear first when stacked */
-    margin-bottom: 20px; /* Add some space if items stack */
+    margin-bottom: 10px; /* Reduced space if items stack */
   }
   .footer-banner-image {
     /* width: 60%; */ /* Now controlled by container or its own responsive props */
@@ -1420,7 +1421,7 @@ span.text-red {
   }
   .banner-desc {
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 10px; /* Reduced gap for mobile */
     text-align: center;
   }
    .banner-desc .left, .banner-desc .right {
