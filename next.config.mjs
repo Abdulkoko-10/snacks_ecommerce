@@ -10,6 +10,16 @@ const nextConfig = {
   // Add swcMinify for potentially faster builds, optional but good practice
   swcMinify: true, 
   pageExtensions: ['js', 'jsx', 'ts', 'tsx'], // This line is key
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'cdn.sanity.io',
+        port: '', // Keep empty for default https port
+        pathname: '/images/**', // Allows all paths under /images/ on that hostname
+      },
+    ],
+  },
 };
 
 export default withBundleAnalyzer(nextConfig);
