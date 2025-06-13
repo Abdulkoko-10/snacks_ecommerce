@@ -33,19 +33,47 @@ import { Navigation, Pagination, A11y } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import useSWR from 'swr';
 
+// Fetcher function for SWR
+const fetchReviews = async (keyWithProductId) => {
+  const productId = keyWithProductId[1]; // Extract productId from the key array
+  if (!productId) return []; // Or throw an error if preferred
+  const reviewsQuery = `*[_type == "review" && product._ref == $productId && approved == true] | order(createdAt desc)`;
+  const reviews = await client.fetch(reviewsQuery, { productId });
+  return reviews;
+};
 
-const ProductDetails = ({ product, products, reviews: initialReviews }) => {
-  const { _id, image, name, details, price, slug } = product; // Added _id and slug for SKU and URL
+const ProductDetails = ({ product, products }) => { // Removed initialReviews from props
+  // Ensure product is not null before destructuring. This can happen if fallback page is shown before data is ready.
+  if (!product) {
+    // Optionally, render a loading state or return null
+    // For now, assuming 'blocking' fallback in getStaticPaths means product will always be populated.
+    // If not, more robust handling here is needed.
+    return <div>Loading product details...</div>;
+  }
+
+  const { _id, image, name, details, price, slug } = product;
   const [index, setIndex] = useState(0);
   const { decQty, incQty, qty, onAdd, setShowCart } = useStateContext();
-  const router = useRouter(); // For constructing current page URL
+  const router = useRouter();
 
   const [isAddedFeedback, setIsAddedFeedback] = useState(false);
   const [isBuyNowFeedback, setIsBuyNowFeedback] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
-  const [currentReviews, setCurrentReviews] = useState(initialReviews || []);
+  // const [currentReviews, setCurrentReviews] = useState(initialReviews || []); // Replaced by SWR
 
+  // SWR for fetching reviews
+  const {
+    data: currentReviews,
+    error: reviewsError,
+    isLoading: reviewsLoading,
+    mutate: mutateReviews
+  } = useSWR(
+    _id ? ['reviews', _id] : null, // Use product._id (aliased as _id here)
+    fetchReviews,
+    { fallbackData: [] } // Initial data until fetch completes
+  );
 
   const handleAddToCartWithFeedback = () => {
     onAdd(product, qty);
@@ -79,10 +107,11 @@ const ProductDetails = ({ product, products, reviews: initialReviews }) => {
   // In a real app, you might want to re-fetch reviews or optimistically update the list.
   const handleReviewSubmitSuccess = async () => {
     setShowReviewForm(false); // Optionally hide form
-    // Re-fetch reviews
-    const reviewsQuery = `*[_type == "review" && product._ref == $productId && approved == true] | order(createdAt desc)`;
-    const updatedReviews = await client.fetch(reviewsQuery, { productId: product._id });
-    setCurrentReviews(updatedReviews);
+    // After successful review submission via API (not shown here, but assumed)
+    // Trigger SWR to re-fetch reviews
+    await mutateReviews();
+    // No need for: const updatedReviews = await client.fetch...
+    // No need for: setCurrentReviews(updatedReviews);
     // Could also add a "Thank you for your review, it's awaiting approval" message.
   };
 
@@ -186,13 +215,17 @@ const ProductDetails = ({ product, products, reviews: initialReviews }) => {
         <div className="product-detail-desc">
           <h1>{name}</h1>
           <div className="reviews">
-            {aggregateRating.count > 0 ? (
-              <>
-                <StarRating rating={averageRating} starSize={20} />
-                <p>({aggregateRating.count} {aggregateRating.count === 1 ? 'Review' : 'Reviews'})</p>
-              </>
-            ) : (
-              <p>(No reviews yet)</p>
+            {reviewsLoading && <p>Loading reviews...</p>}
+            {reviewsError && <p>Error loading reviews.</p>}
+            {!reviewsLoading && !reviewsError && (
+              aggregateRating.count > 0 ? (
+                <>
+                  <StarRating rating={averageRating} starSize={20} />
+                  <p>({aggregateRating.count} {aggregateRating.count === 1 ? 'Review' : 'Reviews'})</p>
+                </>
+              ) : (
+                <p>(No reviews yet)</p>
+              )
             )}
           </div>
           <h4>Details: </h4>
@@ -309,29 +342,26 @@ export const getStaticProps = async ({ params: { slug } }) => {
   // Fetch the product with the given slug
   const product = await client.fetch(query);
 
-  let reviews = [];
+  // Reviews are no longer fetched here; they will be fetched client-side with SWR.
   let products = []; // For "You may also like"
 
   if (product && product._id) {
-    // Fetch reviews for the current product
-    const reviewsDataQuery = `*[_type == "review" && product._ref == $productId && approved == true] | order(createdAt desc)`;
-    reviews = await client.fetch(reviewsDataQuery, { productId: product._id });
-
     // Fetch "You may also like" products (4 other products, excluding the current one)
     const currentProductId = product._id;
     const productsQuery = `*[_type == "product" && _id != $currentProductId] | order(_createdAt desc) [0...4]`;
     products = await client.fetch(productsQuery, { currentProductId });
   } else {
     // Fallback: If product is not found, fetch any 4 products for "You may also like"
-    // This case should ideally not be hit frequently with fallback: 'blocking'
     const productsQuery = `*[_type == "product"] | order(_createdAt desc) [0...4]`;
     products = await client.fetch(productsQuery);
-    // 'product' will be null or undefined, and 'reviews' will be empty.
+    // 'product' will be null or undefined.
     // The page component should handle the case where 'product' is not available.
   }
 
   return {
-    props: { products, product, reviews },
+    // Pass product and products (for "You may also like") as props
+    // Reviews will be fetched client-side by the component using SWR
+    props: { product, products },
     revalidate: 60, // Optionally, add revalidation if using ISR
   };
 };

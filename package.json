@@ -28,7 +28,8 @@
     "react-hot-toast": "^2.2.0",
     "react-icons": "^4.3.1",
     "stripe": "^8.209.0",
-    "swiper": "^11.2.8"
+    "swiper": "^11.2.8",
+    "swr": "^2.2.5"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.0.0",
