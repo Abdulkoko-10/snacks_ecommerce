@@ -476,8 +476,8 @@ span.text-red {
   padding: 15px;
   position: relative;
   overflow: hidden;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  /* backdrop-filter: blur(8px); */
+  /* -webkit-backdrop-filter: blur(8px); */
   box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
   width: 100%; 
 }
@@ -1597,14 +1597,8 @@ span.text-red {
   }
 }
 
-.glassmorphism { /* This is the OLD class, may be unused now */
-  background: var(--glass-background-color);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 10px;
-  border: 1px solid var(--glass-border-color);
-  box-shadow: 0 8px 32px 0 var(--glass-box-shadow-color);
-}
+/* The .glassmorphism class definition, formerly here, has been removed as it was marked as potentially unused. */
+/* All glass effects are now directly applied to components like .navbar-container, .product-card, etc. */
 
 .added-feedback {
   background-color: var(--plus-color) !important;

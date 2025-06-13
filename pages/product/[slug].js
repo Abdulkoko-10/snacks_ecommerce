@@ -14,8 +14,16 @@ import { client, urlFor } from "../../lib/client";
 import Product from "../../components/Product";
 import { useStateContext } from "../../context/StateContext";
 import StarRating from '../../components/StarRating'; // Import StarRating
-import ReviewList from '../../components/ReviewList';   // Import ReviewList
-import ReviewForm from '../../components/ReviewForm';   // Import ReviewForm
+// import ReviewList from '../../components/ReviewList';   // Static import removed
+// import ReviewForm from '../../components/ReviewForm';   // Static import removed
+import dynamic from 'next/dynamic';
+
+const DynamicReviewList = dynamic(() => import('../../components/ReviewList'), {
+  ssr: false,
+});
+const DynamicReviewForm = dynamic(() => import('../../components/ReviewForm'), {
+  ssr: false,
+});
 
 // Swiper imports
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -224,7 +232,7 @@ const ProductDetails = ({ product, products, reviews: initialReviews }) => {
       </div>
 
       <div className="reviews-section">
-        <ReviewList reviews={currentReviews} />
+        <DynamicReviewList reviews={currentReviews} />
         <button 
           type="button" 
           className="btn btn-toggle-review-form" 
@@ -233,7 +241,7 @@ const ProductDetails = ({ product, products, reviews: initialReviews }) => {
           {showReviewForm ? 'Cancel Review' : 'Write a Review'}
         </button>
         {showReviewForm && (
-          <ReviewForm 
+          <DynamicReviewForm
             productId={product._id} 
             onSubmitSuccess={handleReviewSubmitSuccess} 
           />
