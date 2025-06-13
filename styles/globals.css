@@ -1375,14 +1375,14 @@ span.text-red {
     /* order: 1; */ /* Removed */
   }
   .hero-banner-image {
-    position: absolute; /* Ensure absolute positioning on mobile */
-    top: 8%;
-    right: 8%;
-    width: 260px;
-    height: auto; /* Allow height to scale with width */
-    max-height: 260px;
+    position: absolute;
+    top: 10%;
+    right: 5%;
+    width: 70%;
+    height: auto;
+    max-height: 250px;
     object-fit: contain;
-    /* border-radius: 10px; */ /* Already set in base style */
+    /* border-radius should be inherited from base .hero-banner-image or explicitly set if needed */
   }
   .desc { /* Mobile adjustments for desc */
     margin: 20px auto 0 auto; /* Keep it centered */
