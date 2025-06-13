@@ -44,37 +44,39 @@ const fetchReviews = async (keyWithProductId) => {
   return reviews;
 };
 
-const ProductDetails = ({ product, products }) => { // Removed initialReviews from props
-  // Ensure product is not null before destructuring. This can happen if fallback page is shown before data is ready.
-  if (!product) {
-    // Optionally, render a loading state or return null
-    // For now, assuming 'blocking' fallback in getStaticPaths means product will always be populated.
-    // If not, more robust handling here is needed.
-    return <div>Loading product details...</div>;
-  }
-
-  const { _id, image, name, details, price, slug } = product;
+const ProductDetails = ({ product, products }) => {
+  // 1. Call ALL hooks unconditionally at the top
   const [index, setIndex] = useState(0);
   const { decQty, incQty, qty, onAdd, setShowCart } = useStateContext();
   const router = useRouter();
-
   const [isAddedFeedback, setIsAddedFeedback] = useState(false);
   const [isBuyNowFeedback, setIsBuyNowFeedback] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
-  // const [currentReviews, setCurrentReviews] = useState(initialReviews || []); // Replaced by SWR
 
-  // SWR for fetching reviews
+  // SWR hook - product._id might be undefined if product is null initially
+  // The key is conditional (product?._id), which is correct for SWR.
   const {
     data: currentReviews,
     error: reviewsError,
     isLoading: reviewsLoading,
     mutate: mutateReviews
   } = useSWR(
-    _id ? ['reviews', _id] : null, // Use product._id (aliased as _id here)
+    product?._id ? ['reviews', product._id] : null,
     fetchReviews,
-    { fallbackData: [] } // Initial data until fetch completes
+    { fallbackData: [] }
   );
 
+  // 2. Handle loading/not found state for the product *after* all hooks
+  if (!product) {
+    // Customize this loading/not found state as needed
+    // router.isFallback can be checked here if using ISR with fallback: true
+    return <div>Loading product details or product not found...</div>;
+  }
+
+  // 3. Safe destructuring now that product is confirmed to exist
+  const { _id, image, name, details, price, slug } = product;
+
+  // Event handlers and other logic that depend on product properties
   const handleAddToCartWithFeedback = () => {
     onAdd(product, qty);
     setIsAddedFeedback(true);
