@@ -24,10 +24,10 @@ const Home = ({ products, bannerData }) => {
     </div>
   );
 };
-// Export a constant named getServerSideProps which is an async function
-export const getServerSideProps = async () => {
-  // Create a query for all products
-  const query = `*[_type == "product"]`;
+// Export a constant named getStaticProps which is an async function
+export const getStaticProps = async () => {
+  // Create a query for the 10 newest products
+  const query = `*[_type == "product"] | order(_createdAt desc) [0...10]`;
   // Fetch all products using the query
   const products = await client.fetch(query);
 
@@ -39,6 +39,7 @@ export const getServerSideProps = async () => {
   // Return an object containing the products and bannerData as props
   return {
     props: { products, bannerData },
+    revalidate: 60, // Regenerate the page at most once every 60 seconds
   };
 };
 

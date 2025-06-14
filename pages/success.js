@@ -3,7 +3,7 @@ import Link from "next/link";
 import { BsBagCheckFill } from "react-icons/bs";
 
 import { useStateContext } from "../context/StateContext";
-import { runRealistic } from "../lib/utills";
+// import { runRealistic } from "../lib/utills"; // Static import removed
 
 const Success = () => {
   const { setCartItems, setTotalPrice, setTotalQuantities } = useStateContext();
@@ -13,8 +13,19 @@ const Success = () => {
     setCartItems([]);
     setTotalPrice(0);
     setTotalQuantities(0);
-    runRealistic();
-  }, [setCartItems, setTotalPrice, setTotalQuantities]);
+
+    const fireConfetti = async () => {
+      try {
+        const utilsModule = await import("../lib/utills");
+        utilsModule.runRealistic();
+      } catch (error) {
+        console.error("Failed to load confetti utility:", error);
+        // Optionally, provide fallback or user feedback if confetti is critical
+      }
+    };
+
+    fireConfetti();
+  }, [setCartItems, setTotalPrice, setTotalQuantities]); // Dependencies are stable setters
 
   return (
     <div className="success-wrapper">

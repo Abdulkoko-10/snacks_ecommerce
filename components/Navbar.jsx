@@ -3,9 +3,14 @@ import Link from 'next/link';
 import { AiOutlineShopping } from 'react-icons/ai';
 import { FiSun, FiMoon, FiDroplet, FiMoreHorizontal } from 'react-icons/fi'; // Import Feather icons
 import { UserButton, SignInButton, SignedIn, SignedOut } from '@clerk/nextjs';
+import dynamic from 'next/dynamic';
 
-import { Cart } from './';
+// import { Cart } from './'; // Static import removed
 import { useStateContext } from '../context/StateContext';
+
+const DynamicCart = dynamic(() => import('./Cart'), {
+  ssr: false, // Cart is client-side interactive
+});
 
 // Helper to calculate contrast color (black or white)
 const calculateContrastColor = (hexColor) => {
@@ -219,7 +224,7 @@ const Navbar = () => {
   }
 
   return (
-    <div className={`navbar-container glassmorphism ${isScrolled ? 'scrolled-navbar' : ''}`}>
+    <div className={`navbar-container ${isScrolled ? 'scrolled-navbar' : ''}`}>
       <p className="logo">
         <Link href="/">Snacks</Link>
       </p>
@@ -292,7 +297,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {showCart && <Cart />}
+      {showCart && <DynamicCart />}
     </div>
   );
 };

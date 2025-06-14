@@ -3,49 +3,68 @@ import "../styles/globals.css";
 import { StateContext } from "../context/StateContext";
 import { Toaster } from "react-hot-toast";
 import { ClerkProvider } from "@clerk/nextjs";
-import { dark } from "@clerk/themes"; // Import a base theme if you want to use one
+// import { dark } from "@clerk/themes"; // Import a base theme if you want to use one - commented out as it's not used in clerkAppearance
 
-export default function App({ Component, pageProps }) {
+// MUI and Emotion imports for SSR
+import { CacheProvider } from '@emotion/react';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import createEmotionCache from '../lib/createEmotionCache';
+
+// Client-side cache, shared for the whole session of the user in the browser.
+const clientSideEmotionCache = createEmotionCache();
+
+// A simple default theme for MUI components
+// You can customize this further or move it to a separate file
+const defaultTheme = createTheme({
+  palette: {
+    primary: {
+      main: '#556cd6', // Example primary color
+    },
+    secondary: {
+      main: '#19857b', // Example secondary color
+    },
+    // You might want to sync this with your CSS variables if possible,
+    // or define a theme that reflects your app's color scheme.
+  },
+  // You can also add typography, breakpoints, etc.
+});
+
+export default function App(props) {
+  const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
+
+  // Clerk appearance object (copied from original _app.js)
+  // Consider moving this to a separate file if it grows large
   const clerkAppearance = {
-    baseTheme: undefined, // Can be `dark` or light (default) or undefined to use system preference
+    baseTheme: undefined,
     variables: {
-      // General
       colorPrimary: "var(--primary-color)",
       colorBackground: "var(--primary-background-color)",
       colorText: "var(--text-color)",
       colorInputBackground: "var(--secondary-background-color)",
       colorInputText: "var(--text-color)",
-
-      // Cards & Modals (using glassmorphism variables)
-      colorBackgroundMuted: "var(--glass-background-color)", // For card backgrounds
-      colorNeutralMuted: "var(--glass-background-color)", // for modal backdrop
-      colorNeutral: "var(--glass-border-color)", // for borders
-
-      // Buttons
-      colorDanger: "var(--primary-color)", // Example for destructive actions
-      colorSuccess: "var(--plus-color)", // Example for success actions
-
-      // Specific Clerk component elements
-      // You might need to inspect Clerk components to find the exact variables they use if not covered by globals
+      colorBackgroundMuted: "var(--glass-background-color)",
+      colorNeutralMuted: "var(--glass-background-color)",
+      colorNeutral: "var(--glass-border-color)",
+      colorDanger: "var(--primary-color)",
+      colorSuccess: "var(--plus-color)",
     },
     elements: {
-      card: { // This is the main container for the sign-in/up form
+      card: {
         backgroundColor: "var(--glass-background-color)",
         borderColor: "var(--glass-border-color)",
         boxShadow: "0 8px 32px 0 var(--glass-box-shadow-color)",
-        borderRadius: "10px", // Consistent with .glassmorphism class
+        borderRadius: "10px",
       },
-      modalContent: { // modalContent often wraps the card
-        backgroundColor: "transparent", // Make it transparent if card is already glassmorphism
-        // borderColor: "var(--glass-border-color)", // card will handle its own border
-        // boxShadow: "none", // card will handle its own shadow
+      modalContent: {
+        backgroundColor: "transparent",
       },
-      modalBackdrop: "rgba(0, 0, 0, 0.5)", // Standard semi-transparent dark backdrop
+      modalBackdrop: "rgba(0, 0, 0, 0.5)",
       formButtonPrimary: {
         backgroundColor: "var(--primary-color)",
-        color: "var(--text-on-primary-color)", // Assuming you have this for text on primary buttons
+        color: "var(--text-on-primary-color)",
         '&:hover': {
-          backgroundColor: "var(--secondary-color)", // Example: darken on hover
+          backgroundColor: "var(--secondary-color)",
         },
       },
       formFieldInput: {
@@ -57,47 +76,24 @@ export default function App({ Component, pageProps }) {
           boxShadow: "0 0 0 1px var(--primary-color)",
         }
       },
-      headerTitle: {
-        color: "var(--text-color)",
-      },
-      headerSubtitle: {
-        color: "var(--text-color)",
-      },
-      bodyText: {
-        color: "var(--text-color)",
-      },
-      footerActionText: {
-        color: "var(--text-color)",
-      },
+      headerTitle: { color: "var(--text-color)" },
+      headerSubtitle: { color: "var(--text-color)" },
+      bodyText: { color: "var(--text-color)" },
+      footerActionText: { color: "var(--text-color)" },
       footerActionLink: {
         color: "var(--primary-color)",
-        '&:hover': {
-          color: "var(--secondary-color)", // Example: darken on hover
-        }
+        '&:hover': { color: "var(--secondary-color)" }
       },
-      dividerLine: {
-        backgroundColor: "var(--glass-border-color)",
-      },
-      dividerText: {
-        color: "var(--text-color)",
-      },
-      formFieldLabel: {
-        color: "var(--text-color)",
-      },
-      socialButtonsBlockButton: { // For "Continue with X"
+      dividerLine: { backgroundColor: "var(--glass-border-color)" },
+      dividerText: { color: "var(--text-color)" },
+      formFieldLabel: { color: "var(--text-color)" },
+      socialButtonsBlockButton: {
         borderColor: "var(--glass-border-color)",
-        '&:hover': {
-          backgroundColor: "var(--secondary-background-color)",
-        }
-      },
-      socialButtonsProviderIcon: {
-        // color: "var(--text-color)" // if you want to theme the provider icons
+        '&:hover': { backgroundColor: "var(--secondary-background-color)" }
       },
       selectButton: {
         borderColor: "var(--glass-border-color)",
-        '&:hover': {
-          backgroundColor: "var(--secondary-background-color)",
-        }
+        '&:hover': { backgroundColor: "var(--secondary-background-color)" }
       },
       selectOptionsContainer: {
         backgroundColor: "var(--secondary-background-color)",
@@ -124,14 +120,20 @@ export default function App({ Component, pageProps }) {
   return (
     <ClerkProvider
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-      // appearance={clerkAppearance}
+      // appearance={clerkAppearance} // Appearance is defined but not passed, uncomment if needed
     >
-      <StateContext>
-        <Layout>
-          <Toaster />
-          <Component {...pageProps} />
-        </Layout>
-      </StateContext>
+      <CacheProvider value={emotionCache}>
+        <ThemeProvider theme={defaultTheme}>
+          {/* CssBaseline kickstarts an elegant, consistent, and simple baseline to build upon. */}
+          <CssBaseline />
+          <StateContext>
+            <Layout>
+              <Toaster />
+              <Component {...pageProps} />
+            </Layout>
+          </StateContext>
+        </ThemeProvider>
+      </CacheProvider>
     </ClerkProvider>
   );
 }
