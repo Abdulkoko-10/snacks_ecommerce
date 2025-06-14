@@ -71,6 +71,20 @@ const ProductDetails = ({ product, products }) => {
     { fallbackData: [] }
   );
 
+  // useEffect for logging SWR errors
+  useEffect(() => {
+    if (reviewsError) {
+      console.error('SWR Reviews Fetch Error:', reviewsError);
+      // Log additional info if available (SWR errors might have info/status)
+      if (reviewsError.info) {
+        console.error('SWR Error Info:', reviewsError.info);
+      }
+      if (reviewsError.status) {
+        console.error('SWR Error Status:', reviewsError.status);
+      }
+    }
+  }, [reviewsError]);
+
   // 2. Handle loading/not found state for the product *after* all hooks
   if (!product) {
     // Customize this loading/not found state as needed
