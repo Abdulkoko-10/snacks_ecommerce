@@ -25,17 +25,38 @@ const calculateContrastColor = (hexColor) => {
 
 // Helper to darken a hex color
 const darkenColor = (hexColor, amount) => {
-  if (!hexColor) return '#000000';
+  if (!hexColor) return '#000000'; // Default for null/undefined
   let color = hexColor.startsWith('#') ? hexColor.slice(1) : hexColor;
+
+  // Ensure color string is valid for parsing (e.g., 6 chars for RRGGBB)
+  if (color.length !== 6) {
+    // Attempt to handle 3-char shorthand #RGB -> #RRGGBB
+    if (color.length === 3) {
+        color = color.split('').map(char => char + char).join('');
+    } else {
+        return hexColor; // Return original if not 6 or 3 chars, or a default like '#000000'
+    }
+  }
+
   let r = parseInt(color.substring(0, 2), 16);
   let g = parseInt(color.substring(2, 4), 16);
   let b = parseInt(color.substring(4, 6), 16);
+
+  // Check for NaN after parsing (if hex string was invalid like "GGHHII")
+  if (isNaN(r) || isNaN(g) || isNaN(b)) {
+    return hexColor; // Return original color if parsing failed, or a default like '#000000'
+  }
 
   r = Math.max(0, r - amount);
   g = Math.max(0, g - amount);
   b = Math.max(0, b - amount);
 
-  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+  // Ensure values are integers before calling toString(16)
+  const rHex = Math.floor(r).toString(16).padStart(2, '0');
+  const gHex = Math.floor(g).toString(16).padStart(2, '0');
+  const bHex = Math.floor(b).toString(16).padStart(2, '0');
+
+  return `#${rHex}${gHex}${bHex}`;
 };
 
 // Helper to convert hex to rgba
@@ -281,9 +302,13 @@ const Navbar = () => {
                 </li>
               </SignedIn>
               <SignedOut>
-                <li onClick={() => setShowThemeMenu(false)}>
+                <li> {/* onClick removed */}
                   <SignInButton
                     mode="modal"
+                    // Optional: Add an onOpen or onClick handler here if Clerk's button needs to manually close the menu
+                    // For example, if SignInButton had an onOpen prop: onOpen={() => setShowThemeMenu(false)}
+                    // Or, if its child span's onClick could stop propagation and then close.
+                    // Simplest for now is to rely on handleClickOutside or user clicking elsewhere.
                   >
                     {/* This span helps if SignInButton doesn't take full width or needs text styling like other li items */}
                     <span style={{ display: 'block', width: '100%', cursor: 'pointer' }}>

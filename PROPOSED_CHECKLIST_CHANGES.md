@@ -56,7 +56,58 @@
         *   [ ] **Post Sign-In (Navbar):** Verify "Sign In" option updates to `UserButton` or authenticated state.
     ```
 
-These proposed changes ensure that the previously problematic sign-in scenarios are explicitly re-tested with a focus on modal appearance, theming, and correct state transitions after authentication.The proposed changes for `MANUAL_TESTING_CHECKLIST.md` have been created in `PROPOSED_CHECKLIST_CHANGES.md`.
-This focuses on re-testing the sign-in buttons in the Cart and Navbar, verifying the Clerk modal opens, is themed correctly, and that user state updates appropriately after sign-in.
+---
+### Additional Testing Scenarios (Incorporating RGB Theme and Specific Sign-In Interactions)
 
-This completes the subtask.
+**1. RGB Theme Robustness Testing:**
+
+*   **[ ] Activate RGB Theme Mode:**
+    *   [ ] From the theme selection menu, switch to "RGB Mode".
+    *   [ ] **Expected:** UI elements (backgrounds, text, buttons, glass effects) should update to reflect the initial RGB theme settings.
+*   **[ ] RGB Color Picker Interaction:**
+    *   [ ] Locate and use the RGB color picker (usually near the theme switcher).
+    *   [ ] Select several different valid colors.
+    *   [ ] **Expected:** For each color selection, the UI should dynamically update to reflect the chosen RGB values across themed elements.
+    *   [ ] **Console Check:** Monitor the browser's developer console for any errors during theme switching or color picking.
+*   **[ ] RGB Theme - Invalid LocalStorage Value (Advanced/Edge Case):**
+    *   [ ] Ensure RGB mode is currently active or can be activated upon reload.
+    *   [ ] Open browser developer tools and go to `Application` -> `Local Storage`.
+    *   [ ] Manually change the value associated with the `rgbColor` key (or similarly named key responsible for storing the selected RGB color) to an invalid value (e.g., an empty string `""`, a malformed hex like `"#12"`, or a word like `"invalid"`).
+    *   [ ] Reload the page. If RGB mode isn't active by default, switch to it.
+    *   [ ] **Expected:**
+        *   [ ] The site should not crash or become unusable.
+        *   [ ] Ideally, the site should fall back to a default color (either the default light/dark theme, or a default within the RGB mode).
+        *   [ ] Check the console for any errors related to theme processing or color parsing. Note any unhandled exceptions.
+*   **[ ] Post-RGB Theme Tests - Sign-In Button Functionality:**
+    *   [ ] After performing the RGB theme tests (including the invalid value test and restoring to a valid RGB color):
+        *   [ ] Verify the "Sign In" button in the Navbar's ellipsis menu is still visible (if signed out) and functional (opens Clerk modal).
+        *   [ ] Add an item to the cart and verify the "Sign In to Pre-order" button in the Cart is still visible (if signed out) and functional (opens Clerk modal).
+
+**2. Navbar `SignInButton` (Ellipsis Menu) - Detailed Interaction Test:**
+
+*   **[ ] Pre-condition:** Ensure the user is signed out.
+*   **[ ] Open Ellipsis Menu & Trigger Sign-In:**
+    *   [ ] Click the ellipsis icon in the Navbar to open the theme/options menu.
+    *   [ ] Within the opened menu, click the "Sign In" option.
+    *   [ ] **Expected (Clerk Modal):** The Clerk sign-in modal should open promptly.
+    *   [ ] **Expected (Ellipsis Menu Behavior):**
+        *   Observe if the ellipsis menu closes automatically when the Clerk modal opens.
+        *   If it does not close automatically, it should remain interactive or close when focus moves to the modal or a click occurs outside the menu.
+*   **[ ] Interact with Clerk Modal & Ellipsis Menu Closure:**
+    *   [ ] **Scenario A: Sign In Successfully**
+        *   [ ] Complete the sign-in process via the modal.
+        *   [ ] **Expected:** After successful sign-in, the Clerk modal should close. The ellipsis menu (if it was still open) should now reflect the authenticated state (e.g., "Sign In" changes to "Sign Out" or UserButton appears) or close.
+    *   [ ] **Scenario B: Close Clerk Modal Manually**
+        *   [ ] If not signing in, manually close the Clerk modal (e.g., by clicking its close button or pressing Esc).
+        *   [ ] **Expected:** The ellipsis menu (if it was still open) should allow further interaction or close upon clicking outside of it. It should not be stuck or cause UI freezes.
+*   **[ ] Verify No UI Freezes or Overlap Issues:**
+    *   [ ] Ensure there are no issues with the ellipsis menu and Clerk modal overlapping in a way that makes either unusable.
+
+**3. Cart `SignInButton` - Re-verification (Post Other Tests):**
+
+*   **[ ] Pre-condition:** Ensure the user is signed out. Add an item to the cart.
+*   **[ ] Open Cart & Trigger Sign-In:**
+    *   [ ] Open the cart view.
+    *   [ ] Click the "Sign In to Pre-order" button.
+    *   [ ] **Expected:** The Clerk sign-in modal should open reliably and without any errors.
+    *   [ ] (Optional) Perform a quick sign-in and ensure the cart state updates to allow pre-ordering.
