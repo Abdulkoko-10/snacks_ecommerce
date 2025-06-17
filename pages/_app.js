@@ -119,7 +119,7 @@ export default function App(props) {
 
   return (
     <ClerkProvider
-      {...pageProps}
+      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
       appearance={clerkAppearance}
     >
       <CacheProvider value={emotionCache}>
