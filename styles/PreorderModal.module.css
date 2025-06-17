@@ -1,7 +1,6 @@
 /* styles/PreorderModal.module.css */
 
-/* :global is used to target react-modal's default classes */
-:global .ReactModal__Overlay {
+.customOverlay {
   opacity: 0;
   transform: scale(0.95);
   transition: opacity 300ms ease-in-out, transform 300ms ease-in-out;
@@ -19,12 +18,12 @@
   z-index: 1000; /* Ensure modal is on top */
 }
 
-:global .ReactModal__Overlay--after-open {
+.customOverlay:global(.ReactModal__Overlay--after-open) {
   opacity: 1;
   transform: scale(1);
 }
 
-:global .ReactModal__Overlay--before-close {
+.customOverlay:global(.ReactModal__Overlay--before-close) {
   opacity: 0;
   transform: scale(0.95);
 }

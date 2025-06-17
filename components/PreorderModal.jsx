@@ -32,7 +32,7 @@ const PreorderModal = ({ isOpen, onRequestClose, productDetails }) => {
       onRequestClose={onRequestClose}
       contentLabel={productDetails?.name ? `Pre-order ${productDetails.name}` : "Pre-order Modal"}
       className={styles.modalContent}
-      overlayClassName="ReactModal__Overlay"
+      overlayClassName={styles.customOverlay} // Use local CSS module class
       closeTimeoutMS={300} // Matches transition duration
       shouldCloseOnOverlayClick={true}
       shouldCloseOnEsc={true}
