@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY); // Use server-side secret key
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
@@ -15,25 +15,19 @@ export default async function handler(req, res) {
         shipping_options: [{ shipping_rate: "shr_1PIH5XKoaeHWMJtofagidZNz" }],
         // This line creates an array of line items from the request body
         line_items: req.body.map((item) => {
-          // Get the image URL from the item
-          const img = item.image[0].asset._ref;
-          // Create a new image URL by replacing the "image-" prefix with the CDN URL and .webp suffix
-          const newImage = img
-            .replace(
-              "image-",
-              "https://cdn.sanity.io/images/ise1lfsl/production/"
-            )
-            .replace("-webp", ".webp");
+          // The imageUrl is now passed directly from the client
+          // No need for: const img = item.image[0].asset._ref;
+          // No need for: const newImage = img.replace(...);
 
           // Return an object containing the price data, adjustable quantity, and quantity of the item
           return {
             price_data: {
-              // Set the currency to US dollars
-              currency: "usd",
+              // Set the currency to Nigerian Naira
+              currency: "ngn",
               // Set the product data for the item, including its name and images
               product_data: {
                 name: item.name,
-                images: [newImage],
+                images: [item.imageUrl], // Use the imageUrl passed from the client
               },
               // Set the unit amount of the item, based on its price and the 100 minimum bid
               unit_amount: item.price * 100,

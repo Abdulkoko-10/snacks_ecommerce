@@ -9,7 +9,7 @@ import { TiDeleteOutline } from "react-icons/ti";
 import { FaLock } from 'react-icons/fa';
 import toast from "react-hot-toast";
 import { SwipeableDrawer } from '@mui/material';
-//import Image from 'next/image'; // Import next/image
+import Image from 'next/image'; // Import next/image
 import { useUser, SignInButton } from '@clerk/nextjs';
 
 import { useStateContext } from "../context/StateContext";
@@ -53,12 +53,24 @@ const Cart = () => {
     // Original checkout logic (should not be reached if isPaymentLocked is true)
     const stripe = await getStripe();
 
+    // Transform cartItems for Stripe, including imageUrl
+    const itemsForStripe = cartItems.map(item => ({
+      // Include all necessary properties for Stripe
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity,
+      _id: item._id, // Pass _id for reference if needed by Stripe or for your records
+      // Generate a moderately-sized image URL for Stripe Checkout
+      imageUrl: urlFor(item.image && item.image[0]).width(200).url(),
+      // Ensure other properties required by your Stripe API route are included
+    }));
+
     const response = await fetch("/api/stripe", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(cartItems),
+      body: JSON.stringify(itemsForStripe), // Send transformed items
     });
 
     if (response.statusCode === 500) return;
@@ -87,7 +99,7 @@ const Cart = () => {
         }
       }}
     >
-      <div className="cart-container glassmorphism" style={{ padding: '20px', maxHeight: '70vh', overflowY: 'auto' }}>
+      <div className="cart-container" style={{ padding: '20px', maxHeight: '70vh', overflowY: 'auto' }}>
         <div className="cart-heading" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '20px' }}>
           <span className="heading" style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--text-color)' }}>Your Cart</span>
           <span className="cart-num-items" style={{ marginLeft: '10px', color: 'var(--text-color)' }}>({totalQuantities} items)</span>
@@ -116,7 +128,7 @@ const Cart = () => {
                   src={urlFor(item.image[0])}
                   className="cart-product-image"
                 /> */}
-                <img
+                <Image
                   src={urlFor(item.image[0]).url()}
                   alt={item.name}
                   width={180} // from CSS .cart-product-image
