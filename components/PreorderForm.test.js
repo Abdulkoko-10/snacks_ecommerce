@@ -53,7 +53,7 @@ describe('PreorderForm', () => {
   //   fireEvent.change(screen.getByLabelText(/postal code/i), { target: { value: '12345' } });
   //   fireEvent.change(screen.getByLabelText(/country/i), { target: { value: 'Testland' } });
   //   fireEvent.change(screen.getByLabelText(/additional notes/i), { target: { value: 'Some notes here' } });
-  };
+  // };
 
 
   test('renders correctly when user is signed in (not in modal)', () => {
