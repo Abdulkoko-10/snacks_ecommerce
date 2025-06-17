@@ -119,8 +119,8 @@ export default function App(props) {
 
   return (
     <ClerkProvider
-      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-      // appearance={clerkAppearance} // Appearance is defined but not passed, uncomment if needed
+      {...pageProps}
+      appearance={clerkAppearance}
     >
       <CacheProvider value={emotionCache}>
         <ThemeProvider theme={defaultTheme}>

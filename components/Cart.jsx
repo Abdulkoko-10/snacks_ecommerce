@@ -32,13 +32,84 @@ const Cart = () => {
     setTotalQuantities,
   } = useStateContext();
 
-  const handlePreOrder = () => {
-    toast.success('Your pre-order has been placed successfully!');
+  const handlePreOrder = async () => {
+    if (!isSignedIn || !user) {
+      toast.error('Please sign in to place a pre-order.');
+      return;
+    }
 
-    setCartItems([]);
-    setTotalPrice(0);
-    setTotalQuantities(0);
-    setShowCart(false);
+    toast.loading('Placing your pre-order...');
+
+    const preorderData = {
+      userId: user.id,
+      userName: user.fullName || user.firstName || user.username || 'N/A', // Get user's name
+      userEmail: user.primaryEmailAddress ? user.primaryEmailAddress.emailAddress : 'email@example.com', // Get user's email
+      productItems: cartItems.map(item => ({
+        productId: item._id, // Assuming item._id is the Sanity product ID
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+      })),
+      totalPrice: totalPrice,
+      preorderDate: new Date().toISOString(),
+      status: 'pending', // Initial status
+    };
+
+    try {
+      // Step 1: Save pre-order to Sanity
+      const sanityResponse = await fetch('/api/create-preorder', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(preorderData),
+      });
+
+      if (!sanityResponse.ok) {
+        const errorData = await sanityResponse.json();
+        throw new Error(errorData.message || 'Failed to save pre-order.');
+      }
+
+      const sanityResult = await sanityResponse.json();
+      // console.log('Pre-order saved to Sanity:', sanityResult);
+
+      // Step 2: Send confirmation email
+      const emailResponse = await fetch('/api/send-preorder-confirmation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // Send only necessary data for the email
+        body: JSON.stringify({
+          userEmail: preorderData.userEmail,
+          userName: preorderData.userName,
+          productItems: preorderData.productItems,
+          totalPrice: preorderData.totalPrice,
+          preorderDate: preorderData.preorderDate,
+        }),
+      });
+
+      if (!emailResponse.ok) {
+        // Log email error but don't necessarily fail the whole pre-order if Sanity save was successful
+        const emailErrorData = await emailResponse.json();
+        console.error('Failed to send pre-order confirmation email:', emailErrorData.message);
+        toast.error('Pre-order placed, but failed to send confirmation email.');
+      } else {
+        // console.log('Pre-order confirmation email sent.');
+        toast.success('Your pre-order has been placed successfully! Check your email.');
+      }
+
+      // Clear cart and close
+      setCartItems([]);
+      setTotalPrice(0);
+      setTotalQuantities(0);
+      setShowCart(false);
+
+    } catch (error) {
+      console.error('Error placing pre-order:', error);
+      toast.dismiss(); // Dismiss loading toast
+      toast.error(`Error: ${error.message || 'Could not place pre-order.'}`);
+    }
   };
 
   const handleCheckout = async () => {
