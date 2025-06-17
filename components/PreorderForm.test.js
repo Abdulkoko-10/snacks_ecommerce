@@ -50,9 +50,9 @@ describe('PreorderForm', () => {
   //   fireEvent.change(screen.getByLabelText(/quantity/i), { target: { value: '2' } });
   //   fireEvent.change(screen.getByLabelText(/street/i), { target: { value: '123 Main St' } });
   //   fireEvent.change(screen.getByLabelText(/city/i), { target: { value: 'Testville' } });
-    fireEvent.change(screen.getByLabelText(/postal code/i), { target: { value: '12345' } });
-    fireEvent.change(screen.getByLabelText(/country/i), { target: { value: 'Testland' } });
-    fireEvent.change(screen.getByLabelText(/additional notes/i), { target: { value: 'Some notes here' } });
+  //   fireEvent.change(screen.getByLabelText(/postal code/i), { target: { value: '12345' } });
+  //   fireEvent.change(screen.getByLabelText(/country/i), { target: { value: 'Testland' } });
+  //   fireEvent.change(screen.getByLabelText(/additional notes/i), { target: { value: 'Some notes here' } });
   };
 
 

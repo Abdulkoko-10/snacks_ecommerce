@@ -100,7 +100,7 @@ describe('Cart', () => {
     expect(screen.queryAllByRole('button', { name: /pre-order this/i })).toHaveLength(0);
   });
 
-  test('opens PreorderModal with correct product details when "Pre-order This" is clicked', () => {
+  test('opens PreorderModal with correct product details when "Pre-order This" is clicked', async () => {
     const MockedPreorderModal = require('./PreorderModal');
     render(<Cart />);
 
