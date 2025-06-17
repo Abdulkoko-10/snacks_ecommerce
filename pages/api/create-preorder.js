@@ -1,4 +1,4 @@
-import { client } from '../../../lib/client'; // Adjust path as necessary
+import { client } from '../../lib/client'; // Adjust path as necessary
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
