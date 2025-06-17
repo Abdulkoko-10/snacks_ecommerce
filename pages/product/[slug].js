@@ -17,6 +17,7 @@ import StarRating from '../../components/StarRating'; // Import StarRating
 // import ReviewList from '../../components/ReviewList';   // Static import removed
 // import ReviewForm from '../../components/ReviewForm';   // Static import removed
 import dynamic from 'next/dynamic';
+import { PreorderForm } from '../../components'; // Import PreorderForm
 
 const DynamicReviewList = dynamic(() => import('../../components/ReviewList'), {
   ssr: false,
@@ -304,6 +305,16 @@ const ProductDetails = ({ product, products }) => {
 
       {/* "You may also like" section now dynamically imported */}
       <DynamicMayLikeProducts products={products} />
+
+      {/* Pre-order Section */}
+      {product && ( // Ensure product exists before rendering form
+        <div className="preorder-section-container" style={{ marginTop: '40px', paddingTop: '30px', borderTop: '1px solid var(--border-color-light)' }}>
+          <h2 style={{ textAlign: 'center', marginBottom: '30px', color: 'var(--accent-color)' }}>
+            Want this item? Pre-order Now!
+          </h2>
+          <PreorderForm initialProductName={product.name} />
+        </div>
+      )}
     </div>
   );
 };

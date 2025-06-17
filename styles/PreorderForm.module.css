@@ -1,0 +1,161 @@
+/* styles/PreorderForm.module.css */
+.formContainer {
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  border-radius: 15px;
+  padding: clamp(20px, 5vw, 40px); /* Responsive padding */
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
+  color: var(--text-color);
+  max-width: 700px; /* Increased max-width for better layout */
+  margin: 30px auto; /* Increased margin */
+}
+
+.formTitle {
+  text-align: center;
+  font-size: clamp(1.8rem, 5vw, 2.5rem); /* Responsive font size */
+  color: var(--accent-color);
+  margin-bottom: 30px;
+  font-weight: 700;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr; /* Default to single column */
+  gap: 20px;
+}
+
+/* Responsive grid for larger screens */
+@media (min-width: 600px) {
+  .formGrid {
+    grid-template-columns: 1fr 1fr; /* Two columns on larger screens */
+  }
+  .fullWidth {
+    grid-column: 1 / -1; /* Span full width for elements like notes or title */
+  }
+}
+
+.formGroup {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 8px; /* Increased margin */
+  font-weight: 600;
+  font-size: 0.95rem; /* Slightly adjusted font size */
+  color: var(--text-color-secondary); /* Softer label color */
+}
+
+.formGroup input,
+.formGroup textarea {
+  width: 100%;
+  padding: 12px 15px; /* Increased padding */
+  border-radius: 10px; /* Increased border-radius */
+  border: 1px solid var(--glass-edge-highlight-color);
+  background-color: var(--secondary-background-light);
+  color: var(--text-color);
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box; /* Ensure padding doesn't increase size */
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus {
+  outline: none;
+  border-color: var(--accent-color); /* Highlight focus with accent color */
+  box-shadow: 0 0 0 3px rgba(var(--accent-color-rgb-values, 0, 123, 255), 0.25); /* Similar to Bootstrap focus */
+}
+
+.formGroup textarea {
+  min-height: 120px; /* Good default height for notes */
+  resize: vertical; /* Allow vertical resize */
+}
+
+.submitButton {
+  padding: 12px 25px; /* Adjusted padding */
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  background-color: var(--clr-btn-primary-bg);
+  color: var(--clr-btn-primary-text);
+  border: 1px solid var(--clr-btn-primary-bg);
+  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  display: block; /* Make it block to center it if needed or fill width */
+  width: 100%; /* Make button full width */
+  margin-top: 10px; /* Add some margin on top */
+}
+
+@media (min-width: 600px) {
+  .submitButton {
+    width: auto; /* Auto width on larger screens */
+    min-width: 200px; /* Minimum width */
+    margin-left: auto; /* Align to right if formGrid is used for button placement */
+    margin-right: auto; /* Center if in a fullWidth container */
+  }
+  .fullWidth > .submitButton { /* If button is direct child of fullWidth */
+     display: block;
+     margin-left: auto;
+     margin-right: auto;
+  }
+}
+
+
+.submitButton:hover {
+  transform: translateY(-2px); /* Subtle lift effect */
+  background-color: var(--clr-btn-primary-hover-bg);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15); /* Enhanced shadow on hover */
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.message {
+  margin-top: 15px;
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.successMessage {
+  color: var(--plus-color);
+  border: 1px solid var(--plus-color);
+  background-color: rgba(var(--plus-color-rgb-values, 40, 167, 69), 0.1);
+}
+
+.errorMessage {
+  color: #D8000C; /* Standard error red */
+  border: 1px solid #D8000C;
+  background-color: rgba(216, 0, 12, 0.1);
+}
+
+.validationError {
+  color: #D8000C;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+.userInfo {
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: var(--secondary-background-light);
+  border-radius: 10px;
+  border: 1px solid var(--glass-edge-highlight-color);
+  font-size: 0.95rem;
+}
+
+.userInfo p {
+  margin: 5px 0;
+  color: var(--text-color-secondary);
+}
+
+.userInfo strong {
+  color: var(--text-color);
+}
