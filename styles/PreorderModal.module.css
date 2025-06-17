@@ -1,0 +1,118 @@
+/* styles/PreorderModal.module.css */
+
+/* :global is used to target react-modal's default classes */
+:global .ReactModal__Overlay {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 300ms ease-in-out, transform 300ms ease-in-out;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4); /* Darker overlay for better contrast */
+  backdrop-filter: blur(8px); /* Blur effect for the background */
+  -webkit-backdrop-filter: blur(8px); /* Safari support */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000; /* Ensure modal is on top */
+}
+
+:global .ReactModal__Overlay--after-open {
+  opacity: 1;
+  transform: scale(1);
+}
+
+:global .ReactModal__Overlay--before-close {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.modalContent {
+  /* Liquid Glass Effect */
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  border-radius: 18px; /* Slightly more pronounced radius */
+  /* backdrop-filter is on the overlay, direct content doesn't need it again unless layered */
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color),
+              inset 0 -1px 1px 0 var(--glass-inner-shadow-color),
+              0 15px 40px -10px var(--glass-box-shadow-color); /* Enhanced shadow */
+  color: var(--text-color);
+
+  /* Sizing and Positioning */
+  position: relative; /* For absolute positioning of close button */
+  max-width: 700px; /* Max width */
+  width: calc(100% - 40px); /* Responsive width with padding */
+  max-height: calc(100vh - 60px); /* Max height to prevent overflow */
+  overflow-y: auto; /* Allow scrolling for content */
+  padding: 30px;
+  outline: none; /* Remove default focus outline from react-modal */
+
+  /* Animations for the modal content itself (optional, if overlay handles main animation) */
+  /* transform: translateY(-20px); */
+  /* transition: transform 0.3s ease-out; */
+}
+
+:global .ReactModal__Content--after-open {
+  /* transform: translateY(0); */
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--border-color-light); /* Subtle separator */
+}
+
+.modalTitle {
+  font-size: clamp(1.5rem, 4vw, 2rem); /* Responsive title */
+  font-weight: 700;
+  color: var(--accent-color); /* Use accent color for title */
+  margin: 0; /* Remove default margin */
+}
+
+.closeButton {
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  font-size: 2rem; /* Larger icon */
+  cursor: pointer;
+  padding: 5px;
+  line-height: 1;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.closeButton:hover {
+  color: var(--accent-color); /* Highlight with accent color on hover */
+  transform: scale(1.1);
+}
+
+.modalBody {
+  /* Placeholder for form content styling if needed */
+  font-size: 1rem;
+  color: var(--text-color-secondary);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .modalContent {
+    padding: 20px;
+    max-width: calc(100% - 20px); /* Adjust for smaller screens */
+    max-height: calc(100vh - 40px);
+  }
+
+  .modalHeader {
+    margin-bottom: 20px;
+  }
+
+  .modalTitle {
+    font-size: 1.5rem;
+  }
+
+  .closeButton {
+    font-size: 1.8rem;
+  }
+}

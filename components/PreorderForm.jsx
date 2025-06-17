@@ -2,11 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import styles from '../styles/PreorderForm.module.css';
 
-const PreorderForm = ({ initialProductName = '' }) => {
+const PreorderForm = ({
+  initialProductName = '',
+  initialProductId = null,
+  initialQuantity = 1,
+  onPreorderSuccess,
+  isInModal = false
+}) => {
   const { user } = useUser();
   const [formData, setFormData] = useState({
     productName: initialProductName,
-    quantity: 1,
+    productId: initialProductId, // Store productId
+    quantity: initialQuantity, // Use initialQuantity
     street: '',
     city: '',
     postalCode: '',
@@ -18,10 +25,14 @@ const PreorderForm = ({ initialProductName = '' }) => {
   const [submitStatus, setSubmitStatus] = useState({ type: '', message: '' }); // 'success' or 'error'
 
   useEffect(() => {
-    if (initialProductName) {
-      setFormData(prev => ({ ...prev, productName: initialProductName }));
-    }
-  }, [initialProductName]);
+    // Update form data if initial props change
+    setFormData(prev => ({
+      ...prev,
+      productName: initialProductName,
+      productId: initialProductId,
+      quantity: initialQuantity,
+    }));
+  }, [initialProductName, initialProductId, initialQuantity]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -68,7 +79,7 @@ const PreorderForm = ({ initialProductName = '' }) => {
       userName: user.fullName || `${user.firstName} ${user.lastName}`.trim() || user.username || 'N/A',
       userEmail: user.primaryEmailAddress?.emailAddress || 'N/A',
       productName: formData.productName,
-      // productId: '', // Assuming productId might be derived or added later
+      productId: formData.productId, // Include productId
       quantity: formData.quantity,
       shippingAddress: {
         street: formData.street,
@@ -92,8 +103,9 @@ const PreorderForm = ({ initialProductName = '' }) => {
         setSubmitStatus({ type: 'success', message: 'Pre-order submitted successfully!' });
         // Clear form
         setFormData({
-          productName: initialProductName, // Reset to initial or empty
-          quantity: 1,
+          productName: initialProductName,
+          productId: initialProductId,
+          quantity: initialQuantity, // Reset to initial quantity
           street: '',
           city: '',
           postalCode: '',
@@ -101,6 +113,9 @@ const PreorderForm = ({ initialProductName = '' }) => {
           notes: '',
         });
         setErrors({});
+        if (onPreorderSuccess) {
+          onPreorderSuccess(result); // Pass the created preorder data to callback
+        }
       } else {
         setSubmitStatus({ type: 'error', message: result.message || 'Failed to submit pre-order. Please try again.' });
       }
@@ -117,8 +132,8 @@ const PreorderForm = ({ initialProductName = '' }) => {
   }
 
   return (
-    <div className={styles.formContainer}>
-      <h2 className={styles.formTitle}>Pre-order Form</h2>
+    <div className={`${styles.formContainer} ${isInModal ? styles.inModal : ''}`}>
+      {!isInModal && <h2 className={styles.formTitle}>Pre-order Form</h2>}
 
       {user && (
         <div className={`${styles.userInfo} ${styles.fullWidth}`}>
@@ -138,7 +153,7 @@ const PreorderForm = ({ initialProductName = '' }) => {
               name="productName"
               value={formData.productName}
               onChange={handleChange}
-              disabled={!!initialProductName} // Disable if product name is passed as prop
+              disabled={!!initialProductName || !!initialProductId} // Disable if product name or ID is passed (implying it's from a fixed product context)
             />
             {errors.productName && <p className={styles.validationError}>{errors.productName}</p>}
           </div>
@@ -156,8 +171,10 @@ const PreorderForm = ({ initialProductName = '' }) => {
             {errors.quantity && <p className={styles.validationError}>{errors.quantity}</p>}
           </div>
 
-          <div className={styles.formGroup}> {/* Placeholder for potential second item in this row if not notes */}
-            {/* This div helps maintain grid structure if notes is not here */}
+          {/* Hidden input for productId if needed, or just use from state */}
+          {/* <input type="hidden" name="productId" value={formData.productId || ''} /> */}
+
+          <div className={styles.formGroup}> {/* Placeholder for alignment if needed */}
           </div>
 
 

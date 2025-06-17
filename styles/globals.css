@@ -2095,3 +2095,46 @@ body > .cl-modal-root .cl-modal-content {
 .cl-signUp-root .cl-card a:hover {
   color: var(--primary-color-hover) !important; /* Use accent hover */
 }
+
+/* Pre-order button for Cart items */
+.btn-preorder-cart {
+  padding: 8px 14px; /* Slightly more padding for better touch target */
+  font-size: 0.85rem; /* Smaller font for cart context */
+  font-weight: 600;
+  border-radius: 8px; /* Consistent rounding */
+  cursor: pointer;
+  transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+  text-transform: none; /* Normal case for this button */
+
+  /* Liquid Glass styles */
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  color: var(--text-color); /* Default text color */
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: inset 0 1px 0px 0 var(--glass-inner-highlight-color),
+              inset 0 -1px 1px 0 var(--glass-inner-shadow-color),
+              0 4px 10px -3px var(--glass-box-shadow-color);
+}
+
+.btn-preorder-cart:hover {
+  transform: scale(1.05);
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--accent-color); /* Accent color on hover */
+  color: var(--text-on-accent-color); /* Text color for accent background */
+  border-color: var(--accent-color); /* Border matches accent */
+  box-shadow: inset 0 1px 0px 0 var(--glass-inner-highlight-color),
+              inset 0 -1px 1px 0 var(--glass-inner-shadow-color),
+              0 6px 15px -4px var(--glass-box-shadow-color); /* Enhanced hover shadow */
+}
+
+.btn-preorder-cart:disabled {
+  background: var(--secondary-background-color) !important; /* More prominent disabled state */
+  color: var(--text-color) !important;
+  opacity: 0.5; /* More pronounced opacity */
+  cursor: not-allowed;
+  transform: scale(1); /* No transform on disabled */
+  box-shadow: inset 0 1px 0px 0 var(--glass-inner-highlight-color),
+              inset 0 -1px 1px 0 var(--glass-inner-shadow-color),
+              0 2px 5px -2px var(--glass-box-shadow-color); /* Reduced shadow for disabled */
+  border-color: var(--glass-inner-shadow-color); /* Darker border for disabled */
+}
