@@ -51,6 +51,26 @@ export default {
       readOnly: true,
     },
     {
+      name: 'shippingAddress',
+      title: 'Shipping Address',
+      type: 'object',
+      fields: [
+        { name: 'fullName', title: 'Full Name', type: 'string', validation: Rule => Rule.required() },
+        { name: 'street', title: 'Street Address', type: 'string', validation: Rule => Rule.required() },
+        { name: 'city', title: 'City', type: 'string', validation: Rule => Rule.required() },
+        { name: 'state', title: 'State/Province', type: 'string' }, // Optional
+        { name: 'postalCode', title: 'Postal Code', type: 'string', validation: Rule => Rule.required() },
+        { name: 'country', title: 'Country', type: 'string', validation: Rule => Rule.required() },
+        { name: 'phoneNumber', title: 'Phone Number', type: 'string' } // Optional, but good for delivery
+      ],
+      options: {
+        collapsible: true,
+        collapsed: false, // Start expanded in Sanity Studio
+      },
+      // Add validation to make shippingAddress required if desired at the top level
+      // validation: Rule => Rule.required()
+    },
+    {
       name: 'status',
       title: 'Status',
       type: 'string',
@@ -82,12 +102,13 @@ export default {
       title: 'userName',
       subtitle: 'createdAt',
       status: 'status',
-      totalPrice: 'totalPrice'
+      totalPrice: 'totalPrice',
+      shippingFullName: 'shippingAddress.fullName'
     },
     prepare(selection) {
-      const {title, subtitle, status, totalPrice} = selection
+      const {title, subtitle, status, totalPrice, shippingFullName} = selection
       return {
-        title: title || 'No user name',
+        title: shippingFullName || title || 'No user name', // Prioritize shipping name
         subtitle: `Status: ${status || 'pending'} - ${new Date(subtitle).toLocaleDateString()} - $${totalPrice || 0}`
       }
     }

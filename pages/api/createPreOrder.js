@@ -22,8 +22,8 @@ import { sendPreOrderConfirmationEmail, sendAdminPreOrderNotificationEmail } fro
 
 export default async function handler(req, res) {
   if (!writeClient) {
-    console.error('Sanity write client is not configured. Missing SANITY_API_WRITE_TOKEN.');
-    return res.status(500).json({ error: 'Server configuration error: Sanity write token not set.' });
+    console.error('CRITICAL: Sanity write client is not initialized. SANITY_API_WRITE_TOKEN might be missing or invalid in your environment variables.');
+    return res.status(500).json({ error: 'Server configuration error: Unable to connect to database. Please check SANITY_API_WRITE_TOKEN.' });
   }
 
   if (req.method !== 'POST') {
@@ -37,10 +37,20 @@ export default async function handler(req, res) {
       return res.status(401).json({ error: 'Unauthorized: User not logged in.' });
     }
 
-    const { cartItems, totalPrice } = req.body;
+    // const { cartItems, totalPrice } = req.body; // Old
+    const { cartItems, totalPrice, shippingAddress } = req.body; // New: include shippingAddress
 
-    if (!cartItems || !totalPrice || cartItems.length === 0) {
-      return res.status(400).json({ error: 'Missing required pre-order data.' });
+    // Enhanced validation
+    if (!cartItems || typeof totalPrice === 'undefined' || !Array.isArray(cartItems) || cartItems.length === 0 || !shippingAddress) {
+      console.warn('Validation Error: Missing or invalid pre-order data including shippingAddress.', { body: req.body });
+      return res.status(400).json({ error: 'Missing or invalid required pre-order data (cartItems, totalPrice, shippingAddress).' });
+    }
+    // Basic validation for shippingAddress object and required fields
+    const requiredShippingFields = ['fullName', 'street', 'city', 'postalCode', 'country'];
+    for (const field of requiredShippingFields) {
+      if (!shippingAddress[field] || typeof shippingAddress[field] !== 'string' || shippingAddress[field].trim() === '') {
+        return res.status(400).json({ error: `Shipping address is incomplete. Missing or invalid field: ${field}.`});
+      }
     }
 
     // Prepare cart items for Sanity, ensuring they match the schema
@@ -63,8 +73,10 @@ export default async function handler(req, res) {
       totalPrice: totalPrice,
       status: 'pending',
       createdAt: new Date().toISOString(),
+      shippingAddress: shippingAddress, // Add shippingAddress to Sanity data
     };
 
+    // For debugging: console.log('Attempting to create pre-order with data:', JSON.stringify(preOrderData, null, 2));
     const createdPreOrder = await writeClient.create(preOrderData);
 
     if (createdPreOrder) {
@@ -93,19 +105,32 @@ export default async function handler(req, res) {
           console.error("Background admin email sending failed:", adminEmailError);
         });
       } else {
-        console.warn('Admin email address not configured. Skipping admin notification.');
+        console.warn('Admin email address (ADMIN_EMAIL_ADDRESS) not configured. Skipping admin notification.');
       }
     }
 
     return res.status(201).json({ message: 'Pre-order created successfully', preOrder: createdPreOrder });
 
   } catch (error) {
-    console.error('Error creating pre-order:', error);
-    // Check for specific Sanity errors if necessary
-    if (error.response && error.response.body && error.response.body.error) {
-        console.error('Sanity error details:', error.response.body.error);
-        return res.status(500).json({ error: 'Failed to create pre-order in Sanity.', details: error.response.body.error.description || error.response.body.error.message });
+    console.error('Failed to create pre-order. Full error object:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+
+    let errorMessage = 'Failed to create pre-order in database.';
+    let errorDetails = error.message;
+    let statusCode = 500;
+
+    // Check for Sanity client specific 'isBoom' property for Boom errors
+    if (error.isBoom && error.output && error.output.payload) {
+      console.error('Sanity client Boom error details:', JSON.stringify(error.output.payload, null, 2));
+      errorMessage = error.output.payload.message || 'Error interacting with database.';
+      errorDetails = error.output.payload.error || error.output.payload.message || errorDetails; // Sanity specific error message
+      statusCode = error.output.payload.statusCode || statusCode;
+    } else if (error.response && error.response.body && error.response.body.error) { // General structure for some client errors
+       console.error('Sanity error details from response body:', JSON.stringify(error.response.body.error, null, 2));
+       errorMessage = error.response.body.error.description || error.response.body.error.message || 'Error processing request with database.';
+       errorDetails = error.response.body.error;
+       statusCode = error.response.statusCode || statusCode; // Use statusCode from response if available
     }
-    return res.status(500).json({ error: 'Failed to create pre-order.', details: error.message });
+
+    return res.status(statusCode).json({ error: errorMessage, details: errorDetails });
   }
 }
