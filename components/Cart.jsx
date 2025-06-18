@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import { SwipeableDrawer } from '@mui/material';
 import Image from 'next/image'; // Import next/image
 import { useUser, SignInButton } from '@clerk/nextjs';
+import { useRouter } from 'next/router'; // Added import
 
 import { useStateContext } from "../context/StateContext";
 import { urlFor } from "../lib/client";
@@ -19,26 +20,26 @@ import getStripe from "../lib/getStripe";
 const Cart = () => {
   const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
   const { isSignedIn, user } = useUser(); // Get user and signedIn status
+  const router = useRouter(); // Added router instance
   const {
     totalPrice,
     totalQuantities,
     cartItems,
     showCart,
-    setShowCart,
+    setShowCart, // Used to close cart
     toggleCartItemQuanitity,
     onRemove,
-    setCartItems,
-    setTotalPrice,
-    setTotalQuantities,
+    // These are removed from direct use in handlePreOrder here:
+    // setCartItems,
+    // setTotalPrice,
+    // setTotalQuantities,
   } = useStateContext();
 
   const handlePreOrder = () => {
-    toast.success('Your pre-order has been placed successfully!');
-
-    setCartItems([]);
-    setTotalPrice(0);
-    setTotalQuantities(0);
-    setShowCart(false);
+    // No toast here, navigation will occur
+    // No cart clearing here, PreOrderCheckout.jsx handles it after submission
+    setShowCart(false); // Close the cart drawer
+    router.push('/pre-order'); // Navigate to the pre-order page
   };
 
   const handleCheckout = async () => {
