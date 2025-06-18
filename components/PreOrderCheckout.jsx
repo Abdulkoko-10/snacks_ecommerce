@@ -142,13 +142,48 @@ const PreOrderCheckout = () => {
       <h2 style={{ textAlign: 'center', marginBottom: '30px', color: 'var(--text-color)' }}>Confirm Your Pre-Order</h2>
 
       {/* Shipping Details Form */}
-      <div className="shipping-details-form" style={{ marginTop: '30px', marginBottom: '30px', padding: '20px', background: 'var(--secondary-background-color)', borderRadius: '8px' }}>
-        <h3 style={{ color: 'var(--text-color)', marginBottom: '20px', borderBottom: '1px solid var(--text-color)', paddingBottom: '10px' }}>Shipping Information</h3>
+      <div
+        className="shipping-details-form"
+        style={{
+          marginTop: '30px',
+          marginBottom: '30px',
+          padding: '25px', // Increased padding
+          // background: 'var(--secondary-background-color-alpha, rgba(var(--secondary-background-color-rgb), 0.1))', // Example for semi-transparent bg
+          // Assuming --secondary-background-color-rgb is defined like "255, 255, 255" for white
+          // Or use a pre-defined variable for this effect:
+          background: 'var(--liquid-glass-background, rgba(255, 255, 255, 0.05))', // Fallback to a light, subtle effect
+          backdropFilter: 'blur(10px)', // Key for glass effect
+          border: '1px solid var(--liquid-glass-border, rgba(255, 255, 255, 0.2))',
+          borderRadius: '15px', // More rounded
+          boxShadow: '0 4px 30px var(--shadow-color-alpha, rgba(0, 0, 0, 0.1))', // Softer shadow
+        }}
+      >
+        <h3
+          style={{
+            color: 'var(--text-color)',
+            marginBottom: '25px', // Increased margin
+            borderBottom: '1px solid var(--text-color-alpha, rgba(var(--text-color-rgb), 0.3))', // Softer border
+            paddingBottom: '15px', // Increased padding
+            fontWeight: '600', // Slightly bolder
+          }}
+        >
+          Shipping Information
+        </h3>
         {Object.keys(shippingDetails).map((key) => (
-          <div key={key} style={{ marginBottom: '15px' }}>
-            <label htmlFor={key} style={{ display: 'block', color: 'var(--text-color)', marginBottom: '5px', textTransform: 'capitalize' }}>
-              {key.replace(/([A-Z])/g, ' $1').trim()} {/* Auto-format label */}
-              {['fullName', 'street', 'city', 'postalCode', 'country'].includes(key) && <span style={{color: 'red'}}>*</span>}
+          <div key={key} style={{ marginBottom: '20px' }}> {/* Increased margin */}
+            <label
+              htmlFor={key}
+              style={{
+                display: 'block',
+                color: 'var(--text-color)',
+                marginBottom: '8px', // Increased margin
+                textTransform: 'capitalize',
+                fontSize: '0.95em', // Slightly smaller label
+                fontWeight: '500',
+              }}
+            >
+              {key.replace(/([A-Z])/g, ' $1').trim()}
+              {['fullName', 'street', 'city', 'postalCode', 'country'].includes(key) && <span style={{color: 'var(--primary-color, red)', marginLeft: '4px'}}>*</span>}
             </label>
             <input
               type={key === 'phoneNumber' ? 'tel' : 'text'}
@@ -156,9 +191,10 @@ const PreOrderCheckout = () => {
               name={key}
               value={shippingDetails[key]}
               onChange={handleShippingChange}
-              style={{ width: '100%', padding: '10px', borderRadius: '4px', border: `1px solid ${formErrors[key] ? 'red' : 'var(--text-color)'}`, background: 'var(--background-color)', color: 'var(--text-color)' }}
+              // className will be used by <style jsx>
+              className={`shipping-input ${formErrors[key] ? 'input-error' : ''}`}
             />
-            {formErrors[key] && <p style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>{formErrors[key]}</p>}
+            {formErrors[key] && <p style={{color: 'var(--primary-color, red)', fontSize: '0.8em', marginTop: '5px'}}>{formErrors[key]}</p>}
           </div>
         ))}
       </div>
@@ -213,6 +249,29 @@ const PreOrderCheckout = () => {
           border-radius: 15px; // Example for liquid glass
           box-shadow: 0 0 20px var(--shadow-color); // Example
         }
+        .shipping-input {
+          width: 100%;
+          padding: 12px 15px; // Increased padding
+          border-radius: 8px; // More rounded
+          border: 1px solid var(--liquid-glass-input-border, rgba(var(--text-color-rgb), 0.3)); // Softer border
+          background-color: var(--liquid-glass-input-background, rgba(var(--background-color-rgb), 0.5)); // Semi-transparent background
+          color: var(--text-color);
+          font-size: 1em;
+          transition: border-color 0.3s ease, box-shadow 0.3s ease; // Smooth transition for focus
+          outline: none; // Remove default outline
+        }
+        .shipping-input:focus {
+          border-color: var(--primary-color, #007bff); // Use primary color for focus border
+          box-shadow: 0 0 0 3px var(--primary-color-alpha, rgba(0, 123, 255, 0.25)); // Glow effect for focus
+        }
+        .shipping-input.input-error {
+          border-color: var(--primary-color, red); // Error border color
+          // background-color: var(--error-background-input, rgba(255,0,0,0.05)); // Optional: slight red tint for error background
+        }
+        // Ensure CSS variables like --text-color-rgb, --background-color-rgb, --primary-color-alpha are defined in globals.css
+        // e.g. :root { --text-color-rgb: 230, 230, 230; --primary-color: #007bff; --primary-color-alpha: rgba(0,123,255,0.3); }
+        // These RGB versions are needed for rgba() if the original CSS variable is a hex or named color.
+        // If direct rgba variables are available (e.g. --text-color-alpha: rgba(230,230,230,0.3)), use those.
       `}</style>
     </div>
   );
