@@ -70,21 +70,34 @@ const Navbar = ({ contentRef }) => { // Accept contentRef
   useEffect(() => {
     if (extractedBgColor) {
       const contrastColor = calculateContrastColor(extractedBgColor);
-      document.documentElement.style.setProperty('--dynamic-navbar-background', extractedBgColor);
       document.documentElement.style.setProperty('--dynamic-navbar-text-color', contrastColor);
 
-      // For scrolled dynamic navbar, let's use hexToRgba for transparency
+      // Define alpha values for normal and scrolled states
+      const normalDynamicAlpha = 0.35; // Alpha for the main dynamic glass background (adjust as needed)
       const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 800px)').matches;
-      const scrolledDynamicAlpha = isMobile ? 0.7 : 0.85; // Same alpha as RGB for consistency
-      document.documentElement.style.setProperty('--dynamic-scrolled-navbar-bg', hexToRgba(extractedBgColor, scrolledDynamicAlpha));
+      const scrolledDynamicAlpha = isMobile ? 0.7 : 0.85; // Alpha for scrolled dynamic glass background
 
-      // console.log(`Dynamic Navbar: Background set to ${extractedBgColor}, Text set to ${contrastColor}`);
+      // Set CSS variables for the RGBA values of the dynamic background
+      // These will be used by the CSS to construct the full 'background' property including gradients
+      document.documentElement.style.setProperty('--dynamic-navbar-glass-main-bg-color', hexToRgba(extractedBgColor, normalDynamicAlpha));
+      document.documentElement.style.setProperty('--dynamic-navbar-glass-scrolled-bg-color', hexToRgba(extractedBgColor, scrolledDynamicAlpha));
+
+      // --dynamic-navbar-background and --dynamic-scrolled-navbar-bg are no longer directly used for the full background string from JS.
+      // CSS will now combine the radial gradient with these new variables.
+      // However, cart-item-qty uses --dynamic-navbar-background as a solid color, so we still need it as a solid hex.
+      document.documentElement.style.setProperty('--dynamic-navbar-background', extractedBgColor); // Keep this for solid color needs
+
     }
     if (dominantColorError) {
       // console.error('Error getting dominant color for navbar:', dominantColorError);
-      // Potentially revert to a default or previous theme if dynamic fails severely
+      // Fallback: if dynamic color extraction fails, we might want to unset these or set to default glass colors
+      // For now, if extractedBgColor is null/error, these specific glass vars won't be set,
+      // and CSS fallbacks for them (or for the main .navbar-container) should take over.
+      // Consider explicitly setting them to default glass colors if needed.
+      // document.documentElement.style.setProperty('--dynamic-navbar-glass-main-bg-color', 'var(--glass-background-color-light)'); // Example fallback
+      // document.documentElement.style.setProperty('--dynamic-navbar-glass-scrolled-bg-color', 'var(--scrolled-navbar-bg-light)'); // Example fallback
     }
-  }, [extractedBgColor, dominantColorError, hexToRgba]); // Added hexToRgba
+  }, [extractedBgColor, dominantColorError, hexToRgba]); // hexToRgba is a dependency
 
   const [rgbColor, setRgbColor] = useState('#324d67'); // Default RGB color
   const [rgbInputColor, setRgbInputColor] = useState(rgbColor); // For the color picker input

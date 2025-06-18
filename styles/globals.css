@@ -3,9 +3,13 @@
 /* USER PROVIDED VARIABLES START */
 :root {
   /* Default fallbacks for dynamic vars, if not set by JS somehow */
-  --dynamic-navbar-background: #f0f0f0; /* Default light grey */
+  --dynamic-navbar-background: #f0f0f0; /* Solid fallback for elements needing it (e.g. cart qty text bg) */
   --dynamic-navbar-text-color: #000000;   /* Default black */
-  --dynamic-scrolled-navbar-bg: rgba(240, 240, 240, 0.85); /* Default scrolled bg */
+
+  /* Fallbacks for the RGBA components of the dynamic glass background */
+  /* These should ideally match the alpha of --glass-background-color-light and --scrolled-navbar-bg-light */
+  --dynamic-navbar-glass-main-bg-color: rgba(200, 210, 225, 0.35); /* Fallback to default light glass */
+  --dynamic-navbar-glass-scrolled-bg-color: rgba(200, 210, 225, 0.5); /* Fallback to default scrolled light glass */
 
   /* Core Palette */
   --primary-color: #0D2B45; /* Deep Indigo */
@@ -2103,32 +2107,43 @@ body > .cl-modal-root .cl-modal-content {
 
 /* Styles for Dynamic Theme Mode */
 .dynamic-mode .navbar-container {
-  background-color: var(--dynamic-navbar-background);
+  /* This is the key change: use 'background' instead of 'background-color' */
+  background: var(--dynamic-navbar-background);
   color: var(--dynamic-navbar-text-color);
   /* Add transition for smooth color changes */
-  transition: background-color 0.5s ease, color 0.5s ease;
+  /* Transitioning 'background' might be slightly different than 'background-color' */
+  transition: background 0.5s ease, color 0.5s ease; /* Keep transition on background */
+}
+
+/* Styles for Dynamic Theme Mode */
+.dynamic-mode .navbar-container {
+  /* Construct the background using the original radial gradient and the new dynamic RGBA variable */
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--dynamic-navbar-glass-main-bg-color);
+  color: var(--dynamic-navbar-text-color) !important; /* Keep !important from previous diagnostic step for now */
+  /* Ensure other glass properties like backdrop-filter, border, box-shadow are inherited or reapplied if necessary */
+  /* They should be inherited from .navbar-container if not overridden */
 }
 
 .dynamic-mode .navbar-container.scrolled-navbar {
-  background-color: var(--dynamic-scrolled-navbar-bg);
-  /* Potentially add backdrop-filter for glassmorphism if desired, similar to RGB mode */
-  /* backdrop-filter: blur(10px); */
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--dynamic-navbar-glass-scrolled-bg-color);
+  /* Other scrolled properties like specific box-shadow changes if any */
 }
 
-/* Ensuring text, icons, etc., in the navbar use the contrast color */
+/* Text and icon colors (from previous diagnostic step, keeping !important for now) */
 .dynamic-mode .navbar-container .logo a,
 .dynamic-mode .navbar-container .cart-icon, /* Targets the button itself */
 .dynamic-mode .navbar-container .theme-icon-button svg, /* Targets the SVG icon */
 .dynamic-mode .navbar-container .theme-ellipsis-button svg, /* Targets the SVG icon */
 .dynamic-mode .navbar-container .nav-items-right .user-button-li, /* Clerk UserButton might need specific targeting if it doesn't inherit */
 .dynamic-mode .navbar-container .nav-items-right .user-button-li button { /* Clerk UserButton button */
-  color: var(--dynamic-navbar-text-color);
+  color: var(--dynamic-navbar-text-color) !important; /* Added !important */
 }
 
 /* Special case for cart item quantity badge */
 .dynamic-mode .navbar-container .cart-item-qty {
-  background-color: var(--dynamic-navbar-text-color);
-  color: var(--dynamic-navbar-background);
+  background-color: var(--dynamic-navbar-text-color) !important;
+  /* Use the solid --dynamic-navbar-background for the text color of the badge */
+  color: var(--dynamic-navbar-background) !important;
 }
 
 /* If Clerk's UserButton and SignInButton in the dropdown need specific overrides for dynamic mode */
