@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { AiOutlineShopping } from 'react-icons/ai';
-import { FiSun, FiMoon, FiDroplet, FiMoreHorizontal } from 'react-icons/fi'; // Import Feather icons
+import { FiSun, FiMoon, FiDroplet, FiMoreHorizontal, FiShuffle } from 'react-icons/fi'; // Added FiShuffle
 import { UserButton, SignInButton, SignedIn, SignedOut } from '@clerk/nextjs';
 import dynamic from 'next/dynamic';
+import useDominantColor from '../hooks/useDominantColor'; // Import the hook
 
 // import { Cart } from './'; // Static import removed
 import { useStateContext } from '../context/StateContext';
@@ -54,9 +55,37 @@ const hexToRgba = (hex, alpha) => {
 };
 
 
-const Navbar = () => {
+const Navbar = ({ contentRef }) => { // Accept contentRef
   const { showCart, setShowCart, totalQuantities } = useStateContext();
   const [themeMode, setThemeMode] = useState('light'); // 'light', 'dark', 'rgb'
+  // ... other states
+
+  // Use the hook to get the dominant color from the content area
+  const { dominantColor: extractedBgColor, error: dominantColorError } = useDominantColor(contentRef, {
+    defaultColor: '#FFFFFF', // Default to white
+    observe: true // Observe content changes
+  });
+
+  // Effect to update CSS variables when extractedBgColor changes
+  useEffect(() => {
+    if (extractedBgColor) {
+      const contrastColor = calculateContrastColor(extractedBgColor);
+      document.documentElement.style.setProperty('--dynamic-navbar-background', extractedBgColor);
+      document.documentElement.style.setProperty('--dynamic-navbar-text-color', contrastColor);
+
+      // For scrolled dynamic navbar, let's use hexToRgba for transparency
+      const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 800px)').matches;
+      const scrolledDynamicAlpha = isMobile ? 0.7 : 0.85; // Same alpha as RGB for consistency
+      document.documentElement.style.setProperty('--dynamic-scrolled-navbar-bg', hexToRgba(extractedBgColor, scrolledDynamicAlpha));
+
+      // console.log(`Dynamic Navbar: Background set to ${extractedBgColor}, Text set to ${contrastColor}`);
+    }
+    if (dominantColorError) {
+      // console.error('Error getting dominant color for navbar:', dominantColorError);
+      // Potentially revert to a default or previous theme if dynamic fails severely
+    }
+  }, [extractedBgColor, dominantColorError, hexToRgba]); // Added hexToRgba
+
   const [rgbColor, setRgbColor] = useState('#324d67'); // Default RGB color
   const [rgbInputColor, setRgbInputColor] = useState(rgbColor); // For the color picker input
   const [showThemeMenu, setShowThemeMenu] = useState(false);
@@ -128,9 +157,13 @@ const Navbar = () => {
     const savedRgbColor = localStorage.getItem('rgbColor');
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-    document.documentElement.classList.remove('dark-mode', 'rgb-mode'); // Clear old classes
+    document.documentElement.classList.remove('dark-mode', 'rgb-mode', 'dynamic-mode'); // Clear all theme classes
 
-    if (savedThemeMode === 'rgb' && savedRgbColor) {
+    if (savedThemeMode === 'dynamic') {
+      setThemeMode('dynamic');
+      document.documentElement.classList.add('dynamic-mode');
+      // Colors will be applied by the useDominantColor hook and CSS
+    } else if (savedThemeMode === 'rgb' && savedRgbColor) {
       setThemeMode('rgb');
       setRgbColor(savedRgbColor);
       setRgbInputColor(savedRgbColor);
@@ -168,10 +201,10 @@ const Navbar = () => {
       window.removeEventListener('scroll', handleScroll); // Cleanup scroll listener
     };
 
-  }, [applyRgbTheme]); // applyRgbTheme is a dependency, keep it if it's stable or memoized correctly
+  }, [applyRgbTheme]); // ensure dependencies are correct
 
   const setAndStoreTheme = (newThemeMode, newRgbColor = rgbColor) => {
-    document.documentElement.classList.remove('dark-mode', 'rgb-mode');
+    document.documentElement.classList.remove('dark-mode', 'rgb-mode', 'dynamic-mode');
     localStorage.setItem('themeMode', newThemeMode);
     setThemeMode(newThemeMode);
 
@@ -180,18 +213,24 @@ const Navbar = () => {
     } else if (newThemeMode === 'rgb') {
       document.documentElement.classList.add('rgb-mode');
       applyRgbTheme(newRgbColor);
-      setRgbColor(newRgbColor); // Ensure internal state is also up-to-date
-      setRgbInputColor(newRgbColor); // Sync input picker
+      setRgbColor(newRgbColor);
+      setRgbInputColor(newRgbColor);
       localStorage.setItem('rgbColor', newRgbColor);
+    } else if (newThemeMode === 'dynamic') {
+      document.documentElement.classList.add('dynamic-mode');
+      // The CSS variables --dynamic-navbar-background and --dynamic-navbar-text-color
+      // are already being updated by the useDominantColor hook.
+      // No specific color application function needed here for 'dynamic' beyond setting the class.
     }
-    // For 'light' mode, no class is added beyond removing others.
+    // For 'light' mode, no class is added.
   };
 
   const toggleTheme = () => {
     let newMode;
     if (themeMode === 'light') newMode = 'dark';
     else if (themeMode === 'dark') newMode = 'rgb';
-    else newMode = 'light'; // themeMode === 'rgb'
+    else if (themeMode === 'rgb') newMode = 'dynamic'; // rgb -> dynamic
+    else newMode = 'light'; // dynamic -> light (cycle complete)
     setAndStoreTheme(newMode);
   };
   
@@ -213,18 +252,22 @@ const Navbar = () => {
   let currentThemeIcon;
   let themeIconTitle = "Toggle Theme";
   if (themeMode === 'light') {
-    currentThemeIcon = <FiMoon size={22} />; // Icon to switch to Dark
+    currentThemeIcon = <FiMoon size={22} />;
     themeIconTitle = "Activate Dark Mode";
   } else if (themeMode === 'dark') {
-    currentThemeIcon = <FiDroplet size={22} />;  // Icon to switch to RGB
+    currentThemeIcon = <FiDroplet size={22} />;
     themeIconTitle = "Activate RGB Mode";
-  } else { // themeMode === 'rgb'
-    currentThemeIcon = <FiSun size={22} />;  // Icon to switch to Light
+  } else if (themeMode === 'rgb') {
+    currentThemeIcon = <FiShuffle size={22} />; // Icon for RGB -> Dynamic
+    themeIconTitle = "Activate Dynamic Mode";
+  } else { // themeMode === 'dynamic'
+    currentThemeIcon = <FiSun size={22} />; // Icon for Dynamic -> Light
     themeIconTitle = "Activate Light Mode";
   }
 
   return (
-    <div className={`navbar-container ${isScrolled ? 'scrolled-navbar' : ''}`}>
+    // Added navbar-dynamic-active class for specific styling if needed
+    <div className={`navbar-container ${isScrolled ? 'scrolled-navbar' : ''} ${themeMode === 'dynamic' ? 'navbar-dynamic-active' : ''}`}>
       <p className="logo">
         <Link href="/">Snacks</Link>
       </p>
@@ -273,6 +316,7 @@ const Navbar = () => {
               <li onClick={() => selectTheme('light')}>Light Theme</li>
               <li onClick={() => selectTheme('dark')}>Dark Theme</li>
               <li onClick={() => selectTheme('rgb')}>RGB Theme</li>
+              <li onClick={() => selectTheme('dynamic')}>Dynamic Theme</li> {/* Added Dynamic Theme option */}
               <SignedIn>
                 <li className="user-button-li">
                   <UserButton

@@ -2,6 +2,11 @@
 
 /* USER PROVIDED VARIABLES START */
 :root {
+  /* Default fallbacks for dynamic vars, if not set by JS somehow */
+  --dynamic-navbar-background: #f0f0f0; /* Default light grey */
+  --dynamic-navbar-text-color: #000000;   /* Default black */
+  --dynamic-scrolled-navbar-bg: rgba(240, 240, 240, 0.85); /* Default scrolled bg */
+
   /* Core Palette */
   --primary-color: #0D2B45; /* Deep Indigo */
   --secondary-color: #203C56; /* Shadowed Steel */
@@ -2094,4 +2099,44 @@ body > .cl-modal-root .cl-modal-content {
 .cl-signIn-root .cl-card a:hover,
 .cl-signUp-root .cl-card a:hover {
   color: var(--primary-color-hover) !important; /* Use accent hover */
+}
+
+/* Styles for Dynamic Theme Mode */
+.dynamic-mode .navbar-container {
+  background-color: var(--dynamic-navbar-background);
+  color: var(--dynamic-navbar-text-color);
+  /* Add transition for smooth color changes */
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+.dynamic-mode .navbar-container.scrolled-navbar {
+  background-color: var(--dynamic-scrolled-navbar-bg);
+  /* Potentially add backdrop-filter for glassmorphism if desired, similar to RGB mode */
+  /* backdrop-filter: blur(10px); */
+}
+
+/* Ensuring text, icons, etc., in the navbar use the contrast color */
+.dynamic-mode .navbar-container .logo a,
+.dynamic-mode .navbar-container .cart-icon, /* Targets the button itself */
+.dynamic-mode .navbar-container .theme-icon-button svg, /* Targets the SVG icon */
+.dynamic-mode .navbar-container .theme-ellipsis-button svg, /* Targets the SVG icon */
+.dynamic-mode .navbar-container .nav-items-right .user-button-li, /* Clerk UserButton might need specific targeting if it doesn't inherit */
+.dynamic-mode .navbar-container .nav-items-right .user-button-li button { /* Clerk UserButton button */
+  color: var(--dynamic-navbar-text-color);
+}
+
+/* Special case for cart item quantity badge */
+.dynamic-mode .navbar-container .cart-item-qty {
+  background-color: var(--dynamic-navbar-text-color);
+  color: var(--dynamic-navbar-background);
+}
+
+/* If Clerk's UserButton and SignInButton in the dropdown need specific overrides for dynamic mode */
+.dynamic-mode .theme-dropdown-menu .user-button-li button, /* More specific if needed */
+.dynamic-mode .theme-dropdown-menu li span[style*="cursor: pointer"] /* For Sign In button text */ {
+  color: var(--text-color) !important; /* Assuming dropdown uses general text color, or adjust as needed */
+}
+.dynamic-mode .theme-dropdown-menu {
+  background-color: var(--secondary-background-color); /* Or a dynamic variable if preferred */
+  /* Text color for dropdown items should contrast with its background */
 }
