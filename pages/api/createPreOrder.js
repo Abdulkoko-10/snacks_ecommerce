@@ -1,7 +1,7 @@
 // pages/api/createPreOrder.js
-import { writeClient } from '../../../lib/client'; // Adjust path as necessary
+import { writeClient } from '../../lib/client'; // Adjust path as necessary
 import { currentUser } from '@clerk/nextjs/server';
-import { sendPreOrderConfirmationEmail, sendAdminPreOrderNotificationEmail } from '../../../lib/sendEmail';
+import { sendPreOrderConfirmationEmail, sendAdminPreOrderNotificationEmail } from '../../lib/sendEmail';
 
 // Ensure you have a Sanity client configured for writes,
 // possibly a separate one that uses a token with write permissions.
