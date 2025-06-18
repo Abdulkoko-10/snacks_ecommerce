@@ -105,7 +105,7 @@ const Navbar = () => {
 
     // Set the scrolled navbar background for RGB mode, considering mobile viewport
     const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 800px)').matches;
-    const scrolledRgbAlpha = isMobile ? 0.7 : 0.85;
+    const scrolledRgbAlpha = isMobile ? 0.8 : 0.75;
     document.documentElement.style.setProperty('--scrolled-navbar-bg-rgb', hexToRgba(selectedRgbColor, scrolledRgbAlpha));
   }, []);
 
