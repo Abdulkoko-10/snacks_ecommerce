@@ -60,8 +60,8 @@
 
   /* Navbar Specific */
   --navbar-height: 70px;
-  --scrolled-navbar-bg-light: rgba(200, 210, 225, 0.35); /* More opaque version of light glass */
-  --scrolled-navbar-bg-dark: rgba(10, 25, 40, 0.4);    /* More opaque version of dark glass */
+  --scrolled-navbar-bg-light: rgba(200, 210, 225, 0.7); /* More opaque version of light glass */
+  --scrolled-navbar-bg-dark: rgba(10, 25, 40, 0.75);    /* More opaque version of dark glass */
   --scrolled-navbar-bg-rgb: var(--scrolled-navbar-bg-light); /* JS will update this */
 
   /* Button Specific */
@@ -1298,8 +1298,8 @@ span.text-red {
 @media screen and (max-width: 800px) {
   :root { /* These overrides are fine as they are specific to mobile viewport */
     --navbar-height: 60px;
-    --scrolled-navbar-bg-light: rgba(200, 210, 225, 0.5); /* More transparent for mobile scroll */
-    --scrolled-navbar-bg-dark: rgba(10, 25, 40, 0.6);
+    --scrolled-navbar-bg-light: rgba(200, 210, 225, 0.8); /* More transparent for mobile scroll */
+    --scrolled-navbar-bg-dark: rgba(10, 25, 40, 0.85);
     --scrolled-navbar-bg-rgb: rgba(var(--rgb-color-chosen, 200, 210, 225), 0.5); /* JS should set --rgb-color-chosen */
   }
 
