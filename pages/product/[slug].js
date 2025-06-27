@@ -43,10 +43,23 @@ import useSWR from 'swr';
 // Fetcher function for SWR
 const fetchReviews = async (keyWithProductId) => {
   const productId = keyWithProductId[1]; // Extract productId from the key array
-  if (!productId) return []; // Or throw an error if preferred
+  console.log(`[fetchReviews] Fetching reviews for productId: ${productId}`);
+
+  if (!productId) {
+    console.warn('[fetchReviews] No productId provided.');
+    return []; // Or throw an error if preferred
+  }
+
   const reviewsQuery = `*[_type == "review" && product._ref == $productId && approved == true] | order(createdAt desc)`;
-  const reviews = await readClient.fetch(reviewsQuery, { productId });
-  return reviews;
+  try {
+    const reviews = await readClient.fetch(reviewsQuery, { productId });
+    console.log(`[fetchReviews] Found ${reviews.length} approved reviews for productId: ${productId}.`);
+    // console.log(`[fetchReviews] Data for ${productId}:`, reviews); // Optional: log full data
+    return reviews;
+  } catch (error) {
+    console.error(`[fetchReviews] Error fetching reviews for productId ${productId}:`, error);
+    throw error; // Re-throw error so SWR can catch it
+  }
 };
 
 const ProductDetails = ({ product, products }) => {
@@ -84,6 +97,19 @@ const ProductDetails = ({ product, products }) => {
       }
     }
   }, [reviewsError]);
+
+  // Log currentReviews when it changes
+  useEffect(() => {
+    if (product?._id) { // Only log if we expect reviews for a product
+      console.log(`[ProductDetails] currentReviews for product ${product._id}:`, currentReviews);
+      if (reviewsLoading) {
+        console.log(`[ProductDetails] Reviews are currently loading for product ${product._id}.`);
+      }
+      if (!reviewsLoading && currentReviews) {
+        console.log(`[ProductDetails] Received ${currentReviews.length} reviews from SWR for product ${product._id}.`);
+      }
+    }
+  }, [currentReviews, product?._id, reviewsLoading]);
 
   // 2. Handle loading/not found state for the product *after* all hooks
   if (!product) {

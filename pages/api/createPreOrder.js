@@ -112,24 +112,55 @@ export default async function handler(req, res) {
     return res.status(201).json({ message: 'Pre-order created successfully', preOrder: createdPreOrder });
 
   } catch (error) {
-    console.error('Failed to create pre-order. Full error object:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+    // Enhanced logging
+    console.error('------------------------------------------------------');
+    console.error('Failed to create pre-order. Original error object:', error);
+    console.error('------------------------------------------------------');
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    if (error.response) { // Sanity client errors often have a 'response' property
+      console.error('Sanity error response status:', error.response.statusCode);
+      console.error('Sanity error response body:', JSON.stringify(error.response.body, null, 2));
+    }
+    if (error.details) { // Sanity specific details
+        console.error('Sanity error details:', JSON.stringify(error.details, null, 2));
+    }
+    // Attempt to stringify the full error to catch any other properties
+    try {
+      console.error('Full error object (stringified with getOwnPropertyNames):', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+    } catch (e) {
+      console.error('Could not stringify full error object:', e.message);
+    }
+    console.error('------------------------------------------------------');
+
 
     let errorMessage = 'Failed to create pre-order in database.';
-    let errorDetails = error.message;
+    let errorDetails = error.message; // Default to general error message
     let statusCode = 500;
 
-    // Check for Sanity client specific 'isBoom' property for Boom errors
+    // Check for Sanity client specific 'isBoom' property for Boom errors (older Sanity client versions)
     if (error.isBoom && error.output && error.output.payload) {
-      console.error('Sanity client Boom error details:', JSON.stringify(error.output.payload, null, 2));
-      errorMessage = error.output.payload.message || 'Error interacting with database.';
-      errorDetails = error.output.payload.error || error.output.payload.message || errorDetails; // Sanity specific error message
+      console.warn('Handling error as a Boom error (older Sanity client style).');
+      errorMessage = error.output.payload.message || 'Error interacting with database (Boom).';
+      errorDetails = error.output.payload.error || error.output.payload.message || errorDetails;
       statusCode = error.output.payload.statusCode || statusCode;
-    } else if (error.response && error.response.body && error.response.body.error) { // General structure for some client errors
-       console.error('Sanity error details from response body:', JSON.stringify(error.response.body.error, null, 2));
-       errorMessage = error.response.body.error.description || error.response.body.error.message || 'Error processing request with database.';
-       errorDetails = error.response.body.error;
-       statusCode = error.response.statusCode || statusCode; // Use statusCode from response if available
     }
+    // Check for errors with a 'response' property, common with @sanity/client v3+
+    else if (error.response && error.response.body && error.response.body.error) {
+      console.warn('Handling error based on error.response.body.error.');
+      const sanityError = error.response.body.error;
+      errorMessage = sanityError.description || sanityError.message || 'Error processing request with database.';
+      errorDetails = sanityError; // Send the whole Sanity error object as details
+      statusCode = error.response.statusCode || statusCode;
+    } else if (error.response && typeof error.response.body === 'string') {
+      // Sometimes the body might be a string (e.g. HTML error page from a proxy, or plain text error)
+      console.warn('Handling error based on error.response where body is a string.');
+      errorMessage = 'Error from database provider.'; // Generic message
+      errorDetails = error.response.body; // The string response
+      statusCode = error.response.statusCode || statusCode;
+    }
+    // Add more specific checks if needed, based on observed error structures
 
     return res.status(statusCode).json({ error: errorMessage, details: errorDetails });
   }
