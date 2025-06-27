@@ -1,7 +1,7 @@
 // pages/api/createPreOrder.js
 import { writeClient } from '../../lib/client'; // Adjust path as necessary
-import { currentUser } from '@clerk/nextjs/server';
-import { sendPreOrderConfirmationEmail, sendAdminPreOrderNotificationEmail } from '../../lib/sendEmail';
+// import { currentUser } from '@clerk/nextjs/server'; // Temporarily commented out
+// import { sendPreOrderConfirmationEmail, sendAdminPreOrderNotificationEmail } from '../../lib/sendEmail'; // Temporarily commented out
 
 // Ensure you have a Sanity client configured for writes,
 // possibly a separate one that uses a token with write permissions.
@@ -32,10 +32,17 @@ export default async function handler(req, res) {
   }
 
   try {
-    const user = await currentUser();
-    if (!user) {
-      return res.status(401).json({ error: 'Unauthorized: User not logged in.' });
-    }
+    // const user = await currentUser(); // Temporarily commented out
+    // if (!user) {
+    //   return res.status(401).json({ error: 'Unauthorized: User not logged in.' });
+    // }
+    const mockUser = { // Mock user data for testing without Clerk
+        id: 'mock_user_123',
+        emailAddresses: [{ emailAddress: 'mockuser@example.com' }],
+        firstName: 'Mock',
+    };
+    const user = mockUser; // Use mock user
+
 
     // const { cartItems, totalPrice } = req.body; // Old
     const { cartItems, totalPrice, shippingAddress } = req.body; // New: include shippingAddress
@@ -80,36 +87,37 @@ export default async function handler(req, res) {
     const createdPreOrder = await writeClient.create(preOrderData);
 
     if (createdPreOrder) {
-      // Send confirmation email (fire and forget, or await if critical)
-      sendPreOrderConfirmationEmail(
-        user.emailAddresses[0]?.emailAddress, // User's email
-        user.firstName || user.emailAddresses[0]?.emailAddress.split('@')[0], // User's name
-        createdPreOrder // The newly created pre-order document
-      ).catch(emailError => {
-        // Log email sending errors without failing the API response for pre-order creation
-        console.error("Background user email sending failed:", emailError);
-      });
+      // Email sending temporarily commented out
+      // sendPreOrderConfirmationEmail(
+      //   user.emailAddresses[0]?.emailAddress, // User's email
+      //   user.firstName || user.emailAddresses[0]?.emailAddress.split('@')[0], // User's name
+      //   createdPreOrder // The newly created pre-order document
+      // ).catch(emailError => {
+      //   // Log email sending errors without failing the API response for pre-order creation
+      //   console.error("Background user email sending failed:", emailError);
+      // });
 
-      // Admin notification email
-      const adminEmail = process.env.ADMIN_EMAIL_ADDRESS;
-      if (adminEmail) {
-        sendAdminPreOrderNotificationEmail(
-          adminEmail,
-          createdPreOrder,
-          {
-            name: user.firstName || user.emailAddresses[0]?.emailAddress.split('@')[0],
-            email: user.emailAddresses[0]?.emailAddress,
-            id: user.id // Pass user ID if needed by admin email template
-          }
-        ).catch(adminEmailError => {
-          console.error("Background admin email sending failed:", adminEmailError);
-        });
-      } else {
-        console.warn('Admin email address (ADMIN_EMAIL_ADDRESS) not configured. Skipping admin notification.');
-      }
+      // // Admin notification email
+      // const adminEmail = process.env.ADMIN_EMAIL_ADDRESS;
+      // if (adminEmail) {
+      //   sendAdminPreOrderNotificationEmail(
+      //     adminEmail,
+      //     createdPreOrder,
+      //     {
+      //       name: user.firstName || user.emailAddresses[0]?.emailAddress.split('@')[0],
+      //       email: user.emailAddresses[0]?.emailAddress,
+      //       id: user.id // Pass user ID if needed by admin email template
+      //     }
+      //   ).catch(adminEmailError => {
+      //     console.error("Background admin email sending failed:", adminEmailError);
+      //   });
+      // } else {
+      //   console.warn('Admin email address (ADMIN_EMAIL_ADDRESS) not configured. Skipping admin notification.');
+      // }
+      console.log('Skipped email sending for debugging server-only issue.');
     }
 
-    return res.status(201).json({ message: 'Pre-order created successfully', preOrder: createdPreOrder });
+    return res.status(201).json({ message: 'Pre-order created successfully (emails skipped for debug)', preOrder: createdPreOrder });
 
   } catch (error) {
     // Enhanced logging
