@@ -1,7 +1,7 @@
 // pages/api/createPreOrder.js
 import { writeClient } from '../../lib/client'; // Adjust path as necessary
-// import { currentUser } from '@clerk/nextjs/server'; // Temporarily commented out
-// import { sendPreOrderConfirmationEmail, sendAdminPreOrderNotificationEmail } from '../../lib/sendEmail'; // Temporarily commented out
+import { currentUser } from '@clerk/nextjs/server'; // Re-enabled Clerk import
+// import { sendPreOrderConfirmationEmail, sendAdminPreOrderNotificationEmail } from '../../lib/sendEmail'; // Still commented out
 
 // Ensure you have a Sanity client configured for writes,
 // possibly a separate one that uses a token with write permissions.
@@ -32,16 +32,16 @@ export default async function handler(req, res) {
   }
 
   try {
-    // const user = await currentUser(); // Temporarily commented out
-    // if (!user) {
-    //   return res.status(401).json({ error: 'Unauthorized: User not logged in.' });
-    // }
-    const mockUser = { // Mock user data for testing without Clerk
-        id: 'mock_user_123',
-        emailAddresses: [{ emailAddress: 'mockuser@example.com' }],
-        firstName: 'Mock',
-    };
-    const user = mockUser; // Use mock user
+    const user = await currentUser(); // Re-enabled currentUser() call
+    if (!user) {
+      return res.status(401).json({ error: 'Unauthorized: User not logged in.' });
+    }
+    // const mockUser = { // Mock user data for testing without Clerk
+    //     id: 'mock_user_123',
+    //     emailAddresses: [{ emailAddress: 'mockuser@example.com' }],
+    //     firstName: 'Mock',
+    // };
+    // const user = mockUser; // Use mock user
 
 
     // const { cartItems, totalPrice } = req.body; // Old
