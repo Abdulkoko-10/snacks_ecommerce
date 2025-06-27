@@ -1,6 +1,6 @@
 // pages/api/createPreOrder.js
 import { writeClient } from '../../lib/client'; // Adjust path as necessary
-import { currentUser } from '@clerk/nextjs/server'; // Re-enabled Clerk import
+import { getAuth, clerkClient } from '@clerk/nextjs/server'; // Using getAuth and clerkClient
 // import { sendPreOrderConfirmationEmail, sendAdminPreOrderNotificationEmail } from '../../lib/sendEmail'; // Still commented out
 
 // Ensure you have a Sanity client configured for writes,
@@ -32,16 +32,33 @@ export default async function handler(req, res) {
   }
 
   try {
-    const user = await currentUser(); // Re-enabled currentUser() call
-    if (!user) {
-      return res.status(401).json({ error: 'Unauthorized: User not logged in.' });
+    const auth = getAuth(req);
+    if (!auth.userId) {
+      return res.status(401).json({ error: 'Unauthorized: User not logged in or session not found.' });
     }
-    // const mockUser = { // Mock user data for testing without Clerk
-    //     id: 'mock_user_123',
-    //     emailAddresses: [{ emailAddress: 'mockuser@example.com' }],
-    //     firstName: 'Mock',
-    // };
-    // const user = mockUser; // Use mock user
+
+    // Fetch user details using clerkClient
+    let userForPreOrder;
+    try {
+      const clerkUser = await clerkClient.users.getUser(auth.userId);
+      if (!clerkUser) {
+        return res.status(404).json({ error: 'User not found in Clerk.' });
+      }
+      userForPreOrder = {
+        id: clerkUser.id,
+        emailAddress: clerkUser.emailAddresses.find(email => email.id === clerkUser.primaryEmailAddressId)?.emailAddress || clerkUser.emailAddresses[0]?.emailAddress,
+        firstName: clerkUser.firstName,
+        // Add other details as needed
+      };
+      if (!userForPreOrder.emailAddress) {
+        console.warn(`User ${clerkUser.id} does not have a primary or any email address.`);
+        // Decide if this is a critical error or if you can proceed
+        // For now, let's proceed but this might be an issue for email notifications
+      }
+    } catch (clerkError) {
+      console.error('Failed to fetch user details from Clerk:', clerkError);
+      return res.status(500).json({ error: 'Failed to retrieve user details.' });
+    }
 
 
     // const { cartItems, totalPrice } = req.body; // Old
@@ -74,8 +91,8 @@ export default async function handler(req, res) {
 
     const preOrderData = {
       _type: 'preOrder',
-      userId: user.id,
-      userName: user.emailAddresses[0]?.emailAddress || user.firstName || 'N/A', // Or other user identifying info
+      userId: userForPreOrder.id,
+      userName: userForPreOrder.emailAddress || userForPreOrder.firstName || 'N/A', // Or other user identifying info
       cartItems: sanityCartItems,
       totalPrice: totalPrice,
       status: 'pending',
