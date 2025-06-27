@@ -110,9 +110,15 @@ export default async function handler(req, res) {
           userForPreOrder.emailAddress, // User's email
           userForPreOrder.firstName || userForPreOrder.emailAddress.split('@')[0], // User's name
           createdPreOrder // The newly created pre-order document
-        ).catch(emailError => {
-          // Log email sending errors without failing the API response for pre-order creation
-          console.error("Background user email sending failed:", emailError);
+        )
+        .then(success => {
+          if (!success) {
+            console.warn(`sendPreOrderConfirmationEmail to ${userForPreOrder.emailAddress} reported failure. Check logs from lib/sendEmail.js for details.`);
+          }
+        })
+        .catch(emailError => {
+          // This catch is less likely to be hit if sendEmail.js returns false, but good for unexpected issues.
+          console.error(`Unexpected error during sendPreOrderConfirmationEmail call structure for ${userForPreOrder.emailAddress}:`, emailError);
         });
 
         // Admin notification email
@@ -126,8 +132,14 @@ export default async function handler(req, res) {
               email: userForPreOrder.emailAddress,
               id: userForPreOrder.id // Pass user ID if needed by admin email template
             }
-          ).catch(adminEmailError => {
-            console.error("Background admin email sending failed:", adminEmailError);
+          )
+          .then(success => {
+            if (!success) {
+              console.warn(`sendAdminPreOrderNotificationEmail to ${adminEmail} reported failure. Check logs from lib/sendEmail.js for details.`);
+            }
+          })
+          .catch(adminEmailError => {
+            console.error(`Unexpected error during sendAdminPreOrderNotificationEmail call structure for ${adminEmail}:`, adminEmailError);
           });
         } else {
           console.warn('Admin email address (ADMIN_EMAIL_ADDRESS) not configured. Skipping admin notification.');
