@@ -1,7 +1,7 @@
 // pages/api/createPreOrder.js
 import { writeClient } from '../../lib/client'; // Adjust path as necessary
-import { currentUser } from '@clerk/nextjs/server';
-import { sendPreOrderConfirmationEmail, sendAdminPreOrderNotificationEmail } from '../../lib/sendEmail';
+import { getAuth, clerkClient } from '@clerk/nextjs/server'; // Using getAuth and clerkClient
+import { sendPreOrderConfirmationEmail, sendAdminPreOrderNotificationEmail } from '../../lib/sendEmail'; // Re-enabled email imports
 
 // Ensure you have a Sanity client configured for writes,
 // possibly a separate one that uses a token with write permissions.
@@ -32,10 +32,34 @@ export default async function handler(req, res) {
   }
 
   try {
-    const user = await currentUser();
-    if (!user) {
-      return res.status(401).json({ error: 'Unauthorized: User not logged in.' });
+    const auth = getAuth(req);
+    if (!auth.userId) {
+      return res.status(401).json({ error: 'Unauthorized: User not logged in or session not found.' });
     }
+
+    // Fetch user details using clerkClient
+    let userForPreOrder;
+    try {
+      const clerkUser = await clerkClient.users.getUser(auth.userId);
+      if (!clerkUser) {
+        return res.status(404).json({ error: 'User not found in Clerk.' });
+      }
+      userForPreOrder = {
+        id: clerkUser.id,
+        emailAddress: clerkUser.emailAddresses.find(email => email.id === clerkUser.primaryEmailAddressId)?.emailAddress || clerkUser.emailAddresses[0]?.emailAddress,
+        firstName: clerkUser.firstName,
+        // Add other details as needed
+      };
+      if (!userForPreOrder.emailAddress) {
+        console.warn(`User ${clerkUser.id} does not have a primary or any email address.`);
+        // Decide if this is a critical error or if you can proceed
+        // For now, let's proceed but this might be an issue for email notifications
+      }
+    } catch (clerkError) {
+      console.error('Failed to fetch user details from Clerk:', clerkError);
+      return res.status(500).json({ error: 'Failed to retrieve user details.' });
+    }
+
 
     // const { cartItems, totalPrice } = req.body; // Old
     const { cartItems, totalPrice, shippingAddress } = req.body; // New: include shippingAddress
@@ -67,8 +91,8 @@ export default async function handler(req, res) {
 
     const preOrderData = {
       _type: 'preOrder',
-      userId: user.id,
-      userName: user.emailAddresses[0]?.emailAddress || user.firstName || 'N/A', // Or other user identifying info
+      userId: userForPreOrder.id,
+      userName: userForPreOrder.emailAddress || userForPreOrder.firstName || 'N/A', // Or other user identifying info
       cartItems: sanityCartItems,
       totalPrice: totalPrice,
       status: 'pending',
@@ -80,56 +104,103 @@ export default async function handler(req, res) {
     const createdPreOrder = await writeClient.create(preOrderData);
 
     if (createdPreOrder) {
-      // Send confirmation email (fire and forget, or await if critical)
-      sendPreOrderConfirmationEmail(
-        user.emailAddresses[0]?.emailAddress, // User's email
-        user.firstName || user.emailAddresses[0]?.emailAddress.split('@')[0], // User's name
-        createdPreOrder // The newly created pre-order document
-      ).catch(emailError => {
-        // Log email sending errors without failing the API response for pre-order creation
-        console.error("Background user email sending failed:", emailError);
-      });
-
-      // Admin notification email
-      const adminEmail = process.env.ADMIN_EMAIL_ADDRESS;
-      if (adminEmail) {
-        sendAdminPreOrderNotificationEmail(
-          adminEmail,
-          createdPreOrder,
-          {
-            name: user.firstName || user.emailAddresses[0]?.emailAddress.split('@')[0],
-            email: user.emailAddresses[0]?.emailAddress,
-            id: user.id // Pass user ID if needed by admin email template
+      // Re-enable email sending
+      if (userForPreOrder.emailAddress) {
+        sendPreOrderConfirmationEmail(
+          userForPreOrder.emailAddress, // User's email
+          userForPreOrder.firstName || userForPreOrder.emailAddress.split('@')[0], // User's name
+          createdPreOrder // The newly created pre-order document
+        )
+        .then(success => {
+          if (!success) {
+            console.warn(`sendPreOrderConfirmationEmail to ${userForPreOrder.emailAddress} reported failure. Check logs from lib/sendEmail.js for details.`);
           }
-        ).catch(adminEmailError => {
-          console.error("Background admin email sending failed:", adminEmailError);
+        })
+        .catch(emailError => {
+          // This catch is less likely to be hit if sendEmail.js returns false, but good for unexpected issues.
+          console.error(`Unexpected error during sendPreOrderConfirmationEmail call structure for ${userForPreOrder.emailAddress}:`, emailError);
         });
+
+        // Admin notification email
+        const adminEmail = process.env.ADMIN_EMAIL_ADDRESS;
+        if (adminEmail) {
+          sendAdminPreOrderNotificationEmail(
+            adminEmail,
+            createdPreOrder,
+            {
+              name: userForPreOrder.firstName || userForPreOrder.emailAddress.split('@')[0],
+              email: userForPreOrder.emailAddress,
+              id: userForPreOrder.id // Pass user ID if needed by admin email template
+            }
+          )
+          .then(success => {
+            if (!success) {
+              console.warn(`sendAdminPreOrderNotificationEmail to ${adminEmail} reported failure. Check logs from lib/sendEmail.js for details.`);
+            }
+          })
+          .catch(adminEmailError => {
+            console.error(`Unexpected error during sendAdminPreOrderNotificationEmail call structure for ${adminEmail}:`, adminEmailError);
+          });
+        } else {
+          console.warn('Admin email address (ADMIN_EMAIL_ADDRESS) not configured. Skipping admin notification.');
+        }
       } else {
-        console.warn('Admin email address (ADMIN_EMAIL_ADDRESS) not configured. Skipping admin notification.');
+        console.warn(`Pre-order ${createdPreOrder._id} created, but user ${userForPreOrder.id} has no email address. Skipping email notifications.`);
       }
     }
 
     return res.status(201).json({ message: 'Pre-order created successfully', preOrder: createdPreOrder });
 
   } catch (error) {
-    console.error('Failed to create pre-order. Full error object:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+    // Enhanced logging
+    console.error('------------------------------------------------------');
+    console.error('Failed to create pre-order. Original error object:', error);
+    console.error('------------------------------------------------------');
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    if (error.response) { // Sanity client errors often have a 'response' property
+      console.error('Sanity error response status:', error.response.statusCode);
+      console.error('Sanity error response body:', JSON.stringify(error.response.body, null, 2));
+    }
+    if (error.details) { // Sanity specific details
+        console.error('Sanity error details:', JSON.stringify(error.details, null, 2));
+    }
+    // Attempt to stringify the full error to catch any other properties
+    try {
+      console.error('Full error object (stringified with getOwnPropertyNames):', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+    } catch (e) {
+      console.error('Could not stringify full error object:', e.message);
+    }
+    console.error('------------------------------------------------------');
+
 
     let errorMessage = 'Failed to create pre-order in database.';
-    let errorDetails = error.message;
+    let errorDetails = error.message; // Default to general error message
     let statusCode = 500;
 
-    // Check for Sanity client specific 'isBoom' property for Boom errors
+    // Check for Sanity client specific 'isBoom' property for Boom errors (older Sanity client versions)
     if (error.isBoom && error.output && error.output.payload) {
-      console.error('Sanity client Boom error details:', JSON.stringify(error.output.payload, null, 2));
-      errorMessage = error.output.payload.message || 'Error interacting with database.';
-      errorDetails = error.output.payload.error || error.output.payload.message || errorDetails; // Sanity specific error message
+      console.warn('Handling error as a Boom error (older Sanity client style).');
+      errorMessage = error.output.payload.message || 'Error interacting with database (Boom).';
+      errorDetails = error.output.payload.error || error.output.payload.message || errorDetails;
       statusCode = error.output.payload.statusCode || statusCode;
-    } else if (error.response && error.response.body && error.response.body.error) { // General structure for some client errors
-       console.error('Sanity error details from response body:', JSON.stringify(error.response.body.error, null, 2));
-       errorMessage = error.response.body.error.description || error.response.body.error.message || 'Error processing request with database.';
-       errorDetails = error.response.body.error;
-       statusCode = error.response.statusCode || statusCode; // Use statusCode from response if available
     }
+    // Check for errors with a 'response' property, common with @sanity/client v3+
+    else if (error.response && error.response.body && error.response.body.error) {
+      console.warn('Handling error based on error.response.body.error.');
+      const sanityError = error.response.body.error;
+      errorMessage = sanityError.description || sanityError.message || 'Error processing request with database.';
+      errorDetails = sanityError; // Send the whole Sanity error object as details
+      statusCode = error.response.statusCode || statusCode;
+    } else if (error.response && typeof error.response.body === 'string') {
+      // Sometimes the body might be a string (e.g. HTML error page from a proxy, or plain text error)
+      console.warn('Handling error based on error.response where body is a string.');
+      errorMessage = 'Error from database provider.'; // Generic message
+      errorDetails = error.response.body; // The string response
+      statusCode = error.response.statusCode || statusCode;
+    }
+    // Add more specific checks if needed, based on observed error structures
 
     return res.status(statusCode).json({ error: errorMessage, details: errorDetails });
   }
