@@ -20,6 +20,7 @@ const nextConfig = {
       },
     ],
   },
+  transpilePackages: ['react-icons'],
 };
 
 export default withBundleAnalyzer(nextConfig);
