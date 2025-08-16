@@ -62,6 +62,30 @@ const Navbar = () => {
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const themeMenuRef = useRef(null); // For detecting clicks outside
   const [isScrolled, setIsScrolled] = useState(false);
+  const [performanceMode, setPerformanceMode] = useState(false);
+
+  // Effect for Performance Mode
+  useEffect(() => {
+    const savedPerfMode = localStorage.getItem('performanceMode') === 'true';
+    setPerformanceMode(savedPerfMode);
+    if (savedPerfMode) {
+      document.body.classList.add('performance-mode');
+    } else {
+      document.body.classList.remove('performance-mode');
+    }
+  }, []);
+
+  const togglePerformanceMode = () => {
+    const newPerfMode = !performanceMode;
+    setPerformanceMode(newPerfMode);
+    localStorage.setItem('performanceMode', newPerfMode);
+    if (newPerfMode) {
+      document.body.classList.add('performance-mode');
+    } else {
+      document.body.classList.remove('performance-mode');
+    }
+    setShowThemeMenu(false); // Close menu after selection
+  };
 
   const applyRgbTheme = useCallback((selectedRgbColor) => {
     const mainContrastColor = calculateContrastColor(selectedRgbColor);
@@ -273,6 +297,9 @@ const Navbar = () => {
               <li onClick={() => selectTheme('light')}>Light Theme</li>
               <li onClick={() => selectTheme('dark')}>Dark Theme</li>
               <li onClick={() => selectTheme('rgb')}>RGB Theme</li>
+              <li onClick={togglePerformanceMode}>
+                Performance Mode: {performanceMode ? 'On' : 'Off'}
+              </li>
               <SignedIn>
                 <li className="user-button-li">
                   <UserButton

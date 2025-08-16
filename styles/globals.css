@@ -1597,9 +1597,6 @@ span.text-red {
   }
 }
 
-/* The .glassmorphism class definition, formerly here, has been removed as it was marked as potentially unused. */
-/* All glass effects are now directly applied to components like .navbar-container, .product-card, etc. */
-
 .added-feedback {
   background-color: var(--plus-color) !important;
   color: var(--text-on-accent-color) !important; /* Assuming plus color is like accent */
@@ -2094,4 +2091,10 @@ body > .cl-modal-root .cl-modal-content {
 .cl-signIn-root .cl-card a:hover,
 .cl-signUp-root .cl-card a:hover {
   color: var(--primary-color-hover) !important; /* Use accent hover */
+}
+
+/* Performance Mode: Disables expensive backdrop-filter for users who need it */
+.performance-mode * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
