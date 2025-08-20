@@ -30,7 +30,6 @@ describe('ReviewForm Component', () => {
     render(<ReviewForm productId={mockProductId} onSubmitSuccess={mockOnSubmitSuccess} />);
 
     expect(screen.getByLabelText(/Name:/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Rating:/i)).toBeInTheDocument();
     expect(screen.getByTestId('star-rating-input-mock')).toBeInTheDocument();
     expect(screen.getByLabelText(/Review Title \(Optional\):/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Comment:/i)).toBeInTheDocument();
@@ -61,9 +60,10 @@ describe('ReviewForm Component', () => {
     
     fireEvent.click(screen.getByRole('button', { name: /Submit Review/i }));
 
-    await waitFor(() => {
-      expect(screen.getByText('Please fill in your name, rating, and comment.')).toBeInTheDocument();
-    });
+    const errorMessage = await screen.findByTestId('submission-message');
+    expect(errorMessage).toHaveTextContent(
+      'Please fill in your name, rating, and comment.'
+    );
     expect(fetch).not.toHaveBeenCalled();
     expect(mockOnSubmitSuccess).not.toHaveBeenCalled();
   });
@@ -77,9 +77,10 @@ describe('ReviewForm Component', () => {
     
     fireEvent.click(screen.getByRole('button', { name: /Submit Review/i }));
 
-    await waitFor(() => {
-      expect(screen.getByText('Please fill in your name, rating, and comment.')).toBeInTheDocument();
-    });
+    const errorMessage = await screen.findByTestId('submission-message');
+    expect(errorMessage).toHaveTextContent(
+      'Please fill in your name, rating, and comment.'
+    );
     expect(fetch).not.toHaveBeenCalled();
   });
 

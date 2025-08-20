@@ -1,31 +1,34 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import dynamic from 'next/dynamic';
 import '@testing-library/jest-dom';
-import ProductDetails, { getStaticPaths, getStaticProps } from '../../../pages/product/[slug]'; // Corrected path
-import { StateContext } from '../../../context/StateContext'; // Corrected path
-import { client } from '../../../lib/client'; // Corrected path
+import ProductDetails, { getStaticPaths, getStaticProps } from '@/pages/product/[slug]';
+import { StateContext } from '@/context/StateContext';
+import { readClient } from '@/lib/client';
 
 // Mock child components to simplify testing of ProductDetails page logic
-jest.mock('../../../components/Product', () => { // Corrected path
+jest.mock('../../../components/Product', () => {
   const MockProduct = () => <div data-testid="product-component-mock" />;
-  MockProduct.displayName = 'Product'; 
+  MockProduct.displayName = 'Product';
   return MockProduct;
 });
-jest.mock('../../../components/StarRating', () => jest.fn((props) => ( // Corrected path
+jest.mock('../../../components/StarRating', () => jest.fn((props) => (
   <div data-testid="star-rating-mock">Aggregate Rating: {props.rating} ({props.starSize}px)</div>
 )));
-jest.mock('../../../components/ReviewList', () => jest.fn(({ reviews }) => ( // Corrected path
+jest.mock('../../../components/ReviewList', () => jest.fn(({ reviews }) => (
   <div data-testid="review-list-mock">
     {reviews.length} review(s) displayed
     {reviews.map(r => <p key={r._id}>{r.comment}</p>)}
   </div>
 )));
-jest.mock('../../../components/ReviewForm', () => jest.fn(({ productId, onSubmitSuccess }) => ( // Corrected path
-  <form data-testid="review-form-mock" onSubmit={() => onSubmitSuccess()}>
+jest.mock('../../../components/ReviewForm', () => jest.fn(({ productId, onSubmitSuccess }) => (
+  <form data-testid="review-form-mock" onSubmit={(e) => { e.preventDefault(); onSubmitSuccess(); }}>
     <input name="productId" type="hidden" value={productId} />
     <button type="submit">Submit Mock Review</button>
   </form>
 )));
+
+import useSWR from 'swr';
 
 // Mock next/router
 jest.mock('next/router', () => ({
@@ -34,9 +37,15 @@ jest.mock('next/router', () => ({
   }),
 }));
 
-// Mock Sanity client
-jest.mock('../../../lib/client', () => ({ // Corrected path
-  client: {
+// Mock SWR
+jest.mock('swr');
+
+// Mock Sanity client - relative path needed for jest.mock
+jest.mock('../../../lib/client', () => ({
+  readClient: {
+    fetch: jest.fn(),
+  },
+  writeClient: {
     fetch: jest.fn(),
   },
   urlFor: jest.fn((source) => ({ 
@@ -44,13 +53,12 @@ jest.mock('../../../lib/client', () => ({ // Corrected path
   })),
 }));
 
-
 const mockProduct = {
   _id: 'prod123',
   name: 'Test Snack',
   details: 'This is a delicious test snack.',
   price: 100,
-  image: [{ asset: { _ref: 'image-xxxx' } }], // Mock image asset
+  image: [{ asset: { _ref: 'image-xxxx' } }],
   slug: { current: 'test-snack-slug' },
 };
 
@@ -61,42 +69,44 @@ const mockReviewsData = [
   { _id: 'rev2', user: 'User B', rating: 4, comment: 'Good.', createdAt: new Date().toISOString() },
 ];
 
-// Default StateContext values
-const defaultContextValues = {
-  decQty: jest.fn(),
-  incQty: jest.fn(),
-  qty: 1,
-  onAdd: jest.fn(),
-  setShowCart: jest.fn(),
-  // Add other necessary context values if ProductDetails uses them
-};
-
-const renderProductDetails = (product = mockProduct, products = mockProducts, reviews = mockReviewsData, contextValues = defaultContextValues) => {
+const renderProductDetails = (product = mockProduct, products = mockProducts, reviews = mockReviewsData) => {
   return render(
-    <StateContext.Provider value={contextValues}>
+    <StateContext>
       <ProductDetails product={product} products={products} reviews={reviews} />
-    </StateContext.Provider>
+    </StateContext>
   );
 };
 
 
 describe('ProductDetails Page - Reviews Section', () => {
+  let mutateMock;
   beforeEach(() => {
-    client.fetch.mockReset();
-    // Mock fetch for ReviewForm submission if it's not globally mocked sufficiently
+    readClient.fetch.mockClear();
+    mutateMock = jest.fn();
     global.fetch = jest.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve({ message: "Review submitted" }) }));
+    useSWR.mockReturnValue({
+      data: mockReviewsData,
+      error: null,
+      isLoading: false,
+      mutate: mutateMock,
+    });
   });
 
   test('renders aggregate rating correctly', () => {
     renderProductDetails();
-    // Average of 5 and 4 is 4.5
     expect(screen.getByTestId('star-rating-mock')).toHaveTextContent('Aggregate Rating: 4.5 (20px)');
     expect(screen.getByText('(2 Reviews)')).toBeInTheDocument();
   });
 
   test('renders "No reviews yet" for aggregate rating if no reviews', () => {
+    useSWR.mockReturnValue({
+      data: [],
+      error: null,
+      isLoading: false,
+      mutate: jest.fn(),
+    });
     renderProductDetails(mockProduct, mockProducts, []);
-    expect(screen.getByTestId('star-rating-mock')).toHaveTextContent('Aggregate Rating: 0 (20px)'); // Or however your StarRating handles 0
+    expect(screen.queryByTestId('star-rating-mock')).not.toBeInTheDocument();
     expect(screen.getByText('(No reviews yet)')).toBeInTheDocument();
   });
 
@@ -104,7 +114,7 @@ describe('ProductDetails Page - Reviews Section', () => {
     renderProductDetails();
     expect(screen.getByTestId('review-list-mock')).toBeInTheDocument();
     expect(screen.getByTestId('review-list-mock')).toHaveTextContent('2 review(s) displayed');
-    expect(screen.getByText('Great!')).toBeInTheDocument(); // Check for a comment
+    expect(screen.getByText('Great!')).toBeInTheDocument();
   });
 
   test('renders "Write a Review" button', () => {
@@ -112,15 +122,16 @@ describe('ProductDetails Page - Reviews Section', () => {
     expect(screen.getByRole('button', { name: /Write a Review/i })).toBeInTheDocument();
   });
 
-  test('toggles ReviewForm visibility on button click', () => {
+  test('toggles ReviewForm visibility on button click', async () => {
     renderProductDetails();
     const toggleButton = screen.getByRole('button', { name: /Write a Review/i });
-
-    // Initially, form should be hidden (or not exist if conditionally rendered as null)
     expect(screen.queryByTestId('review-form-mock')).not.toBeInTheDocument();
     
     fireEvent.click(toggleButton);
-    expect(screen.getByTestId('review-form-mock')).toBeInTheDocument();
+
+    // Wait for the dynamically imported form to appear
+    const reviewForm = await screen.findByTestId('review-form-mock');
+    expect(reviewForm).toBeInTheDocument();
     expect(toggleButton).toHaveTextContent(/Cancel Review/i);
 
     fireEvent.click(toggleButton);
@@ -129,45 +140,21 @@ describe('ProductDetails Page - Reviews Section', () => {
   });
 
   test('submitting review form calls onSubmitSuccess and potentially updates reviews (simulated)', async () => {
-    client.fetch.mockResolvedValueOnce(mockReviewsData); // For initial load
-    // For re-fetch after review submission
-    const updatedMockReviews = [
-        ...mockReviewsData, 
-        { _id: 'rev3', user: 'New User', rating: 3, comment: 'New comment', createdAt: new Date().toISOString() }
-    ];
-    client.fetch.mockResolvedValueOnce(updatedMockReviews);
-
-
     renderProductDetails();
     const toggleButton = screen.getByRole('button', { name: /Write a Review/i });
     fireEvent.click(toggleButton); // Show the form
 
-    const reviewForm = screen.getByTestId('review-form-mock');
-    // Simulate form submission (mocked ReviewForm calls onSubmitSuccess directly)
-    fireEvent.submit(reviewForm.querySelector('button[type="submit"]'));
+    // The form is mocked to call onSubmitSuccess on submit
+    fireEvent.submit(screen.getByTestId('review-form-mock'));
     
     await waitFor(() => {
-        // Check if client.fetch was called for re-fetching reviews
-        // The first call is in getStaticProps (or initial client-side if not using static props for reviews)
-        // The second call is in handleReviewSubmitSuccess
-        expect(client.fetch).toHaveBeenCalledTimes(1); // This count might be tricky depending on initial load vs. client-side effect
-                                                     // If reviews loaded by getStaticProps, this might be the first client.fetch
-                                                     // For this test, we'll assume handleReviewSubmitSuccess triggers a fetch.
-    });
-    
-    // Check if the review list mock is updated (or would be if it re-rendered with new props)
-    // This depends on ReviewList mock correctly reflecting its props.
-    // Our mock shows review count.
-    await waitFor(() => {
-      // This assertion might fail if the re-render mechanism isn't fully testable with current mocks
-      // It relies on setCurrentReviews updating the prop passed to the mocked ReviewList.
-      // expect(screen.getByTestId('review-list-mock')).toHaveTextContent('3 review(s) displayed');
+        expect(mutateMock).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('getStaticProps and getStaticPaths', () => {
     test('getStaticPaths returns correct paths', async () => {
-      client.fetch.mockResolvedValueOnce([{ slug: { current: 'snack1' } }, { slug: { current: 'snack2' } }]);
+      readClient.fetch.mockResolvedValue([{ slug: { current: 'snack1' } }, { slug: { current: 'snack2' } }]);
       const response = await getStaticPaths({});
       expect(response.paths).toEqual([
         { params: { slug: 'snack1' } },
@@ -176,24 +163,23 @@ describe('ProductDetails Page - Reviews Section', () => {
       expect(response.fallback).toBe('blocking');
     });
 
-    test('getStaticProps fetches product and reviews', async () => {
+    test('getStaticProps fetches product and related products', async () => {
       const params = { slug: 'test-snack-slug' };
-      client.fetch
+      readClient.fetch
         .mockResolvedValueOnce(mockProduct) // For product query
-        .mockResolvedValueOnce(mockReviewsData) // For reviewsDataQuery
-        .mockResolvedValueOnce(mockProducts); // For productsQuery (all products)
+        .mockResolvedValueOnce(mockProducts); // For productsQuery
 
       const response = await getStaticProps({ params });
       
-      expect(client.fetch).toHaveBeenCalledWith(expect.stringContaining(`slug.\n  current == '${params.slug}'`));
-      expect(client.fetch).toHaveBeenCalledWith(expect.stringContaining(`_type == "review" && product._ref == "${mockProduct._id}"`));
-      expect(client.fetch).toHaveBeenCalledWith(expect.stringContaining('*[_type == "product"]'));
+      expect(readClient.fetch).toHaveBeenNthCalledWith(1, `*[_type == "product" && slug.current == '${params.slug}'][0]`);
+
+      const currentProductId = mockProduct._id;
+      const productsQuery = `*[_type == "product" && _id != $currentProductId] | order(_createdAt desc) [0...4]`;
+      expect(readClient.fetch).toHaveBeenNthCalledWith(2, productsQuery, { currentProductId });
 
       expect(response.props.product).toEqual(mockProduct);
-      expect(response.props.reviews).toEqual(mockReviewsData);
       expect(response.props.products).toEqual(mockProducts);
       expect(response.revalidate).toBe(60);
     });
   });
-
 });

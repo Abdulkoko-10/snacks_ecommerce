@@ -1,8 +1,8 @@
 // __tests__/api/createPreOrder.test.js
-import createPreOrderHandler from '../../pages/api/createPreOrder'; // Adjust path
-import { writeClient } from '../../lib/client'; // Mock this
-import { sendPreOrderConfirmationEmail, sendAdminPreOrderNotificationEmail } from '../../lib/sendEmail'; // Mock this
-import { currentUser } from '@clerk/nextjs/server'; // Mock this
+import createPreOrderHandler from '../../pages/api/createPreOrder';
+import { writeClient } from '../../lib/client';
+import { sendPreOrderConfirmationEmail, sendAdminPreOrderNotificationEmail } from '../../lib/sendEmail';
+import { getAuth, clerkClient } from '@clerk/nextjs/server';
 
 jest.mock('../../lib/client', () => ({
   writeClient: {
@@ -14,11 +14,23 @@ jest.mock('../../lib/sendEmail', () => ({
   sendAdminPreOrderNotificationEmail: jest.fn(),
 }));
 jest.mock('@clerk/nextjs/server', () => ({
-  currentUser: jest.fn(),
+  getAuth: jest.fn(),
+  clerkClient: {
+    users: {
+      getUser: jest.fn(),
+    },
+  },
 }));
 
 describe('/api/createPreOrder', () => {
   let req, res;
+  const mockUser = {
+      id: 'user_123',
+      primaryEmailAddressId: 'email_123',
+      emailAddresses: [{ id: 'email_123', emailAddress: 'test@example.com' }],
+      firstName: 'Test'
+    };
+
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -27,6 +39,13 @@ describe('/api/createPreOrder', () => {
       body: {
         cartItems: [{ _id: 'prod1', name: 'Test Product', price: 10, quantity: 1 }],
         totalPrice: 10,
+        shippingAddress: {
+          fullName: 'Test User',
+          street: '123 Test St',
+          city: 'Testville',
+          postalCode: '12345',
+          country: 'Testland'
+        }
       },
     };
     res = {
@@ -35,15 +54,10 @@ describe('/api/createPreOrder', () => {
       setHeader: jest.fn().mockReturnThis(),
       end: jest.fn().mockReturnThis(),
     };
-    // Ensure SANITY_API_WRITE_TOKEN is perceived as set for the writeClient check in API
-    // For the purpose of this test, the mock directly replaces writeClient.
-    // If testing the null check for writeClient, a different mock setup would be needed.
-    // process.env.SANITY_API_WRITE_TOKEN = "dummytoken";
     process.env.ADMIN_EMAIL_ADDRESS = 'admin@example.com';
   });
 
   afterEach(() => {
-    // delete process.env.SANITY_API_WRITE_TOKEN;
     delete process.env.ADMIN_EMAIL_ADDRESS;
   });
 
@@ -55,52 +69,73 @@ describe('/api/createPreOrder', () => {
   });
 
   it('should return 401 if user is not logged in', async () => {
-    currentUser.mockResolvedValue(null);
+    getAuth.mockReturnValue({ userId: null });
     await createPreOrderHandler(req, res);
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized: User not logged in.' });
+    expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized: User not logged in or session not found.' });
   });
 
-  it('should return 400 if cartItems or totalPrice are missing', async () => {
-    currentUser.mockResolvedValue({ id: 'user_123', emailAddresses: [{ emailAddress: 'test@example.com' }] });
-    req.body = {};
+  it('should return 400 if cartItems are missing', async () => {
+    getAuth.mockReturnValue({ userId: 'user_123' });
+    clerkClient.users.getUser.mockResolvedValue(mockUser); // Mock clerk user to prevent 404
+    delete req.body.cartItems; // More specific test
     await createPreOrderHandler(req, res);
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ error: 'Missing required pre-order data.' });
+    expect(res.json).toHaveBeenCalledWith({ error: 'Missing or invalid required pre-order data (cartItems, totalPrice, shippingAddress).' });
   });
 
   it('should create pre-order and send emails on success', async () => {
-    const mockUser = { id: 'user_123', emailAddresses: [{ emailAddress: 'test@example.com' }], firstName: 'Test' };
     const mockCreatedPreOrder = { _id: 'preorder_abc', ...req.body };
-    currentUser.mockResolvedValue(mockUser);
+
+    getAuth.mockReturnValue({ userId: mockUser.id });
+    clerkClient.users.getUser.mockResolvedValue(mockUser);
     writeClient.create.mockResolvedValue(mockCreatedPreOrder);
     sendPreOrderConfirmationEmail.mockResolvedValue(true);
     sendAdminPreOrderNotificationEmail.mockResolvedValue(true);
 
     await createPreOrderHandler(req, res);
 
+    const expectedSanityCartItems = req.body.cartItems.map(item => ({
+        _key: item._id,
+        productId: item._id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+    }));
+
     expect(writeClient.create).toHaveBeenCalledWith(expect.objectContaining({
+      _type: 'preOrder',
       userId: mockUser.id,
-      userName: mockUser.firstName,
-      cartItems: expect.any(Array),
+      userName: mockUser.emailAddresses[0].emailAddress, // API prioritizes email
+      cartItems: expectedSanityCartItems, // API transforms cart items
       totalPrice: req.body.totalPrice,
+      shippingAddress: req.body.shippingAddress,
       status: 'pending',
     }));
+
     expect(sendPreOrderConfirmationEmail).toHaveBeenCalledWith(mockUser.emailAddresses[0].emailAddress, mockUser.firstName, mockCreatedPreOrder);
     expect(sendAdminPreOrderNotificationEmail).toHaveBeenCalledWith(
       'admin@example.com',
       mockCreatedPreOrder,
       expect.objectContaining({ email: mockUser.emailAddresses[0].emailAddress })
     );
+
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.json).toHaveBeenCalledWith({ message: 'Pre-order created successfully', preOrder: mockCreatedPreOrder });
   });
 
   it('should handle Sanity client failure', async () => {
-    currentUser.mockResolvedValue({ id: 'user_123', emailAddresses: [{ emailAddress: 'test@example.com' }] });
-    writeClient.create.mockRejectedValue(new Error('Sanity error'));
+    getAuth.mockReturnValue({ userId: mockUser.id });
+    clerkClient.users.getUser.mockResolvedValue(mockUser);
+    const sanityError = new Error('Sanity error');
+    writeClient.create.mockRejectedValue(sanityError);
+
     await createPreOrderHandler(req, res);
+
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ error: 'Failed to create pre-order.' }));
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+        error: 'Failed to create pre-order in database.',
+        details: sanityError.message
+    }));
   });
 });

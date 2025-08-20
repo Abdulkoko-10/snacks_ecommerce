@@ -35,7 +35,7 @@ const StarRating = ({ rating = 0, onRatingChange, isInput = false, starSize = 24
     }
   }
 
-  return <div className="star-rating">{stars}</div>;
+  return <div className="star-rating" data-testid="star-container">{stars}</div>;
 };
 
 export default StarRating;

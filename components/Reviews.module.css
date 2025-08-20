@@ -1,0 +1,207 @@
+/* Styles for the Reviews component */
+.reviews { /* Star ratings and review count text */
+  color: var(--accent-color); /* Use accent for stars */
+  margin-top: 10px;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  font-family: 'Open Sans', sans-serif;
+  margin-bottom: 1rem;
+}
+.reviews p { /* (x Reviews) text */
+  color: var(--text-color); /* Use main text color */
+  margin-top: 0px;
+  font-size: 0.9rem;
+}
+.reviews_section {
+  margin-top: 40px;
+     padding: 30px;
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+     border: 1px solid var(--glass-edge-highlight-color);
+  border-radius: 15px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
+     color: var(--text-color);
+}
+
+.star_rating {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.star_icon svg {
+  color: var(--accent-color);
+}
+
+.review_list_container {
+  margin-bottom: 30px;
+}
+
+.review_list_title, .review_form_title {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--glass-edge-highlight-color); /* Themed border */
+}
+
+.review_item {
+     padding: 20px;
+     margin-bottom: 20px;
+     background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+     border: 1px solid var(--glass-edge-highlight-color);
+     border-radius: 15px;
+     backdrop-filter: blur(8px);
+     -webkit-backdrop-filter: blur(8px);
+     box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
+     color: var(--text-color);
+}
+
+.review_item_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.review_user {
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text-color);
+}
+
+.review_date {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-color);
+  opacity: 0.7; /* Make date less prominent */
+}
+
+.review_title {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-top: 8px;
+  margin-bottom: 5px;
+  color: var(--text-color);
+}
+
+.review_comment {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-color);
+  margin-bottom: 0;
+}
+
+.no_reviews_message {
+  font-family: 'Open Sans', sans-serif;
+  font-style: italic;
+  color: var(--text-color);
+  opacity: 0.8;
+  padding: 20px 0;
+  text-align: center;
+}
+
+.review_form_container {
+  padding: 25px;
+  margin-top: 20px;
+     background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+     border: 1px solid var(--glass-edge-highlight-color);
+     border-radius: 15px;
+     backdrop-filter: blur(8px);
+     -webkit-backdrop-filter: blur(8px);
+     box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
+     color: var(--text-color);
+}
+
+.form_group {
+  margin-bottom: 20px;
+}
+
+.form_group label {
+  display: block;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+
+.form_group input[type="text"],
+.form_group textarea {
+  width: 100%;
+  padding: 12px 15px; /* Increased padding */
+  border-radius: 8px; /* More rounding */
+  border: 1px solid var(--glass-edge-highlight-color); /* Themed border */
+  background-color: var(--primary-background-color); /* Match main background */
+  color: var(--text-color);
+  font-family: 'Open Sans', sans-serif;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Added box-shadow transition */
+}
+
+.form_group input[type="text"]:focus,
+.form_group textarea:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px var(--accent-color-rgb, rgba(255, 165, 0, 0.3)); /* Use accent color for focus ring */
+}
+
+.form_group textarea {
+  resize: vertical;
+  min-height: 120px; /* Increased min-height */
+}
+
+.submission_message {
+  padding: 12px; /* Increased padding */
+  border-radius: 8px;
+  margin-top: 15px;
+  font-family: 'Open Sans', sans-serif;
+  text-align: center;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.error_message {
+  background-color: rgba(255, 0, 0, 0.1); /* Standard error red */
+  color: #D8000C; /* Darker red for text */
+  border-color: #D8000C;
+}
+
+.success_message {
+  background-color: rgba(var(--plus-color-rgb-values, 40, 167, 69), 0.1); /* Use RGB values from plus-color */
+  color: var(--plus-color);
+  border-color: var(--plus-color);
+}
+
+.btn_submit_review {
+  margin-top: 10px;
+}
+.btn_submit_review:disabled {
+  background-color: var(--secondary-color); /* Use secondary color for disabled */
+  opacity: 0.7;
+  cursor: not-allowed;
+  border-color: var(--secondary-color);
+}
+
+.btn_toggle_review_form {
+  display: block;
+  margin: 30px auto; /* Increased margin */
+  min-width: 220px; /* Wider button */
+}
+
+.product-detail-desc .reviews {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+.product-detail-desc .reviews p {
+  margin-bottom: 0;
+  font-size: 0.95rem;
+}

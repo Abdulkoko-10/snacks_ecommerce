@@ -1,0 +1,251 @@
+/* Styles for the ProductDetails page */
+.product_detail_container {
+  display: flex;
+  gap: 30px; /* Adjusted gap */
+  margin: 40px auto; /* Adjusted margin */
+  padding: 30px; /* Increased padding for glass effect */
+  max-width: 1200px;
+  /* Glass styles */
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  border-radius: 15px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
+  color: var(--text-color); /* Ensure text inside inherits correctly */
+}
+
+.product_detail_image {
+  border-radius: 10px; /* Match inner card rounding */
+  background-color: var(--secondary-background-color);
+  width: 400px;
+  height: 400px;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+  object-fit: cover; /* Ensure image covers area */
+}
+.product_detail_image:hover {
+  /* background-color: var(--primary-color); /* Removed to avoid conflict with glass */
+  opacity: 0.85; /* Slight opacity change on hover */
+}
+.small_images_container {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+.small_image {
+  border-radius: 8px;
+  background-color: var(--secondary-background-color);
+  width: 70px;
+  height: 70px;
+  cursor: pointer;
+  border: 1px solid transparent; /* Add border for selected state */
+  transition: border-color 0.3s ease, opacity 0.3s ease;
+  object-fit: cover;
+}
+.small_image:hover {
+    opacity: 0.7;
+}
+.selected_image {
+  /* background-color: var(--primary-color); /* Replaced by border */
+  border-color: var(--accent-color);
+  opacity: 1;
+}
+.product_detail_desc h4 {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-top: 10px;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+}
+.product_detail_desc p {
+  font-family: 'Open Sans', sans-serif;
+  line-height: 1.7;
+  margin-top: 10px;
+  margin-bottom: 1.5rem;
+  color: var(--text-color);
+  font-size: 1rem;
+}
+.product_detail_desc .price {
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 700;
+  font-size: 2rem;
+  margin-top: 20px;
+  margin-bottom: 1rem;
+  color: var(--accent-color); /* Price in accent color */
+}
+.price .old_price {
+  color: var(--text-color); /* Old price uses main text color, less prominent */
+  opacity: 0.7; /* Make it less prominent */
+  text-decoration: line-through;
+  font-weight: 400;
+  font-size: 1.2rem;
+  margin-left: 0.5rem;
+}
+.product_detail_desc .quantity {
+  display: flex;
+  gap: 20px;
+  margin-top: 10px;
+  align-items: center;
+  color: var(--text-color);
+}
+.product_detail_desc .buttons {
+  display: flex;
+  gap: 20px; /* Reduced gap */
+  margin-top: 1.5rem;
+}
+
+.buttons .add_to_cart {
+  padding: 12px 20px;
+  margin-top: 40px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 200px;
+  transform: scale(1, 1);
+  transition: transform 0.5s ease, background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease;
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  color: var(--text-color);
+  border-radius: 10px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color);
+  position: relative;
+  z-index: 1;
+}
+.buttons .add_to_cart:hover {
+    transform: scale(1.05);
+    box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 30px -5px var(--glass-box-shadow-color);
+}
+
+.buttons .buy_now {
+  padding: 12px 20px;
+  margin-top: 40px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 200px;
+  transform: scale(1, 1);
+  transition: transform 0.5s ease, background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease;
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  color: var(--text-color);
+  border-radius: 10px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color);
+  position: relative;
+  z-index: 1;
+}
+.buttons .buy_now:hover {
+    transform: scale(1.05);
+    box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 30px -5px var(--glass-box-shadow-color);
+}
+
+.quantity_desc {
+  border: 1px solid var(--glass-edge-highlight-color);
+  padding: 6px;
+  color: var(--text-color);
+  border-radius: 8px; /* Rounded */
+  display: flex; /* Align items nicely */
+  align-items: center;
+}
+.quantity_desc span {
+  font-size: 1rem;
+  padding: 6px 10px; /* Adjusted padding */
+  cursor: pointer;
+  background: transparent; /* Remove individual backgrounds */
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+.quantity_desc span:hover {
+    background-color: var(--glass-inner-shadow-color); /* Subtle hover */
+}
+.quantity_desc .minus {
+  color: var(--accent-color); /* Accent for minus */
+}
+.quantity_desc .num {
+  font-size: 1.2rem;
+  color: var(--text-color);
+  padding: 6px 12px; /* More horizontal padding for number */
+  border-left: 1px solid var(--glass-edge-highlight-color);
+  border-right: 1px solid var(--glass-edge-highlight-color);
+}
+.quantity_desc .plus {
+  color: var(--plus-color);
+}
+
+.maylike_products_wrapper {
+  margin-top: 80px; /* Adjusted margin */
+  padding: 30px; /* Add padding for glass effect */
+  /* Glass styles */
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  border-radius: 15px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
+  color: var(--text-color);
+  /* overflow: hidden; */ /* Removed to test if it helps with page widening */
+}
+.maylike_products_wrapper h2 {
+  text-align: center;
+  margin: 0 auto 30px auto; /* Adjusted margin */
+  color: var(--text-color); /* Was secondary, now direct text color */
+}
+.maylike_products_container { /* This is the Swiper container */
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+@media screen and (max-width: 800px) {
+  .product_detail_container {
+    flex-wrap: wrap;
+    gap: 20px;
+    margin: 20px auto;
+    padding: 15px;
+  }
+  .product_detail_container .product_detail_image {
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+  }
+  .product_detail_desc h4 {
+    font-size: 1.1rem;
+  }
+  .product_detail_desc p {
+    font-size: 0.9rem;
+  }
+  .product_detail_desc .price {
+    font-size: 1.5rem;
+  }
+  .product_detail_desc .buttons {
+    flex-direction: column;
+    gap: 15px;
+  }
+  .buttons .add_to_cart, .buttons .buy_now {
+    width: 100%;
+    margin-top: 15px;
+    font-size: 0.9rem;
+  }
+  .maylike_products_wrapper {
+    padding: 20px; /* Adjust padding */
+    margin-top: 60px; /* Adjust margin */
+  }
+  .maylike_products_wrapper h2 {
+    font-size: 1.5rem;
+    margin: 0 auto 20px auto; /* Adjusted margin */
+  }
+  .maylike_products_container { /* Swiper */
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+  }
+}

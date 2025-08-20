@@ -70,6 +70,13 @@ describe('<PreOrderCheckout />', () => {
     expect(screen.getByText('Product 1')).toBeInTheDocument();
     expect(screen.getByText('Subtotal: $100.00')).toBeInTheDocument();
 
+    // Fill out the form
+    fireEvent.change(screen.getByLabelText(/full name/i), { target: { value: 'Test User' } });
+    fireEvent.change(screen.getByLabelText(/street/i), { target: { value: '123 Test St' } });
+    fireEvent.change(screen.getByLabelText(/city/i), { target: { value: 'Testville' } });
+    fireEvent.change(screen.getByLabelText(/postal code/i), { target: { value: '12345' } });
+    fireEvent.change(screen.getByLabelText(/country/i), { target: { value: 'Testland' } });
+
     fireEvent.click(screen.getByRole('button', { name: /Confirm Pre-Order & Notify Me/i }));
 
     expect(toast.loading).toHaveBeenCalledWith('Processing your pre-order...');
@@ -99,6 +106,14 @@ describe('<PreOrderCheckout />', () => {
       json: async () => ({ error: 'API Error' }),
     });
     render(<PreOrderCheckout />);
+
+    // Fill out the form
+    fireEvent.change(screen.getByLabelText(/full name/i), { target: { value: 'Test User' } });
+    fireEvent.change(screen.getByLabelText(/street/i), { target: { value: '123 Test St' } });
+    fireEvent.change(screen.getByLabelText(/city/i), { target: { value: 'Testville' } });
+    fireEvent.change(screen.getByLabelText(/postal code/i), { target: { value: '12345' } });
+    fireEvent.change(screen.getByLabelText(/country/i), { target: { value: 'Testland' } });
+
     fireEvent.click(screen.getByRole('button', { name: /Confirm Pre-Order & Notify Me/i }));
     await waitFor(() => expect(toast.error).toHaveBeenCalledWith('Error: API Error'));
   });

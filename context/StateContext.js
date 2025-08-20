@@ -1,4 +1,3 @@
-import product from "../koko/schemaTypes/product"; // This import seems unused and might be an error. Keeping it for now.
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { toast } from "react-hot-toast";
 

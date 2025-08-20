@@ -1,35 +1,27 @@
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image'; // Import next/image
 
 import { urlFor } from '../lib/client';
+import styles from '../styles/Product.module.css';
 
-const Product = ({ product: {image, name, 
-slug, price } }) => {
-  // Ensure image and image[0] exist before calling urlFor
-  const imageUrl = image && image[0] ? urlFor(image[0]).url() : '/placeholder.png'; // Fallback if no image
-
+const Product = ({ product: { image, name, slug, price } }) => {
   return (
     <div>
       <Link href={`/product/${slug.current}`}>
-        <div className="product-card">
-          <Image
-            src={imageUrl}
-            alt={name} // Already using name for alt
-            width={250} // Placeholder, adjust based on actual CSS/design
-            height={250} // Placeholder, adjust based on actual CSS/design
-            className="product-image"
+        <div className={styles.product_card}>
+          <img
+            src={urlFor(image && image[0])}
+            width={250}
+            height={250}
+            className={styles.product_image}
+            alt={name}
           />
-          <p className="product-name">{name}</p>
-          <p className="product-price">N{price}</p>
-          <div className="product-card-hover-buttons">
-            <button type="button" className="btn-add-to-cart-hover">Add to Cart</button>
-            <button type="button" className="btn-quick-view-hover">Quick View</button>
-          </div>
+          <p className={styles.product_name}>{name}</p>
+          <p className={styles.product_price}>${price}</p>
         </div>
       </Link>
     </div>
   );
 }
 
-export default Product
+export default Product;

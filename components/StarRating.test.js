@@ -6,8 +6,8 @@ import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
 
 // Mock react-icons to make it easier to count star types
 jest.mock('react-icons/ai', () => ({
-  AiFillStar: jest.fn(() => <svg data-testid="filled-star" />),
-  AiOutlineStar: jest.fn(() => <svg data-testid="outline-star" />),
+  AiFillStar: jest.fn((props) => <svg data-testid="filled-star" {...props} />),
+  AiOutlineStar: jest.fn((props) => <svg data-testid="outline-star" {...props} />),
 }));
 
 describe('StarRating Component', () => {
@@ -70,7 +70,7 @@ describe('StarRating Component', () => {
       render(<StarRating rating={0} onRatingChange={onRatingChangeMock} isInput={true} />);
       
       // Click the 3rd star (index 2), should result in a rating of 3
-      fireEvent.click(screen.getAllByTestId('outline-star')[2]);
+      fireEvent.click(screen.getByTestId('star-container').children[2]);
       expect(onRatingChangeMock).toHaveBeenCalledTimes(1);
       expect(onRatingChangeMock).toHaveBeenCalledWith(3);
     });

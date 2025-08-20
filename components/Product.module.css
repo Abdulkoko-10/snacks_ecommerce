@@ -1,0 +1,160 @@
+/* Styles for the Product component */
+.product_card {
+  cursor: pointer;
+  transform: scale(1, 1);
+  transition: transform 0.5s ease, box-shadow 0.5s ease, background 0.5s ease; /* Added transitions for new properties */
+  color: var(--text-color); /* Ensure text inside card uses theme text color */
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  border-radius: 15px; /* Maintained */
+  padding: 15px;
+  position: relative;
+  overflow: hidden;
+  /* backdrop-filter: blur(8px); */
+  /* -webkit-backdrop-filter: blur(8px); */
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
+  width: 100%;
+}
+.product_card:hover {
+  transform: scale(1.03);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 12px 40px -5px var(--glass-box-shadow-color); /* Enhanced hover shadow */
+}
+
+.product_card_hover_buttons {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 15px;
+  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%); /* Slightly darker gradient */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+}
+
+.product_card:hover .product_card_hover_buttons {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.product_card_hover_buttons button {
+  width: 100%;
+  padding: 8px 10px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid var(--glass-edge-highlight-color); /* Added border */
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  color: var(--text-color);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 6px 15px -4px var(--glass-box-shadow-color);
+}
+.btn-add-to-cart-hover:hover, .btn-quick-view-hover:hover {
+  background-color: var(--accent-color); /* Use accent color for hover */
+  color: var(--text-on-accent-color);
+  border-color: var(--accent-color);
+}
+
+.product_image {
+  border-radius: 10px; /* Match card's inner rounding */
+  background-color: var(--secondary-background-color);
+  transform: scale(1, 1);
+  transition: transform 0.5s ease;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  max-height: 180px;
+}
+
+.product_name {
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-color);
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+  overflow-wrap: break-word;
+}
+.product_price {
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-top: 6px;
+  color: var(--text-color);
+  overflow-wrap: break-word;
+}
+
+@media screen and (max-width: 800px) {
+  .product_card { /* For 2-column layout on medium screens */
+    flex: 0 1 calc(50% - 10px); /* Adjust for gap */
+    width: auto; /* Override width:100% from base .product_card */
+    padding: 10px;
+    max-width: none;
+  }
+  .product_image {
+    max-height: 200px;
+  }
+  .product_name {
+    font-size: 0.9rem;
+  }
+  .product_price {
+    font-size: 1rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+    .product_card { /* Single column on very small screens */
+      flex: 0 1 100%;
+      width: 100%;
+      padding: 15px;
+    }
+    .product_image {
+      max-height: 180px;
+    }
+    .product_name {
+      font-size: 0.85rem;
+    }
+    .product_price {
+      font-size: 0.95rem;
+    }
+    .product_card_hover_buttons {
+      padding: 10px;
+    }
+    .product_card_hover_buttons button {
+      font-size: 0.8rem;
+      padding: 6px 8px;
+    }
+}
+
+@media screen and (min-width: 801px) {
+  .product_card {
+    flex: 0 1 calc(33.333% - 20px); /* 3 cards per row, accounting for gap */
+    width: auto; /* Ensure flex-basis takes precedence over base width:100% */
+    /* max-width: none; /* No max-width needed with flex */
+    padding: 20px; /* Larger padding for desktop cards */
+  }
+
+  .product_image {
+    max-height: 280px; /* Larger images on desktop */
+  }
+
+  .product_name {
+    font-size: 1.05rem;
+    margin-top: 0.75rem;
+  }
+
+  .product_price {
+    font-size: 1.15rem;
+    margin-top: 0.5rem;
+  }
+}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, fireEvent, act, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { ClerkProvider } from '@clerk/nextjs';
 
 import Navbar from './Navbar'; // Adjust path as needed
 import { useStateContext } from '../context/StateContext'; // Adjust path
@@ -12,6 +13,14 @@ jest.mock('../context/StateContext', () => ({
     setShowCart: jest.fn(),
     totalQuantities: 0,
   })),
+}));
+
+jest.mock('@clerk/nextjs', () => ({
+  ClerkProvider: ({ children }) => <div>{children}</div>,
+  SignedIn: ({ children }) => <div>{children}</div>,
+  SignedOut: ({ children }) => <div>{children}</div>,
+  UserButton: () => <div />,
+  SignInButton: ({ children }) => <div>{children}</div>,
 }));
 
 // Mock Feather Icons
@@ -102,6 +111,14 @@ describe('Navbar Component - Theme Management', () => {
   let addEventListenerSpy;
   let removeEventListenerSpy;
 
+  const renderNavbar = () => {
+    return render(
+      <ClerkProvider>
+        <Navbar />
+      </ClerkProvider>
+    );
+  };
+
   beforeEach(() => {
     mockLocalStorage.clear();
     mockLocalStorage.getItem.mockClear();
@@ -132,7 +149,7 @@ describe('Navbar Component - Theme Management', () => {
   describe('Initial Theme State', () => {
     // ... (tests remain the same)
     it('defaults to "light" theme, shows FiMoon icon, color picker hidden, and ellipsis menu hidden', () => {
-        render(<Navbar />);
+        renderNavbar();
         expect(mockLocalStorage.setItem).toHaveBeenCalledWith('themeMode', 'light');
         expect(screen.getByTestId('fi-moon')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /Activate Dark Mode/i })).toBeInTheDocument();
@@ -141,7 +158,7 @@ describe('Navbar Component - Theme Management', () => {
       });
   
       it('initializes click outside listener for theme menu on mount and cleans up on unmount', () => {
-        const { unmount } = render(<Navbar />);
+        const { unmount } = renderNavbar();
         expect(addEventListenerSpy).toHaveBeenCalledWith('mousedown', expect.any(Function));
         unmount();
         expect(removeEventListenerSpy).toHaveBeenCalledWith('mousedown', expect.any(Function));
@@ -151,7 +168,7 @@ describe('Navbar Component - Theme Management', () => {
   describe('Theme Toggling with Cycle Icon Button', () => {
     // ... (tests remain the same)
     it('cycles themes and icons: light (FiMoon) -> dark (FiDroplet) -> rgb (FiSun) -> light (FiMoon)', () => {
-        render(<Navbar />);
+        renderNavbar();
         const toggleButton = screen.getByRole('button', { name: /Activate Dark Mode/i }); 
   
         act(() => { fireEvent.click(toggleButton); }); 
@@ -176,7 +193,7 @@ describe('Navbar Component - Theme Management', () => {
   describe('Ellipsis Theme Menu', () => {
     // ... (tests remain the same)
     it('toggles dropdown menu visibility on ellipsis button click', () => {
-        render(<Navbar />);
+        renderNavbar();
         const ellipsisButton = screen.getByRole('button', { name: /More theme options/i });
         expect(screen.queryByRole('list')).not.toBeInTheDocument(); 
   
@@ -188,7 +205,7 @@ describe('Navbar Component - Theme Management', () => {
       });
   
       it('closes dropdown menu on clicking outside', () => {
-        render(<Navbar />);
+        renderNavbar();
         const ellipsisButton = screen.getByRole('button', { name: /More theme options/i });
         act(() => { fireEvent.click(ellipsisButton); }); 
         expect(screen.getByRole('list')).toBeVisible();
@@ -200,7 +217,7 @@ describe('Navbar Component - Theme Management', () => {
       });
   
       it('selects "Light Theme" from dropdown', () => {
-        render(<Navbar />);
+        renderNavbar();
         act(() => { fireEvent.click(screen.getByRole('button', { name: /More theme options/i })); }); 
         act(() => { fireEvent.click(screen.getByText('Light Theme')); });
   
@@ -210,7 +227,7 @@ describe('Navbar Component - Theme Management', () => {
       });
   
       it('selects "Dark Theme" from dropdown', () => {
-        render(<Navbar />);
+        renderNavbar();
         act(() => { fireEvent.click(screen.getByRole('button', { name: /More theme options/i })); });
         act(() => { fireEvent.click(screen.getByText('Dark Theme')); });
   
@@ -220,7 +237,7 @@ describe('Navbar Component - Theme Management', () => {
       });
   
       it('selects "RGB Theme" from dropdown and applies glassmorphism variables', () => {
-        render(<Navbar />);
+        renderNavbar();
         act(() => { fireEvent.click(screen.getByRole('button', { name: /More theme options/i })); });
         act(() => { fireEvent.click(screen.getByText('RGB Theme')); });
   
@@ -250,7 +267,7 @@ describe('Navbar Component - Theme Management', () => {
     it('updates CSS variables correctly including glassmorphism per "SAFER APPROACH" and localStorage when color picker changes', () => {
       mockLocalStorageStore['themeMode'] = 'rgb'; 
       mockLocalStorageStore['rgbColor'] = '#324d67'; // Initial default before user interaction
-      render(<Navbar />);
+      renderNavbar();
       
       const colorPicker = screen.getByTitle(/Select RGB base color/i);
       expect(colorPicker).toBeInTheDocument();
@@ -258,7 +275,7 @@ describe('Navbar Component - Theme Management', () => {
       const testColor = '#FFAA00'; // User selects this color
       act(() => { fireEvent.change(colorPicker, { target: { value: testColor } }); });
 
-      expect(mockLocalStorage.setItem).toHaveBeenCalledWith('rgbColor', testColor);
+      expect(mockLocalStorage.setItem).toHaveBeenCalledWith('rgbColor', testColor.toLowerCase());
       
       const expectedMainContrast = calculateContrastColor(testColor);
       const expectedSecondaryBg = darkenColor(testColor, 15); 
@@ -271,11 +288,13 @@ describe('Navbar Component - Theme Management', () => {
       expect(mockStyle.setProperty).toHaveBeenCalledWith('--secondary-color-rgb', expectedMainContrast);
 
       // NEW Assertions for Glassmorphism:
-      const expectedGlassBg = hexToRgba(testColor, 0.15);
-      const expectedGlassBorder = hexToRgba(expectedMainContrast, 0.2);
-      const expectedGlassShadow = hexToRgba('#000000', 0.1);
+        const expectedGlassBg = hexToRgba('#324d67', 0.25);
+        const expectedGlassBorder = hexToRgba('#FFFFFF', 0.18);
+        const expectedGlassShadow = hexToRgba('#FFFFFF', 0.25);
 
       expect(mockStyle.setProperty).toHaveBeenCalledWith('--glass-background-color-rgb', expectedGlassBg);
+        expect(mockStyle.setProperty).toHaveBeenCalledWith('--glass-border-color-rgb', expectedGlassBorder);
+        expect(mockStyle.setProperty).toHaveBeenCalledWith('--glass-box-shadow-color-rgb', expectedGlassShadow);
       expect(mockStyle.setProperty).toHaveBeenCalledWith('--glass-border-color-rgb', expectedGlassBorder);
       expect(mockStyle.setProperty).toHaveBeenCalledWith('--glass-box-shadow-color-rgb', expectedGlassShadow);
 

@@ -17,6 +17,8 @@ import StarRating from '../../components/StarRating'; // Import StarRating
 // import ReviewList from '../../components/ReviewList';   // Static import removed
 // import ReviewForm from '../../components/ReviewForm';   // Static import removed
 import dynamic from 'next/dynamic';
+import styles from './ProductDetails.module.css';
+import reviewsStyles from '../../components/Reviews.module.css';
 
 const DynamicReviewList = dynamic(() => import('../../components/ReviewList'), {
   ssr: false,
@@ -226,21 +228,21 @@ const ProductDetails = ({ product, products }) => {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdData) }}
         />
       </Head>
-      <div className="product-detail-container">
+      <div className={styles.product_detail_container}>
         <div>
-          <div className="image-container">
+          <div className={styles.image_container}>
             {image && image[index] && ( // Check if image and image[index] exist
               <Image
                 src={urlFor(image[index]).url()}
                 alt={name}
                 width={400} // From CSS .product-detail-image
                 height={400} // From CSS .product-detail-image
-                className="product-detail-image"
+                className={styles.product_detail_image}
                 priority // Main product image, likely LCP
               />
             )}
           </div>
-          <div className="small-images-container">
+          <div className={styles.small_images_container}>
             {image?.map((item, i) => (
               item && ( // Ensure item exists before rendering Image
                 <Image
@@ -250,7 +252,7 @@ const ProductDetails = ({ product, products }) => {
                   width={70} // From CSS .small-image
                   height={70} // From CSS .small-image
                   className={
-                    i === index ? "small-image selected-image" : "small-image"
+                    i === index ? `${styles.small_image} ${styles.selected_image}` : styles.small_image
                   }
                   onMouseEnter={() => setIndex(i)}
                 />
@@ -259,9 +261,9 @@ const ProductDetails = ({ product, products }) => {
           </div>
         </div>
 
-        <div className="product-detail-desc">
+        <div className={styles.product_detail_desc}>
           <h1>{name}</h1>
-          <div className="reviews">
+          <div className={reviewsStyles.reviews}>
             {reviewsLoading && <p>Loading reviews...</p>}
             {reviewsError && <p>Error loading reviews.</p>}
             {!reviewsLoading && !reviewsError && (
@@ -277,23 +279,23 @@ const ProductDetails = ({ product, products }) => {
           </div>
           <h4>Details: </h4>
           <p>{details}</p>
-          <p className="price">N{price}</p>
-          <div className="quantity">
+          <p className={styles.price}>N{price}</p>
+          <div className={styles.quantity}>
             <h3>Quantity: </h3>
-            <p className="quantity-desc">
-              <span className="minus" onClick={decQty}>
+            <p className={styles.quantity_desc}>
+              <span className={styles.minus} onClick={decQty}>
                 <AiOutlineMinus />
               </span>
-              <span className="num">{qty}</span>
-              <span className="plus" onClick={incQty}>
+              <span className={styles.num}>{qty}</span>
+              <span className={styles.plus} onClick={incQty}>
                 <AiOutlinePlus />
               </span>
             </p>
           </div>
-          <div className="buttons">
+          <div className={styles.buttons}>
             <button
               type="button"
-              className={`add-to-cart ${isAddedFeedback ? 'added-feedback' : ''}`}
+              className={`${styles.add_to_cart} ${isAddedFeedback ? styles.added_feedback : ''}`}
               onClick={handleAddToCartWithFeedback}
               disabled={isAddedFeedback}
             >
@@ -301,7 +303,7 @@ const ProductDetails = ({ product, products }) => {
             </button>
             <button 
               type="button" 
-              className={`buy-now ${isBuyNowFeedback ? 'added-feedback' : ''}`} 
+              className={`${styles.buy_now} ${isBuyNowFeedback ? styles.added_feedback : ''}`}
               onClick={handleBuyNow}
               disabled={isBuyNowFeedback}
             >
@@ -311,11 +313,11 @@ const ProductDetails = ({ product, products }) => {
         </div>
       </div>
 
-      <div className="reviews-section">
+      <div className={reviewsStyles.reviews_section}>
         <DynamicReviewList reviews={currentReviews} />
         <button 
           type="button" 
-          className="btn btn-toggle-review-form" 
+          className={`btn ${reviewsStyles.btn_toggle_review_form}`}
           onClick={() => setShowReviewForm(!showReviewForm)}
         >
           {showReviewForm ? 'Cancel Review' : 'Write a Review'}
