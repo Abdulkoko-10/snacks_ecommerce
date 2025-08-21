@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import styles from '../styles/components/navbar.module.css';
+import cartStyles from '../styles/components/cart.module.css';
 import { AiOutlineShopping } from 'react-icons/ai';
 import { FiSun, FiMoon, FiDroplet, FiMoreHorizontal } from 'react-icons/fi'; // Import Feather icons
 import { UserButton, SignInButton, SignedIn, SignedOut } from '@clerk/nextjs';
@@ -277,9 +278,9 @@ const Navbar = () => {
         )}
 
         <button type="button"
-          className={styles.cartIcon} onClick={() => setShowCart(true)}>
+          className={cartStyles.cartIcon} onClick={() => setShowCart(true)}>
           <AiOutlineShopping />
-          <span className={styles.cartItemQty}>{totalQuantities}</span>
+          <span className={cartStyles.cartItemQty}>{totalQuantities}</span>
         </button>
 
         {/* New Ellipsis Menu Button & Dropdown */}

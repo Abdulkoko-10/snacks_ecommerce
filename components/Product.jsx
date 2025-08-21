@@ -24,7 +24,7 @@ slug, price } }) => {
           <p className={styles.productName}>{name}</p>
           <p className={styles.productPrice}>N{price}</p>
           <div className={styles.productCardHoverButtons}>
-            <button type="button" className={styles.btnAddtoCartHover}>Add to Cart</button>
+            <button type="button" className={styles.btnAddToCartHover}>Add to Cart</button>
             <button type="button" className={styles.btnQuickViewHover}>Quick View</button>
           </div>
         </div>
