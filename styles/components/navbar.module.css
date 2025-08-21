@@ -24,11 +24,11 @@
   background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--scrolled-navbar-bg-light) !important;
 }
 
-.dark-mode .scrolled-navbar {
+:global(.dark-mode) .scrolled-navbar {
   background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--scrolled-navbar-bg-dark) !important;
 }
 
-.rgb-mode .scrolled-navbar {
+:global(.rgb-mode) .scrolled-navbar {
   background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--scrolled-navbar-bg-rgb) !important;
 }
 
