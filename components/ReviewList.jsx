@@ -1,5 +1,6 @@
 import React from 'react';
 import StarRating from './StarRating'; // Assuming StarRating.jsx is in the same directory
+import '../styles/components/reviews.css';
 
 const ReviewList = ({ reviews = [] }) => {
   const formatDate = (dateString) => {

@@ -1,5 +1,6 @@
 import React from "react";
 import { readClient } from "../lib/client";
+import '../styles/pages/home.css';
 
 import { Product, FooterBanner, HeroBanner } from "../components";
 

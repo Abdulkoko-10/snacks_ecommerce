@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import '../styles/pages/product-details.css';
 import Head from 'next/head'; // Import Head
 import { useRouter } from 'next/router'; // To get current path for URL
 import Image from 'next/image'; // Ensure Image is imported

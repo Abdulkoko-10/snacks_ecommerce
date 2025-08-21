@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import '../styles/components/product-card.css';
 import Image from 'next/image'; // Import next/image
 
 import { urlFor } from '../lib/client';

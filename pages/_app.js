@@ -1,5 +1,5 @@
 import { Layout } from "../components";
-import "../styles/globals.css";
+import "../styles/common.css";
 import { StateContext } from "../context/StateContext";
 import { Toaster } from "react-hot-toast";
 import { ClerkProvider } from "@clerk/nextjs";

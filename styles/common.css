@@ -1,0 +1,536 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Quicksand:wght@500;700&display=swap');
+
+/* USER PROVIDED VARIABLES START */
+:root {
+  /* Core Palette */
+  --primary-color: #0D2B45; /* Deep Indigo */
+  --secondary-color: #203C56; /* Shadowed Steel */
+  --accent-color: #FFA500; /* Vibrant Orange */
+
+  /* Text Colors */
+  --text-color-light: #F0F4F8; /* Off-White/Light Gray */
+  --text-color-dark: #1A1A1A; /* Near Black */
+  --text-on-primary-color: var(--text-color-light); /* For text on primary-color backgrounds */
+  --text-on-accent-color: var(--text-color-dark); /* For text on accent-color backgrounds */
+
+  /* Background Colors */
+  --background-base-light: #FFFFFF; /* Pure White */
+  --background-base-dark: #081C2D; /* Very Dark Blue */
+  --secondary-background-light: #E0E7EF; /* Lightest Gray */
+  --secondary-background-dark: #122A3F; /* Dark Gray-Blue */
+
+  /* Glass Effect Colors - Light Theme */
+  --glass-background-color-light: rgba(200, 210, 225, 0.15); /* Slightly opaque light blue/gray */
+  --glass-sheen-color-light: rgba(230, 240, 255, 0.4); /* Lighter, more prominent sheen */
+  --glass-edge-highlight-color-light: rgba(220, 230, 245, 0.5); /* Clearer edge highlight */
+  --glass-inner-highlight-color-light: rgba(230, 240, 255, 0.2); /* Subtle inner top highlight */
+  --glass-inner-shadow-color-light: rgba(0, 10, 25, 0.1); /* Soft, darker inner bottom shadow */
+  --glass-box-shadow-color-light: rgba(13, 43, 69, 0.25); /* More defined, slightly colored shadow */
+
+  /* Glass Effect Colors - Dark Theme */
+  --glass-background-color-dark: rgba(10, 25, 40, 0.2); /* Slightly opaque dark blue */
+  --glass-sheen-color-dark: rgba(175, 200, 225, 0.15); /* Subtler, cooler sheen */
+  --glass-edge-highlight-color-dark: rgba(120, 150, 180, 0.3); /* Softer, darker edge */
+  --glass-inner-highlight-color-dark: rgba(175, 200, 225, 0.08); /* Very subtle inner top highlight */
+  --glass-inner-shadow-color-dark: rgba(0, 0, 0, 0.2); /* Darker inner bottom shadow */
+  --glass-box-shadow-color-dark: rgba(0, 10, 20, 0.3); /* Deeper, more pronounced shadow */
+
+  /* Glass Effect Colors - RGB Theme (defaults, JS will customize based on chosen color) */
+  --glass-background-color-rgb: var(--glass-background-color-light);
+  --glass-sheen-color-rgb: var(--glass-sheen-color-light);
+  --glass-edge-highlight-color-rgb: var(--glass-edge-highlight-color-light);
+  --glass-inner-highlight-color-rgb: var(--glass-inner-highlight-color-light);
+  --glass-inner-shadow-color-rgb: var(--glass-inner-shadow-color-light);
+  --glass-box-shadow-color-rgb: var(--glass-box-shadow-color-light);
+
+  /* General UI Variables (Defaults to Light Theme) */
+  --text-color: var(--text-color-dark); /* Default text for light theme is dark */
+  --primary-background-color: var(--background-base-light); /* Main page background */
+  --secondary-background-color: var(--secondary-background-light); /* Cards, sections */
+
+  --glass-background-color: var(--glass-background-color-light);
+  --glass-sheen-color: var(--glass-sheen-color-light);
+  --glass-edge-highlight-color: var(--glass-edge-highlight-color-light);
+  --glass-inner-highlight-color: var(--glass-inner-highlight-color-light);
+  --glass-inner-shadow-color: var(--glass-inner-shadow-color-light);
+  --glass-box-shadow-color: var(--glass-box-shadow-color-light);
+
+  /* Product Card Specific (can be aliased or specific) */
+  --product-card-hover-shadow: rgba(13, 43, 69, 0.35); /* Enhanced hover shadow for light theme */
+
+  /* Navbar Specific */
+  --navbar-height: 70px;
+  --scrolled-navbar-bg-light: rgba(200, 210, 225, 0.7); /* More opaque version of light glass */
+  --scrolled-navbar-bg-dark: rgba(10, 25, 40, 0.75);    /* More opaque version of dark glass */
+  --scrolled-navbar-bg-rgb: var(--scrolled-navbar-bg-light); /* JS will update this */
+
+  /* Button Specific */
+  --primary-color-hover: #FF8C00; /* Darker/alternate orange for hover */
+  --clr-btn-primary-bg: var(--accent-color);
+  --clr-btn-primary-text: var(--text-on-accent-color);
+  --clr-btn-primary-hover-bg: var(--primary-color-hover);
+
+  /* Other UI Elements */
+  --plus-color: #28a745; /* Green for positive actions/icons */
+  --success-icon-color: var(--plus-color);
+  --success-message-color: var(--plus-color);
+  --plus-color-rgb: var(--plus-color); /* For RGB mode consistency if not themed by base */
+  --success-icon-color-rgb: var(--plus-color-rgb);
+  --success-message-color-rgb: var(--plus-color-rgb);
+}
+
+.dark-mode {
+  --text-color: var(--text-color-light); /* Text for dark theme is light */
+  --primary-background-color: var(--background-base-dark);
+  --secondary-background-color: var(--secondary-background-dark);
+
+  --glass-background-color: var(--glass-background-color-dark);
+  --glass-sheen-color: var(--glass-sheen-color-dark);
+  --glass-edge-highlight-color: var(--glass-edge-highlight-color-dark);
+  --glass-inner-highlight-color: var(--glass-inner-highlight-color-dark);
+  --glass-inner-shadow-color: var(--glass-inner-shadow-color-dark);
+  --glass-box-shadow-color: var(--glass-box-shadow-color-dark);
+
+  --product-card-hover-shadow: rgba(0, 10, 20, 0.45); /* Enhanced hover shadow for dark theme */
+
+  /* Text on primary still uses light text, primary color is dark */
+  --text-on-primary-color: var(--text-color-light);
+}
+
+.rgb-mode {
+  --primary-color: var(--primary-color-rgb, var(--primary-color));
+  --secondary-color: var(--secondary-color-rgb, var(--secondary-color));
+  --accent-color: var(--accent-color-rgb, var(--accent-color)); /* If accent is also dynamic */
+
+  --text-color: var(--text-color-rgb, var(--text-color-dark)); /* Default to dark text if RGB not set */
+  --primary-background-color: var(--primary-background-color-rgb, var(--background-base-light));
+  --secondary-background-color: var(--secondary-background-color-rgb, var(--secondary-background-light));
+
+  --glass-background-color: var(--glass-background-color-rgb);
+  --glass-sheen-color: var(--glass-sheen-color-rgb);
+  --glass-edge-highlight-color: var(--glass-edge-highlight-color-rgb);
+  --glass-inner-highlight-color: var(--glass-inner-highlight-color-rgb);
+  --glass-inner-shadow-color: var(--glass-inner-shadow-color-rgb);
+  --glass-box-shadow-color: var(--glass-box-shadow-color-rgb);
+
+  --product-card-hover-shadow: var(--glass-box-shadow-color-rgb); /* Or a slightly intensified version */
+
+  --text-on-primary-color: var(--text-on-primary-color-rgb, var(--text-color-rgb));
+  --text-on-accent-color: var(--text-on-accent-color-rgb, var(--text-color-dark));
+
+  --clr-btn-primary-bg: var(--accent-color-rgb, var(--accent-color));
+  --clr-btn-primary-text: var(--text-on-accent-color-rgb, var(--text-on-accent-color));
+  --clr-btn-primary-hover-bg: var(--accent-color-hover-rgb, var(--primary-color-hover));
+}
+
+html {
+  background-color: transparent;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  background-color: transparent;
+  background: var(--glass-background-color);
+  min-height: 100vh;
+  position: relative;
+  color: var(--text-color);
+  font-family: 'Open Sans', sans-serif;
+  line-height: 1.6;
+  width: 100%;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+* {
+  padding: 0;
+  margin: 0;
+  font-family: 'Open Sans', sans-serif;
+  box-sizing: border-box;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Quicksand', sans-serif;
+  color: var(--text-color);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+h1 { font-size: 2.8rem; margin-bottom: 1.5rem; line-height: 1.2; }
+h2 { font-size: 2.2rem; margin-bottom: 1.25rem; line-height: 1.3; }
+h3 { font-size: 1.8rem; margin-bottom: 1rem; line-height: 1.4; }
+h4 { font-size: 1.5rem; font-weight: 500; margin-bottom: 0.75rem; line-height: 1.4; }
+h5 { font-size: 1.25rem; font-weight: 500; margin-bottom: 0.5rem; line-height: 1.5; }
+h6 { font-size: 1rem; font-weight: 500; margin-bottom: 0.5rem; line-height: 1.5; }
+
+p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: var(--accent-color);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--primary-color-hover);
+}
+
+.main-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+.layout {
+  padding: calc(var(--navbar-height) + 20px) 20px 20px 20px;
+}
+
+.btn-container {
+  width: 100%;
+  margin: auto;
+}
+.btn {
+  width: 100%;
+  max-width: 400px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  cursor: pointer;
+  transform: scale(1, 1);
+  background-color: var(--clr-btn-primary-bg);
+  color: var(--clr-btn-primary-text);
+  border: 1px solid var(--clr-btn-primary-bg);
+  transition: transform 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 12px -2px var(--glass-box-shadow-color);
+}
+.btn:hover {
+  transform: scale(1.03);
+  background-color: var(--clr-btn-primary-hover-bg);
+  border-color: var(--clr-btn-primary-hover-bg);
+  color: var(--clr-btn-primary-text);
+  box-shadow: 0 6px 18px -4px var(--glass-box-shadow-color);
+}
+
+.success-wrapper,
+.cancel-wrapper {
+  background-color: transparent;
+  min-height: calc(100vh - var(--navbar-height) - 20px);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color);
+}
+.success,
+.cancel {
+  width: 100%;
+  max-width: 600px;
+  margin: auto;
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  border-radius: 15px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
+  padding: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+.success .icon {
+  color: var(--success-icon-color);
+  font-size: 50px;
+  margin-bottom: 15px;
+}
+.success h1 {
+  text-transform: capitalize;
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-weight: 700;
+  font-size: 2.5rem;
+  color: var(--text-color);
+}
+.success .email-msg {
+  font-size: 1rem;
+  font-weight: 400;
+  text-align: center;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+.cancel p {
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+.success .description {
+  font-size: 1rem;
+  font-weight: 400;
+  text-align: center;
+  margin: 10px auto 20px auto;
+  max-width: 500px;
+  line-height: 1.6;
+}
+.success .description .email {
+  margin-left: 5px;
+  color: var(--accent-color);
+  font-weight: 600;
+}
+.success .btn, .cancel .btn {
+    margin-top: 20px;
+}
+
+.added-feedback {
+  background-color: var(--plus-color) !important;
+  color: var(--text-on-accent-color) !important;
+  pointer-events: none;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 800px) {
+  :root {
+    --navbar-height: 60px;
+    --scrolled-navbar-bg-light: rgba(200, 210, 225, 0.8);
+    --scrolled-navbar-bg-dark: rgba(10, 25, 40, 0.85);
+    --scrolled-navbar-bg-rgb: rgba(var(--rgb-color-chosen, 200, 210, 225), 0.5);
+  }
+
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.7rem; }
+  h3 { font-size: 1.4rem; }
+  h4 { font-size: 1.2rem; }
+  h5 { font-size: 1.1rem; }
+  h6 { font-size: 1rem; }
+
+  .layout {
+    padding: calc(var(--navbar-height) + 15px) 15px 15px 15px;
+  }
+  .success-wrapper,
+  .cancel-wrapper {
+    min-height: calc(100vh - var(--navbar-height));
+    padding: 15px;
+  }
+  .success,
+  .cancel {
+    width: 100%;
+    max-width: 370px;
+    margin-top: 0;
+    padding: 25px;
+  }
+  .success h1 {
+    font-size: 1.8rem;
+  }
+}
+
+/* Tooltip styles */
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+}
+.tooltip-container:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+.tooltip-text {
+  visibility: hidden;
+  width: max-content;
+  max-width: 200px;
+  background-color: var(--secondary-background-color);
+  color: var(--text-color);
+  text-align: center;
+  border-radius: 8px;
+  padding: 8px 12px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  box-shadow: 0 2px 8px -2px var(--glass-box-shadow-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+}
+.tooltip-text::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--secondary-background-color) transparent transparent transparent;
+}
+
+/* Locked button style */
+.btn-locked {
+  background: var(--secondary-background-color) !important;
+  color: var(--text-color) !important;
+  opacity: 0.6 !important;
+  border-color: var(--glass-edge-highlight-color) !important;
+  cursor: not-allowed;
+}
+
+.btn-locked:hover,
+.btn-locked:active {
+  background: var(--secondary-background-color) !important;
+  color: var(--text-color) !important;
+  opacity: 0.6 !important;
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 8px 25px -6px var(--glass-box-shadow-color) !important;
+  transform: scale(1) !important;
+}
+
+/* Clerk UserButton / UserProfile Modal Theming Overrides */
+.cl-userProfileRoot .cl-card,
+.cl-userProfileSheet .cl-card,
+.cl-userProfileModalContent .cl-card,
+body > .cl-modal-root .cl-modal-content {
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid var(--glass-edge-highlight-color) !important;
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color) !important;
+  border-radius: 12px !important;
+}
+
+.cl-userProfileRoot h1,
+.cl-userProfileRoot h2,
+.cl-userProfileRoot p,
+.cl-userProfileRoot label,
+.cl-userProfileRoot div,
+.cl-userProfileRoot span,
+.cl-userProfileRoot a,
+.cl-userProfileRoot li,
+.cl-userProfileRoot button,
+.cl-modalContent h1,
+.cl-modalContent p,
+.cl-modalContent label {
+  color: var(--text-color) !important;
+}
+
+.cl-userProfileRoot input,
+.cl-modalContent input {
+  color: var(--text-color) !important;
+  background-color: var(--secondary-background-color) !important;
+  border: 1px solid var(--glass-edge-highlight-color) !important;
+  border-radius: 8px !important;
+}
+
+.cl-userProfileRoot input:focus,
+.cl-modalContent input:focus {
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 0 2px var(--accent-color-rgb, rgba(255, 165, 0, 0.3)) !important;
+}
+
+.cl-userProfileRoot .cl-button.cl-button--primary,
+.cl-userProfileRoot .cl-formButtonPrimary,
+.cl-userProfileRoot .cl-profileSectionPrimaryButton,
+.cl-modalContent .cl-button.cl-button--primary {
+  background-color: var(--clr-btn-primary-bg) !important;
+  color: var(--clr-btn-primary-text) !important;
+  font-size: 0.95rem !important;
+  text-transform: none !important;
+  border-radius: 8px !important;
+  padding: 10px 18px !important;
+  border: 1px solid transparent !important;
+}
+
+.cl-userProfileRoot .cl-button.cl-button--primary:hover,
+.cl-userProfileRoot .cl-formButtonPrimary:hover,
+.cl-userProfileRoot .cl-profileSectionPrimaryButton:hover,
+.cl-modalContent .cl-button.cl-button--primary:hover {
+  background-color: var(--clr-btn-primary-hover-bg) !important;
+  box-shadow: 0 2px 8px -2px var(--glass-box-shadow-color) !important;
+}
+
+.cl-userProfileRoot .cl-navbarButton {
+  color: var(--text-color) !important;
+  border-radius: 8px !important;
+  transition: background-color 0.2s ease, color 0.2s ease !important;
+}
+.cl-userProfileRoot .cl-navbarButton:hover {
+  color: var(--accent-color) !important;
+  background-color: var(--glass-inner-shadow-color) !important;
+}
+.cl-userProfileRoot .cl-navbarButton__active,
+.cl-userProfileRoot .cl-profileSidebarNavigationButton__active {
+  color: var(--accent-color) !important;
+  background-color: var(--glass-background-color-light) !important;
+  border-bottom-color: var(--accent-color) !important;
+  box-shadow: 0 2px 5px -2px var(--glass-box-shadow-color) !important;
+}
+.dark-mode .cl-userProfileRoot .cl-navbarButton__active,
+.dark-mode .cl-userProfileRoot .cl-profileSidebarNavigationButton__active {
+    background-color: var(--glass-background-color-dark) !important;
+}
+
+.cl-userProfileRoot .cl-internal-card,
+.cl-userProfileRoot .cl-navbar,
+.cl-userProfileRoot .cl-profileSidebar,
+.cl-userProfileRoot .cl-profileSection,
+.cl-userProfileRoot .cl-pageContent,
+.cl-userProfileRoot .cl-scrollableContent {
+    background-color: transparent !important;
+}
+
+.cl-signIn-root .cl-card,
+.cl-signUp-root .cl-card {
+  background: var(--glass-background-color) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid var(--glass-edge-highlight-color) !important;
+  box-shadow: 0 8px 32px 0 var(--glass-box-shadow-color) !important;
+  border-radius: 12px !important;
+}
+
+.cl-signIn-root .cl-card h1,
+.cl-signIn-root .cl-card h2,
+.cl-signIn-root .cl-card p,
+.cl-signIn-root .cl-card label,
+.cl-signIn-root .cl-card div,
+.cl-signUp-root .cl-card h1,
+.cl-signUp-root .cl-card h2,
+.cl-signUp-root .cl-card p,
+.cl-signUp-root .cl-card label,
+.cl-signUp-root .cl-card div {
+  color: var(--text-color) !important;
+}
+
+.cl-signIn-root .cl-internal-card,
+.cl-signUp-root .cl-internal-card {
+    background-color: transparent !important;
+}
+
+.cl-signIn-root .cl-card a,
+.cl-signUp-root .cl-card a {
+  color: var(--accent-color) !important;
+}
+.cl-signIn-root .cl-card a:hover,
+.cl-signUp-root .cl-card a:hover {
+  color: var(--primary-color-hover) !important;
+}
+
+/* Performance Mode: Disables expensive backdrop-filter for users who need it */
+.performance-mode * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}

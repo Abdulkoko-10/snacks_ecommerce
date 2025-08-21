@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import StarRating from './StarRating'; // Assuming StarRating.jsx is in the same directory
+import '../styles/components/reviews.css';
 
 const ReviewForm = ({ productId, onSubmitSuccess }) => {
   const [formData, setFormData] = useState({

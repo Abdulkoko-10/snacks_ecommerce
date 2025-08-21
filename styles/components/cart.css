@@ -1,0 +1,261 @@
+/* Styles for the Cart component */
+
+.cart-icon {
+  font-size: 25px;
+  color: var(--text-color);
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.4s ease;
+  border: none;
+  background-color: transparent;
+}
+.cart-icon:hover {
+  transform: scale(1.1, 1.1);
+}
+.cart-item-qty {
+  position: absolute;
+  right: -8px;
+  font-size: 0.75rem;
+  color: var(--text-on-accent-color);
+  background-color: var(--accent-color);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  text-align: center;
+  font-weight: 600;
+}
+.cart-wrapper {
+  width: 100vw;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 10050;
+  transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+  opacity: 0;
+  visibility: hidden;
+}
+.cart-wrapper.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.cart-container {
+  height: 100vh;
+  width: 100vw;
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  border-radius: 15px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
+  position: relative;
+  color: var(--text-color);
+  padding: 30px 15px;
+}
+
+.cart-heading {
+  display: flex;
+  align-items: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  gap: 2px;
+  margin-left: 10px;
+  border: none;
+  background-color: transparent;
+  color: var(--text-color);
+  margin-bottom: 1rem;
+}
+
+.cart-heading .heading {
+  margin-left: 10px;
+  font-family: 'Quicksand', sans-serif;
+}
+.cart-num-items {
+  margin-left: 10px;
+  color: var(--accent-color);
+  font-size: 0.9rem;
+}
+.empty-cart {
+  margin: 40px;
+  text-align: center;
+}
+.empty-cart h3 {
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--text-color);
+  margin-bottom: 1rem;
+}
+.empty-cart .btn {
+  margin-top: 20px;
+}
+.cancel { /* General cancel icon/button in cart */
+  cursor: pointer;
+  color: var(--accent-color);
+  transition: transform 0.2s ease;
+}
+.cancel:hover {
+    transform: scale(1.1);
+}
+.product-container { /* This is for items within the cart */
+  margin-top: 15px;
+  overflow: auto;
+  max-height: calc(70vh - 150px);
+  padding: 10px 5px;
+  background-color: transparent;
+}
+.product { /* Individual product item in cart */
+  display: flex;
+  gap: 20px;
+  padding: 15px;
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  border-radius: 15px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
+  margin-bottom: 10px;
+  color: var(--text-color);
+}
+.product .cart-product-image {
+  width: 150px;
+  height: 120px;
+  border-radius: 8px;
+  background-color: var(--secondary-background-color);
+  object-fit: cover;
+}
+.item-desc .flex {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  color: var(--text-color);
+  font-family: 'Quicksand', sans-serif;
+  overflow: hidden;
+}
+.item-desc .bottom {
+  margin-top: auto;
+  padding-top: 10px;
+}
+.flex h5 {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-color);
+  line-height: 1.4;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+.flex h4 { /* Price */
+  font-family: 'Open Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-color);
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+.total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+.total h3 {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-color);
+}
+.remove-item {
+  font-size: 22px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  color: var(--accent-color);
+  padding: 6px 8px;
+  border-radius: 8px;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+.remove-item:hover {
+    color: var(--primary-color-hover);
+    transform: scale(1.1);
+}
+.cart-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  background: radial-gradient(ellipse at 50% 100%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border-top: 1px solid var(--glass-edge-highlight-color);
+  box-shadow: 0 -5px 20px -5px var(--glass-box-shadow-color);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.max-qty {
+  font-weight: 500;
+  color: var(--accent-color);
+}
+.product-max-qty {
+  margin-top: 10px;
+  color: var(--accent-color);
+  font-weight: 500;
+}
+
+@media screen and (max-width: 800px) {
+  .cart-container {
+    width: 100%;
+    padding: 20px 10px;
+    float: none;
+    border-left: none;
+    border-radius: 20px 20px 0 0;
+  }
+  .cart-heading {
+    margin-top: 10px;
+    font-size: 1rem;
+  }
+  .product-container {
+    margin-top: 10px;
+    max-height: calc(80vh - 180px);
+  }
+  .product {
+    padding: 10px;
+    gap: 10px;
+    flex-direction: column;
+    align-items: center;
+  }
+  .product .cart-product-image {
+    width: 60%;
+    max-width: 150px;
+    height: auto;
+  }
+  .item-desc .flex {
+    width: 100%;
+    text-align: center;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .item-desc .bottom {
+    margin-top: 15px;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+  .cart-bottom {
+    position: relative;
+    padding: 15px;
+    border-radius: 0 0 20px 20px;
+  }
+  .btn-container {
+    width: 100%;
+    padding: 0 10px;
+  }
+
+  .total h3 {
+    font-size: 1.2rem;
+  }
+}
