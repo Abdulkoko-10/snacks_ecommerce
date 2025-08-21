@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import '../../styles/pages/product-details.css';
+import styles from '../../styles/pages/product-details.module.css';
 import Head from 'next/head'; // Import Head
 import { useRouter } from 'next/router'; // To get current path for URL
 import Image from 'next/image'; // Ensure Image is imported
@@ -227,21 +227,21 @@ const ProductDetails = ({ product, products }) => {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdData) }}
         />
       </Head>
-      <div className="product-detail-container">
+      <div className={styles.productDetailContainer}>
         <div>
-          <div className="image-container">
+          <div className={styles.imageContainer}>
             {image && image[index] && ( // Check if image and image[index] exist
               <Image
                 src={urlFor(image[index]).url()}
                 alt={name}
                 width={400} // From CSS .product-detail-image
                 height={400} // From CSS .product-detail-image
-                className="product-detail-image"
+                className={styles.productDetailImage}
                 priority // Main product image, likely LCP
               />
             )}
           </div>
-          <div className="small-images-container">
+          <div className={styles.smallImagesContainer}>
             {image?.map((item, i) => (
               item && ( // Ensure item exists before rendering Image
                 <Image
@@ -251,7 +251,7 @@ const ProductDetails = ({ product, products }) => {
                   width={70} // From CSS .small-image
                   height={70} // From CSS .small-image
                   className={
-                    i === index ? "small-image selected-image" : "small-image"
+                    i === index ? `${styles.smallImage} ${styles.selectedImage}` : styles.smallImage
                   }
                   onMouseEnter={() => setIndex(i)}
                 />
@@ -260,9 +260,9 @@ const ProductDetails = ({ product, products }) => {
           </div>
         </div>
 
-        <div className="product-detail-desc">
+        <div className={styles.productDetailDesc}>
           <h1>{name}</h1>
-          <div className="reviews">
+          <div className={styles.reviews}>
             {reviewsLoading && <p>Loading reviews...</p>}
             {reviewsError && <p>Error loading reviews.</p>}
             {!reviewsLoading && !reviewsError && (
@@ -278,23 +278,23 @@ const ProductDetails = ({ product, products }) => {
           </div>
           <h4>Details: </h4>
           <p>{details}</p>
-          <p className="price">N{price}</p>
-          <div className="quantity">
+          <p className={styles.price}>N{price}</p>
+          <div className={styles.quantity}>
             <h3>Quantity: </h3>
-            <p className="quantity-desc">
-              <span className="minus" onClick={decQty}>
+            <p className={styles.quantityDesc}>
+              <span className={styles.minus} onClick={decQty}>
                 <AiOutlineMinus />
               </span>
-              <span className="num">{qty}</span>
-              <span className="plus" onClick={incQty}>
+              <span className={styles.num}>{qty}</span>
+              <span className={styles.plus} onClick={incQty}>
                 <AiOutlinePlus />
               </span>
             </p>
           </div>
-          <div className="buttons">
+          <div className={styles.buttons}>
             <button
               type="button"
-              className={`add-to-cart ${isAddedFeedback ? 'added-feedback' : ''}`}
+              className={`${styles.addToCart} ${isAddedFeedback ? styles.addedFeedback : ''}`}
               onClick={handleAddToCartWithFeedback}
               disabled={isAddedFeedback}
             >
@@ -302,7 +302,7 @@ const ProductDetails = ({ product, products }) => {
             </button>
             <button 
               type="button" 
-              className={`buy-now ${isBuyNowFeedback ? 'added-feedback' : ''}`} 
+              className={`${styles.buyNow} ${isBuyNowFeedback ? styles.addedFeedback : ''}`}
               onClick={handleBuyNow}
               disabled={isBuyNowFeedback}
             >
@@ -312,11 +312,11 @@ const ProductDetails = ({ product, products }) => {
         </div>
       </div>
 
-      <div className="reviews-section">
+      <div className={styles.reviewsSection}>
         <DynamicReviewList reviews={currentReviews} />
         <button 
           type="button" 
-          className="btn btn-toggle-review-form" 
+          className={`btn ${styles.btnToggleReviewForm}`}
           onClick={() => setShowReviewForm(!showReviewForm)}
         >
           {showReviewForm ? 'Cancel Review' : 'Write a Review'}

@@ -1,6 +1,6 @@
 import React from "react";
 import { readClient } from "../lib/client";
-import '../styles/pages/home.css';
+import styles from '../styles/pages/home.module.css';
 
 import { Product, FooterBanner, HeroBanner } from "../components";
 
@@ -10,12 +10,12 @@ const Home = ({ products, bannerData }) => {
       {bannerData?.[0] && ( // Conditional rendering for safety
         <HeroBanner heroBanner={bannerData[0]} />
       )}
-      <div className="products-heading">
+      <div className={styles.productsHeading}>
         <h2>Best Selling Products</h2>
         <p>Samosas of different Tastes</p>
       </div>
 
-      <div className="products-container">
+      <div className={styles.productsContainer}>
         {products?.map((product) => (
           <Product key={product._id} product={product} />
         ))}

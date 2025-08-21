@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import '../styles/components/cart.css';
+import styles from '../styles/components/cart.module.css';
 import {
   AiOutlineMinus,
   AiOutlinePlus,
@@ -101,13 +101,13 @@ const Cart = () => {
         }
       }}
     >
-      <div className="cart-container" style={{ padding: '20px', maxHeight: '70vh', overflowY: 'auto' }}>
-        <div className="cart-heading" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '20px' }}>
-          <span className="heading" style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--text-color)' }}>Your Cart</span>
-          <span className="cart-num-items" style={{ marginLeft: '10px', color: 'var(--text-color)' }}>({totalQuantities} items)</span>
+      <div className={styles.cartContainer} style={{ padding: '20px', maxHeight: '70vh', overflowY: 'auto' }}>
+        <div className={styles.cartHeading} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '20px' }}>
+          <span className={styles.heading} style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--text-color)' }}>Your Cart</span>
+          <span className={styles.cartNumItems} style={{ marginLeft: '10px', color: 'var(--text-color)' }}>({totalQuantities} items)</span>
         </div>
         {cartItems.length < 1 && (
-          <div className="empty-cart">
+          <div className={styles.emptyCart}>
             <AiOutlineShopping size={150} />
             <h3 style={{color: 'var(--text-color)'}}>Your shopping bag is empty</h3>
             <Link href="/">
@@ -122,10 +122,10 @@ const Cart = () => {
           </div>
         )}
 
-        <div className="product-container">
+        <div className={styles.productContainer}>
           {cartItems.length >= 1 &&
             cartItems.map((item) => (
-              <div className="product" key={item._id}>
+              <div className={styles.product} key={item._id}>
                 {/* <img
                   src={urlFor(item.image[0])}
                   className="cart-product-image"
@@ -135,31 +135,31 @@ const Cart = () => {
                   alt={item.name}
                   width={180} // from CSS .cart-product-image
                   height={150} // from CSS .cart-product-image
-                  className="cart-product-image"
+                  className={styles.cartProductImage}
                   // layout="responsive" // This might require parent to have defined aspect ratio or size
                   // objectFit="cover" // If using layout="responsive" or "fill"
                 />
-                <div className="item-desc">
-                  <div className="flex top">
+                <div className={styles.itemDesc}>
+                  <div className={`${styles.flex} ${styles.top}`}>
                     <h5 style={{ color: 'var(--text-color)' }}>{item.name}</h5>
                     <h4 style={{ color: 'var(--text-color)' }}>${item.price}</h4>
                   </div>
-                  <div className="flex bottom">
+                  <div className={`${styles.flex} ${styles.bottom}`}>
                     <div>
-                      <p className="quantity-desc" style={{ border: '1px solid var(--secondary-background-color)'}}>
+                      <p className={styles.quantityDesc} style={{ border: '1px solid var(--secondary-background-color)'}}>
                         <span
-                          className="minus"
+                          className={styles.minus}
                           onClick={() =>
                             toggleCartItemQuanitity(item._id, "dec")
                           }
                         >
                           <AiOutlineMinus style={{ color: 'var(--text-color)' }} />
                         </span>
-                        <span className="num" onClick="" style={{ borderLeft: '1px solid var(--secondary-background-color)', borderRight: '1px solid var(--secondary-background-color)', color: 'var(--text-color)'}}>
+                        <span className={styles.num} onClick="" style={{ borderLeft: '1px solid var(--secondary-background-color)', borderRight: '1px solid var(--secondary-background-color)', color: 'var(--text-color)'}}>
                           {item.quantity}
                         </span>
                         <span
-                          className="plus"
+                          className={styles.plus}
                           onClick={() =>
                             toggleCartItemQuanitity(item._id, "inc")
                           }
@@ -170,7 +170,7 @@ const Cart = () => {
                     </div>
                     <button
                       type="button"
-                      className="remove-item"
+                      className={styles.removeItem}
                       onClick={() => onRemove(item)}
                       style={{ color: 'var(--primary-color)' }}
                     >
@@ -182,8 +182,8 @@ const Cart = () => {
             ))}
         </div>
         {cartItems.length >= 1 && (
-          <div className="cart-bottom">
-            <div className="total">
+          <div className={styles.cartBottom}>
+            <div className={styles.total}>
               <h3 style={{ color: 'var(--text-color)' }}>Subtotal:</h3>
               <h3 style={{ color: 'var(--text-color)' }}>${totalPrice}</h3>
             </div>

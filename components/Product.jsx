@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import '../styles/components/product-card.css';
+import styles from '../styles/components/product-card.module.css';
 import Image from 'next/image'; // Import next/image
 
 import { urlFor } from '../lib/client';
@@ -13,19 +13,19 @@ slug, price } }) => {
   return (
     <div>
       <Link href={`/product/${slug.current}`}>
-        <div className="product-card">
+        <div className={styles.productCard}>
           <Image
             src={imageUrl}
             alt={name} // Already using name for alt
             width={250} // Placeholder, adjust based on actual CSS/design
             height={250} // Placeholder, adjust based on actual CSS/design
-            className="product-image"
+            className={styles.productImage}
           />
-          <p className="product-name">{name}</p>
-          <p className="product-price">N{price}</p>
-          <div className="product-card-hover-buttons">
-            <button type="button" className="btn-add-to-cart-hover">Add to Cart</button>
-            <button type="button" className="btn-quick-view-hover">Quick View</button>
+          <p className={styles.productName}>{name}</p>
+          <p className={styles.productPrice}>N{price}</p>
+          <div className={styles.productCardHoverButtons}>
+            <button type="button" className={styles.btnAddtoCartHover}>Add to Cart</button>
+            <button type="button" className={styles.btnQuickViewHover}>Quick View</button>
           </div>
         </div>
       </Link>

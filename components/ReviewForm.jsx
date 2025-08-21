@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import StarRating from './StarRating'; // Assuming StarRating.jsx is in the same directory
-import '../styles/components/reviews.css';
+import styles from '../styles/components/reviews.module.css';
 
 const ReviewForm = ({ productId, onSubmitSuccess }) => {
   const [formData, setFormData] = useState({
@@ -83,17 +83,17 @@ const ReviewForm = ({ productId, onSubmitSuccess }) => {
 
   if (submissionStatus.success) {
     return (
-      <div className="review-form-container">
-        <p className="submission-message success-message">{submissionStatus.message}</p>
+      <div className={styles.reviewFormContainer}>
+        <p className={`${styles.submissionMessage} ${styles.successMessage}`}>{submissionStatus.message}</p>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="review-form-container">
-      <h3 className="review-form-title">Write a Review</h3>
+    <form onSubmit={handleSubmit} className={styles.reviewFormContainer}>
+      <h3 className={styles.reviewFormTitle}>Write a Review</h3>
       
-      <div className="form-group">
+      <div className={styles.formGroup}>
         <label htmlFor="userName">Name:</label>
         <input
           type="text"
@@ -105,7 +105,7 @@ const ReviewForm = ({ productId, onSubmitSuccess }) => {
         />
       </div>
 
-      <div className="form-group">
+      <div className={styles.formGroup}>
         <label>Rating:</label>
         <StarRating
           rating={formData.rating}
@@ -115,7 +115,7 @@ const ReviewForm = ({ productId, onSubmitSuccess }) => {
         />
       </div>
 
-      <div className="form-group">
+      <div className={styles.formGroup}>
         <label htmlFor="reviewTitle">Review Title (Optional):</label>
         <input
           type="text"
@@ -126,7 +126,7 @@ const ReviewForm = ({ productId, onSubmitSuccess }) => {
         />
       </div>
 
-      <div className="form-group">
+      <div className={styles.formGroup}>
         <label htmlFor="comment">Comment:</label>
         <textarea
           id="comment"
@@ -139,12 +139,12 @@ const ReviewForm = ({ productId, onSubmitSuccess }) => {
       </div>
 
       {submissionStatus.message && (
-        <p className={`submission-message ${submissionStatus.error ? 'error-message' : ''}`}>
+        <p className={`${styles.submissionMessage} ${submissionStatus.error ? styles.errorMessage : ''}`}>
           {submissionStatus.message}
         </p>
       )}
 
-      <button type="submit" className="btn btn-submit-review" disabled={submissionStatus.loading}>
+      <button type="submit" className={`btn ${styles.btnSubmitReview}`} disabled={submissionStatus.loading}>
         {submissionStatus.loading ? 'Submitting...' : 'Submit Review'}
       </button>
     </form>

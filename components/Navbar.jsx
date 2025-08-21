@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
-import '../styles/components/navbar.css';
+import styles from '../styles/components/navbar.module.css';
 import { AiOutlineShopping } from 'react-icons/ai';
 import { FiSun, FiMoon, FiDroplet, FiMoreHorizontal } from 'react-icons/fi'; // Import Feather icons
 import { UserButton, SignInButton, SignedIn, SignedOut } from '@clerk/nextjs';
@@ -249,15 +249,15 @@ const Navbar = () => {
   }
 
   return (
-    <div className={`navbar-container ${isScrolled ? 'scrolled-navbar' : ''}`}>
-      <p className="logo">
+    <div className={`${styles.navbarContainer} ${isScrolled ? styles.scrolledNavbar : ''}`}>
+      <p className={styles.logo}>
         <Link href="/">Snacks</Link>
       </p>
 
-      <div className="nav-items-right">
+      <div className={styles.navItemsRight}>
         <button 
           type="button" 
-          className="theme-icon-button" 
+          className={styles.themeIconButton}
           onClick={toggleTheme}
           title={themeIconTitle}
           aria-label={themeIconTitle}
@@ -271,22 +271,22 @@ const Navbar = () => {
             type="color"
             value={rgbInputColor}
             onChange={handleRgbColorChange}
-            className="rgb-color-picker"
+            className={styles.rgbColorPicker}
             title="Select RGB base color"
           />
         )}
 
         <button type="button"
-          className="cart-icon" onClick={() => setShowCart(true)}>
+          className={styles.cartIcon} onClick={() => setShowCart(true)}>
           <AiOutlineShopping />
-          <span className="cart-item-qty">{totalQuantities}</span>
+          <span className={styles.cartItemQty}>{totalQuantities}</span>
         </button>
 
         {/* New Ellipsis Menu Button & Dropdown */}
-        <div className="theme-menu-container" ref={themeMenuRef}>
+        <div className={styles.themeMenuContainer} ref={themeMenuRef}>
           <button
             type="button"
-            className="theme-ellipsis-button"
+            className={styles.themeEllipsisButton}
             onClick={() => setShowThemeMenu(!showThemeMenu)}
             title="More theme options"
             aria-label="More theme options"
@@ -294,7 +294,7 @@ const Navbar = () => {
             <FiMoreHorizontal size={22} />
           </button>
           {showThemeMenu && (
-            <ul className="theme-dropdown-menu">
+            <ul className={styles.themeDropdownMenu}>
               <li onClick={() => selectTheme('light')}>Light Theme</li>
               <li onClick={() => selectTheme('dark')}>Dark Theme</li>
               <li onClick={() => selectTheme('rgb')}>RGB Theme</li>
@@ -302,7 +302,7 @@ const Navbar = () => {
                 Performance Mode: {performanceMode ? 'On' : 'Off'}
               </li>
               <SignedIn>
-                <li className="user-button-li">
+                <li className={styles.userButtonLi}>
                   <UserButton
                     afterSignOutUrl="/"
                   />
