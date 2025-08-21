@@ -10,7 +10,7 @@ import {
   AiOutlineStar,
 } from "react-icons/ai";
 
-import { readClient, urlFor } from "../../lib/client";
+import { readClient, urlFor, previewClient } from "../../lib/client";
 import Product from "../../components/Product";
 import { useStateContext } from "../../context/StateContext";
 import StarRating from '../../components/StarRating'; // Import StarRating
@@ -52,7 +52,7 @@ const fetchReviews = async (keyWithProductId) => {
 
   const reviewsQuery = `*[_type == "review" && product._ref == $productId && approved == true] | order(createdAt desc)`;
   try {
-    const reviews = await readClient.fetch(reviewsQuery, { productId });
+    const reviews = await previewClient.fetch(reviewsQuery, { productId });
     console.log(`[fetchReviews] Found ${reviews.length} approved reviews for productId: ${productId}.`);
     // console.log(`[fetchReviews] Data for ${productId}:`, reviews); // Optional: log full data
     return reviews;
@@ -341,7 +341,7 @@ export const getStaticPaths = async () => {
     }
   }`;
 
-  const products = await readClient.fetch(query);
+  const products = await previewClient.fetch(query);
 
   const paths = products.map((product) => ({
     params: {
@@ -361,7 +361,7 @@ export const getStaticProps = async ({ params: { slug } }) => {
   // Create a query for the product with the given slug
   const query = `*[_type == "product" && slug.current == '${slug}'][0]`;
   // Fetch the product with the given slug
-  const product = await readClient.fetch(query);
+  const product = await previewClient.fetch(query);
 
   // Reviews are no longer fetched here; they will be fetched client-side with SWR.
   let products = []; // For "You may also like"
@@ -370,11 +370,11 @@ export const getStaticProps = async ({ params: { slug } }) => {
     // Fetch "You may also like" products (4 other products, excluding the current one)
     const currentProductId = product._id;
     const productsQuery = `*[_type == "product" && _id != $currentProductId] | order(_createdAt desc) [0...4]`;
-    products = await readClient.fetch(productsQuery, { currentProductId });
+    products = await previewClient.fetch(productsQuery, { currentProductId });
   } else {
     // Fallback: If product is not found, fetch any 4 products for "You may also like"
     const productsQuery = `*[_type == "product"] | order(_createdAt desc) [0...4]`;
-    products = await readClient.fetch(productsQuery);
+    products = await previewClient.fetch(productsQuery);
     // 'product' will be null or undefined.
     // The page component should handle the case where 'product' is not available.
   }
