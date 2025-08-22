@@ -1605,15 +1605,15 @@ span.text-red {
 
 /* Review Section Styles */
 .reviews-section {
-  margin-top: 40px;
-     padding: 30px;
+  margin-top: 20px;
+  padding: 15px;
   background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
-     border: 1px solid var(--glass-edge-highlight-color);
+  border: 1px solid var(--glass-edge-highlight-color);
   border-radius: 15px;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
-     color: var(--text-color);
+  color: var(--text-color);
 }
 
 .star-rating {
@@ -1626,65 +1626,65 @@ span.text-red {
 }
 
 .review-list-container {
-  margin-bottom: 30px;
+  margin-bottom: 15px;
 }
 
 .review-list-title, .review-form-title {
   font-family: 'Quicksand', sans-serif;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-color);
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--glass-edge-highlight-color); /* Themed border */
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--glass-edge-highlight-color);
 }
 
 .review-item {
-     padding: 20px;
-     margin-bottom: 20px;
-     background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
-     border: 1px solid var(--glass-edge-highlight-color);
-     border-radius: 15px;
-     backdrop-filter: blur(8px);
-     -webkit-backdrop-filter: blur(8px);
-     box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
-     color: var(--text-color);
+  padding: 15px;
+  margin-bottom: 15px;
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  border-radius: 10px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 5px 20px -5px var(--glass-box-shadow-color);
+  color: var(--text-color);
 }
 
 .review-item-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
 }
 
 .review-user {
   font-family: 'Quicksand', sans-serif;
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: var(--text-color);
 }
 
 .review-date {
   font-family: 'Open Sans', sans-serif;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--text-color);
-  opacity: 0.7; /* Make date less prominent */
+  opacity: 0.7;
 }
 
 .review-title {
   font-family: 'Quicksand', sans-serif;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 500;
-  margin-top: 8px;
-  margin-bottom: 5px;
+  margin-top: 5px;
+  margin-bottom: 3px;
   color: var(--text-color);
 }
 
 .review-comment {
   font-family: 'Open Sans', sans-serif;
-  font-size: 1rem;
-  line-height: 1.6;
+  font-size: 0.9rem;
+  line-height: 1.5;
   color: var(--text-color);
   margin-bottom: 0;
 }
@@ -2097,4 +2097,171 @@ body > .cl-modal-root .cl-modal-content {
 .performance-mode * {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+}
+
+/* Styles for new review features */
+.admin-reply {
+  background-color: rgba(var(--accent-color-rgb, 255, 165, 0), 0.1);
+  border-left: 4px solid var(--accent-color);
+  padding: 15px;
+  margin-top: 15px;
+  border-radius: 0 8px 8px 0;
+}
+
+.admin-badge-wrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.admin-badge {
+  background-color: var(--accent-color);
+  color: var(--text-on-accent-color);
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.admin-reply-comment {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.review-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid var(--glass-edge-highlight-color);
+}
+
+.like-dislike-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.action-button {
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 1rem;
+  transition: color 0.2s ease;
+}
+
+.action-button:hover {
+  color: var(--accent-color);
+}
+
+.action-button svg {
+  font-size: 1.2rem;
+}
+
+.reply-button {
+  font-weight: 600;
+}
+
+.public-replies-container {
+  margin-top: 15px;
+  padding-left: 20px;
+  border-left: 2px solid var(--glass-edge-highlight-color);
+}
+
+.public-reply-item {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--glass-edge-highlight-color);
+}
+.public-reply-item:last-child {
+  border-bottom: none;
+}
+
+
+.public-reply-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.public-reply-user {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.public-reply-date {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.public-reply-comment {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.reply-form-container {
+  margin-top: 15px;
+  padding: 15px;
+  background: var(--secondary-background-color);
+  border-radius: 8px;
+}
+
+.reply-form-name {
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid var(--glass-edge-highlight-color);
+    background-color: var(--primary-background-color);
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+.reply-form-textarea {
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid var(--glass-edge-highlight-color);
+    background-color: var(--primary-background-color);
+    color: var(--text-color);
+    resize: vertical;
+}
+
+.btn-submit-reply {
+    margin-top: 10px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
+
+.btn-show-more {
+  background: none;
+  border: none;
+  color: var(--accent-color);
+  cursor: pointer;
+  display: block;
+  margin: 15px auto 0;
+  padding: 5px;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.btn-show-more:hover {
+  color: var(--primary-color-hover);
+}
+
+.like-button:hover, .dislike-button:hover {
+    transform: scale(1.1);
+}
+
+.like-button.liked, .dislike-button.disliked {
+    color: var(--accent-color);
+}
+
+.action-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
 }
