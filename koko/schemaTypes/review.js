@@ -49,6 +49,59 @@ export default {
       type: 'boolean',
       initialValue: false,
     },
+    {
+      name: 'likes',
+      title: 'Likes',
+      type: 'number',
+      initialValue: 0,
+      readOnly: true, // Assuming only client-side updates
+    },
+    {
+      name: 'dislikes',
+      title: 'Dislikes',
+      type: 'number',
+      initialValue: 0,
+      readOnly: true, // Assuming only client-side updates
+    },
+    {
+      name: 'adminReply',
+      title: 'Admin Reply',
+      type: 'text',
+      rows: 3,
+    },
+    {
+      name: 'replies',
+      title: 'Replies',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            { name: 'user', type: 'string', title: 'User' },
+            { name: 'comment', type: 'text', title: 'Comment' },
+            {
+              name: 'createdAt',
+              type: 'datetime',
+              title: 'Created At',
+              initialValue: () => new Date().toISOString(),
+              readOnly: true,
+            },
+          ],
+          preview: {
+            select: {
+              title: 'user',
+              subtitle: 'comment'
+            },
+            prepare({ title, subtitle }) {
+              return {
+                title: `Reply from ${title || 'Anonymous'}`,
+                subtitle: subtitle,
+              };
+            },
+          },
+        },
+      ],
+    },
   ],
   preview: {
     select: {

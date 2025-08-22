@@ -312,7 +312,11 @@ const ProductDetails = ({ product, products }) => {
       </div>
 
       <div className="reviews-section">
-        <DynamicReviewList reviews={currentReviews} />
+        <DynamicReviewList
+          reviews={currentReviews}
+          productId={product._id}
+          onReviewUpdate={mutateReviews}
+        />
         <button 
           type="button" 
           className="btn btn-toggle-review-form" 

@@ -2098,3 +2098,141 @@ body > .cl-modal-root .cl-modal-content {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
+
+/* Styles for new review features */
+.admin-reply {
+  background-color: rgba(var(--accent-color-rgb, 255, 165, 0), 0.1);
+  border-left: 4px solid var(--accent-color);
+  padding: 15px;
+  margin-top: 15px;
+  border-radius: 0 8px 8px 0;
+}
+
+.admin-badge-wrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.admin-badge {
+  background-color: var(--accent-color);
+  color: var(--text-on-accent-color);
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.admin-reply-comment {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.review-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid var(--glass-edge-highlight-color);
+}
+
+.like-dislike-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.action-button {
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 1rem;
+  transition: color 0.2s ease;
+}
+
+.action-button:hover {
+  color: var(--accent-color);
+}
+
+.action-button svg {
+  font-size: 1.2rem;
+}
+
+.reply-button {
+  font-weight: 600;
+}
+
+.public-replies-container {
+  margin-top: 15px;
+  padding-left: 20px;
+  border-left: 2px solid var(--glass-edge-highlight-color);
+}
+
+.public-reply-item {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--glass-edge-highlight-color);
+}
+.public-reply-item:last-child {
+  border-bottom: none;
+}
+
+
+.public-reply-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.public-reply-user {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.public-reply-date {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.public-reply-comment {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.reply-form-container {
+  margin-top: 15px;
+  padding: 15px;
+  background: var(--secondary-background-color);
+  border-radius: 8px;
+}
+
+.reply-form-name {
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid var(--glass-edge-highlight-color);
+    background-color: var(--primary-background-color);
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+.reply-form-textarea {
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid var(--glass-edge-highlight-color);
+    background-color: var(--primary-background-color);
+    color: var(--text-color);
+    resize: vertical;
+}
+
+.btn-submit-reply {
+    margin-top: 10px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
