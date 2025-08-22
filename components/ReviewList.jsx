@@ -1,11 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import StarRating from './StarRating';
 import { AiOutlineLike, AiOutlineDislike } from 'react-icons/ai';
 
 const ReviewList = ({ reviews = [], productId, onReviewUpdate }) => {
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyContent, setReplyContent] = useState('');
-  const [userName, setUserName] = useState(''); // For anonymous replies
+  const [userName, setUserName] = useState('');
+  const [showAll, setShowAll] = useState(false);
+  const [likedReviews, setLikedReviews] = useState([]);
+  const [dislikedReviews, setDislikedReviews] = useState([]);
+
+  useEffect(() => {
+    const liked = JSON.parse(localStorage.getItem(`likedReviews_${productId}`)) || [];
+    const disliked = JSON.parse(localStorage.getItem(`dislikedReviews_${productId}`)) || [];
+    setLikedReviews(liked);
+    setDislikedReviews(disliked);
+  }, [productId]);
+
+  const reviewsToShow = showAll ? reviews : reviews.slice(0, 5);
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -14,6 +26,13 @@ const ReviewList = ({ reviews = [], productId, onReviewUpdate }) => {
   };
 
   const handleLikeDislike = async (reviewId, action) => {
+    const alreadyLiked = likedReviews.includes(reviewId);
+    const alreadyDisliked = dislikedReviews.includes(reviewId);
+
+    if ((action === 'like' && alreadyLiked) || (action === 'dislike' && alreadyDisliked)) {
+      return; // Already voted
+    }
+
     try {
       const response = await fetch('/api/updateReviewStats', {
         method: 'POST',
@@ -22,7 +41,16 @@ const ReviewList = ({ reviews = [], productId, onReviewUpdate }) => {
       });
       const data = await response.json();
       if (response.ok) {
-        onReviewUpdate(); // Re-fetch reviews to show updated counts
+        onReviewUpdate();
+        if (action === 'like') {
+          const newLiked = [...likedReviews, reviewId];
+          setLikedReviews(newLiked);
+          localStorage.setItem(`likedReviews_${productId}`, JSON.stringify(newLiked));
+        } else if (action === 'dislike') {
+          const newDisliked = [...dislikedReviews, reviewId];
+          setDislikedReviews(newDisliked);
+          localStorage.setItem(`dislikedReviews_${productId}`, JSON.stringify(newDisliked));
+        }
       } else {
         console.error('Failed to update stats:', data.message);
       }
@@ -67,7 +95,7 @@ const ReviewList = ({ reviews = [], productId, onReviewUpdate }) => {
   return (
     <div className="review-list-container">
       <h3 className="review-list-title">Customer Reviews</h3>
-      {reviews.map((review) => (
+      {reviewsToShow.map((review) => (
         <div key={review._id} className="review-item">
           <div className="review-item-header">
             <span className="review-user">{review.user || 'Anonymous'}</span>
@@ -88,10 +116,20 @@ const ReviewList = ({ reviews = [], productId, onReviewUpdate }) => {
 
           <div className="review-actions">
             <div className="like-dislike-buttons">
-              <button onClick={() => handleLikeDislike(review._id, 'like')} className="action-button like-button" data-testid={`like-button-${review._id}`}>
+              <button
+                onClick={() => handleLikeDislike(review._id, 'like')}
+                className={`action-button like-button ${likedReviews.includes(review._id) ? 'liked' : ''}`}
+                disabled={likedReviews.includes(review._id) || dislikedReviews.includes(review._id)}
+                data-testid={`like-button-${review._id}`}
+              >
                 <AiOutlineLike /> <span>{review.likes || 0}</span>
               </button>
-              <button onClick={() => handleLikeDislike(review._id, 'dislike')} className="action-button dislike-button" data-testid={`dislike-button-${review._id}`}>
+              <button
+                onClick={() => handleLikeDislike(review._id, 'dislike')}
+                className={`action-button dislike-button ${dislikedReviews.includes(review._id) ? 'disliked' : ''}`}
+                disabled={likedReviews.includes(review._id) || dislikedReviews.includes(review._id)}
+                data-testid={`dislike-button-${review._id}`}
+              >
                 <AiOutlineDislike /> <span>{review.dislikes || 0}</span>
               </button>
             </div>
@@ -141,6 +179,11 @@ const ReviewList = ({ reviews = [], productId, onReviewUpdate }) => {
           )}
         </div>
       ))}
+      {!showAll && reviews.length > 5 && (
+        <button onClick={() => setShowAll(true)} className="btn btn-show-more">
+          Show More Reviews
+        </button>
+      )}
     </div>
   );
 };

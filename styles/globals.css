@@ -2236,3 +2236,21 @@ body > .cl-modal-root .cl-modal-content {
     padding: 8px 16px;
     font-size: 0.9rem;
 }
+
+.btn-show-more {
+  display: block;
+  margin: 20px auto 0;
+}
+
+.like-button:hover, .dislike-button:hover {
+    transform: scale(1.1);
+}
+
+.like-button.liked, .dislike-button.disliked {
+    color: var(--accent-color);
+}
+
+.action-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}

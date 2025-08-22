@@ -50,7 +50,7 @@ const fetchReviews = async (keyWithProductId) => {
     return []; // Or throw an error if preferred
   }
 
-  const reviewsQuery = `*[_type == "review" && product._ref == $productId && approved == true] | order(createdAt desc)`;
+  const reviewsQuery = `*[_type == "review" && product._ref == $productId && approved == true] | order((likes - dislikes) desc, createdAt desc)`;
   try {
     const reviews = await previewClient.fetch(reviewsQuery, { productId });
     console.log(`[fetchReviews] Found ${reviews.length} approved reviews for productId: ${productId}.`);
