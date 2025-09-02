@@ -10,6 +10,11 @@ export default {
       validation: Rule => Rule.required().error('User name is required.'),
     },
     {
+      name: 'userProfileImageUrl',
+      title: 'User Profile Image URL',
+      type: 'url',
+    },
+    {
       name: 'rating',
       title: 'Rating',
       type: 'number',
@@ -48,6 +53,62 @@ export default {
       title: 'Approved',
       type: 'boolean',
       initialValue: false,
+    },
+    {
+      name: 'likes',
+      title: 'Likes',
+      type: 'number',
+      initialValue: 0,
+      readOnly: true, // Managed by the API
+    },
+    {
+      name: 'dislikes',
+      title: 'Dislikes',
+      type: 'number',
+      initialValue: 0,
+      readOnly: true, // Managed by the API
+    },
+    {
+      name: 'adminReply',
+      title: 'Admin Reply',
+      type: 'text',
+      description: 'An official reply from the admin.',
+    },
+    {
+      name: 'replies',
+      title: 'Public Replies',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          name: 'reply',
+          fields: [
+            {name: 'user', type: 'string', title: 'User'},
+            {name: 'userProfileImageUrl', type: 'url', title: 'User Profile Image URL'},
+            {name: 'userFlair', type: 'string', title: 'User Flair'},
+            {name: 'comment', type: 'text', title: 'Comment'},
+            {
+              name: 'createdAt',
+              type: 'datetime',
+              title: 'Created At',
+              options: {readOnly: true},
+            },
+          ],
+          preview: {
+            select: {
+              user: 'user',
+              comment: 'comment',
+              createdAt: 'createdAt',
+            },
+            prepare({user, comment, createdAt}) {
+              return {
+                title: `${user || 'Anonymous'}: "${comment.substring(0, 20)}..."`,
+                subtitle: new Date(createdAt).toLocaleString(),
+              };
+            },
+          },
+        },
+      ],
     },
   ],
   preview: {
