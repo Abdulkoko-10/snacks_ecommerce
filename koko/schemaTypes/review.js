@@ -49,6 +49,60 @@ export default {
       type: 'boolean',
       initialValue: false,
     },
+    {
+      name: 'likes',
+      title: 'Likes',
+      type: 'number',
+      initialValue: 0,
+      readOnly: true, // Managed by the API
+    },
+    {
+      name: 'dislikes',
+      title: 'Dislikes',
+      type: 'number',
+      initialValue: 0,
+      readOnly: true, // Managed by the API
+    },
+    {
+      name: 'adminReply',
+      title: 'Admin Reply',
+      type: 'text',
+      description: 'An official reply from the admin.',
+    },
+    {
+      name: 'replies',
+      title: 'Public Replies',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          name: 'reply',
+          fields: [
+            {name: 'user', type: 'string', title: 'User'},
+            {name: 'comment', type: 'text', title: 'Comment'},
+            {
+              name: 'createdAt',
+              type: 'datetime',
+              title: 'Created At',
+              options: {readOnly: true},
+            },
+          ],
+          preview: {
+            select: {
+              user: 'user',
+              comment: 'comment',
+              createdAt: 'createdAt',
+            },
+            prepare({user, comment, createdAt}) {
+              return {
+                title: `${user || 'Anonymous'}: "${comment.substring(0, 20)}..."`,
+                subtitle: new Date(createdAt).toLocaleString(),
+              };
+            },
+          },
+        },
+      ],
+    },
   ],
   preview: {
     select: {

@@ -40,6 +40,10 @@ export default async function handler(req, res) {
         },
         createdAt: new Date().toISOString(),
         approved: false, // Reviews default to not approved
+        likes: 0,
+        dislikes: 0,
+        replies: [],
+        adminReply: '',
       };
 
       // Use the imported and pre-configured writeClient directly

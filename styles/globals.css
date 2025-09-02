@@ -2098,3 +2098,84 @@ body > .cl-modal-root .cl-modal-content {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
+
+/* New Review Section Styles */
+.review-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.like-btn, .dislike-btn, .reply-btn {
+  background: transparent;
+  border: 1px solid var(--glass-edge-highlight-color);
+  color: var(--text-color);
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.like-btn:hover, .dislike-btn:hover, .reply-btn:hover {
+  background-color: var(--secondary-background-color);
+}
+
+.admin-reply {
+  background-color: var(--secondary-background-dark);
+  border: 1px solid var(--glass-edge-highlight-color);
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 15px;
+  position: relative;
+}
+
+.admin-badge {
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  background-color: var(--accent-color);
+  color: var(--text-on-accent-color);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.public-replies {
+  margin-top: 15px;
+  padding-left: 20px;
+  border-left: 2px solid var(--glass-edge-highlight-color);
+}
+
+.reply-item {
+  margin-bottom: 10px;
+}
+
+.reply-form {
+  margin-top: 15px;
+}
+
+.reply-form textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--glass-edge-highlight-color);
+  background-color: var(--primary-background-color);
+  color: var(--text-color);
+  resize: vertical;
+  min-height: 80px;
+}
+
+.reply-form button {
+  margin-top: 10px;
+  padding: 8px 15px;
+  border-radius: 8px;
+  border: none;
+  background-color: var(--accent-color);
+  color: var(--text-on-accent-color);
+  cursor: pointer;
+}
