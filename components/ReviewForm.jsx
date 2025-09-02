@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
-import StarRating from './StarRating'; // Assuming StarRating.jsx is in the same directory
+import React, { useState, useEffect } from 'react';
+import StarRating from './StarRating';
+import { useUser } from '@clerk/nextjs';
 
 const ReviewForm = ({ productId, onSubmitSuccess }) => {
+  const { user: clerkUser } = useUser();
   const [formData, setFormData] = useState({
     user: '',
     rating: 0,
@@ -14,6 +16,12 @@ const ReviewForm = ({ productId, onSubmitSuccess }) => {
     error: false,
     success: false,
   });
+
+  useEffect(() => {
+    if (clerkUser) {
+      setFormData((prev) => ({ ...prev, user: clerkUser.fullName || clerkUser.username }));
+    }
+  }, [clerkUser]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -28,7 +36,6 @@ const ReviewForm = ({ productId, onSubmitSuccess }) => {
     e.preventDefault();
     setSubmissionStatus({ loading: true, message: '', error: false, success: false });
 
-    // Client-side validation
     if (!formData.user || formData.rating === 0 || !formData.comment) {
       setSubmissionStatus({
         loading: false,
@@ -39,13 +46,16 @@ const ReviewForm = ({ productId, onSubmitSuccess }) => {
       return;
     }
 
+    const requestBody = { ...formData, productId };
+    if (clerkUser && clerkUser.publicMetadata.showProfileIcon) {
+      requestBody.userProfileImageUrl = clerkUser.imageUrl;
+    }
+
     try {
       const response = await fetch('/api/createReview', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ...formData, productId }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
       });
 
       const result = await response.json();
@@ -57,9 +67,9 @@ const ReviewForm = ({ productId, onSubmitSuccess }) => {
           error: false,
           success: true,
         });
-        setFormData({ user: '', rating: 0, reviewTitle: '', comment: '' }); // Reset form
+        setFormData({ user: '', rating: 0, reviewTitle: '', comment: '' });
         if (onSubmitSuccess) {
-          onSubmitSuccess(); // Callback for parent component, e.g., to re-fetch reviews
+          onSubmitSuccess();
         }
       } else {
         setSubmissionStatus({
@@ -101,6 +111,7 @@ const ReviewForm = ({ productId, onSubmitSuccess }) => {
           value={formData.user}
           onChange={handleInputChange}
           required
+          disabled={!!clerkUser}
         />
       </div>
 

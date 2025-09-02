@@ -2,7 +2,7 @@ import { writeClient as configuredWriteClient } from '../../lib/client'; // Impo
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
-    const { user, rating, reviewTitle, comment, productId } = req.body;
+    const { user, rating, reviewTitle, comment, productId, userProfileImageUrl } = req.body;
 
     // Basic validation
     if (!user || !rating || !comment || !productId) {
@@ -44,6 +44,7 @@ export default async function handler(req, res) {
         dislikes: 0,
         replies: [],
         adminReply: '',
+        userProfileImageUrl: userProfileImageUrl || '',
       };
 
       // Use the imported and pre-configured writeClient directly

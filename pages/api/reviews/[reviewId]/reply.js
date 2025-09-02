@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   }
 
   const { reviewId } = req.query;
-  const { user, comment } = req.body;
+  const { user, comment, userProfileImageUrl, userFlair } = req.body;
 
   if (!user || !comment) {
     return res.status(400).json({ message: 'Missing required fields: user, comment' });
@@ -24,6 +24,8 @@ export default async function handler(req, res) {
       user,
       comment,
       createdAt: new Date().toISOString(),
+      userProfileImageUrl: userProfileImageUrl || '',
+      userFlair: userFlair || '',
     };
 
     await writeClient

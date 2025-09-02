@@ -10,6 +10,11 @@ export default {
       validation: Rule => Rule.required().error('User name is required.'),
     },
     {
+      name: 'userProfileImageUrl',
+      title: 'User Profile Image URL',
+      type: 'url',
+    },
+    {
       name: 'rating',
       title: 'Rating',
       type: 'number',
@@ -79,6 +84,8 @@ export default {
           name: 'reply',
           fields: [
             {name: 'user', type: 'string', title: 'User'},
+            {name: 'userProfileImageUrl', type: 'url', title: 'User Profile Image URL'},
+            {name: 'userFlair', type: 'string', title: 'User Flair'},
             {name: 'comment', type: 'text', title: 'Comment'},
             {
               name: 'createdAt',

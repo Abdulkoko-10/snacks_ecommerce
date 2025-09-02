@@ -301,6 +301,13 @@ const Navbar = () => {
                 Performance Mode: {performanceMode ? 'On' : 'Off'}
               </li>
               <SignedIn>
+                <li>
+                  <Link href="/user-profile">
+                    <span style={{ display: 'block', width: '100%', cursor: 'pointer' }}>
+                      My Profile
+                    </span>
+                  </Link>
+                </li>
                 <li className="user-button-li">
                   <UserButton
                     afterSignOutUrl="/"

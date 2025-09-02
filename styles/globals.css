@@ -2179,3 +2179,74 @@ body > .cl-modal-root .cl-modal-content {
   color: var(--text-on-accent-color);
   cursor: pointer;
 }
+
+/* Review Settings Styles */
+.review-settings-container {
+  padding: 20px;
+  background: var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  border-radius: 15px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
+  color: var(--text-color);
+  width: 100%;
+  max-width: 600px;
+}
+
+.review-settings-container h3 {
+  margin-bottom: 20px;
+}
+
+.review-settings-container .form-group {
+  margin-bottom: 15px;
+}
+
+.review-settings-container .form-group label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.review-settings-container button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  background-color: var(--accent-color);
+  color: var(--text-on-accent-color);
+  cursor: pointer;
+}
+
+.save-message {
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+/* Review User Avatar and Flair Styles */
+.review-user-avatar, .reply-user-avatar {
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.reply-item-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+
+.user-flair {
+  background-color: var(--accent-color);
+  color: var(--text-on-accent-color);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.reply-date {
+  font-size: 0.8rem;
+  color: var(--text-color);
+  opacity: 0.7;
+}
