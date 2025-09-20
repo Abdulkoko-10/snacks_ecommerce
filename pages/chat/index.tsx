@@ -6,12 +6,24 @@ import ChatThread from '@/components/chat/ChatThread';
 import ChatInput from '@/components/chat/ChatInput';
 import FloatingCatAssistant from '@/components/chat/FloatingCatAssistant';
 import { ChatMessage, ChatRecommendationCard } from '@fd/schemas/chat';
-import Layout from '@/components/Layout';
+import Navbar from '@/components/Navbar';
+import { BsChatSquareDots } from 'react-icons/bs';
+
+const ChatHistoryToggleButton = ({ toggle, isOpen }) => (
+  <button onClick={toggle} className="chat-history-toggle">
+    <BsChatSquareDots size={22} />
+  </button>
+);
 
 const ChatPage = () => {
   const { userId } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [recommendations, setRecommendations] = useState<Record<string, ChatRecommendationCard[]>>({});
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
   const handleSend = async (text: string) => {
     const userMessage: ChatMessage = {
@@ -58,21 +70,25 @@ const ChatPage = () => {
   };
 
   return (
-    <div className="chat-page-container">
-      <ChatPageLayout>
-        <ChatSidebar />
-        <main className="chat-main">
-          <ChatThread messages={messages} recommendations={recommendations} />
-          <ChatInput onSend={handleSend} />
-        </main>
-      </ChatPageLayout>
+    <ChatPageLayout>
+      <ChatSidebar isOpen={isSidebarOpen} toggle={toggleSidebar} />
+      <main className="chat-main">
+        <ChatHistoryToggleButton toggle={toggleSidebar} isOpen={isSidebarOpen} />
+        <ChatThread messages={messages} recommendations={recommendations} />
+        <ChatInput onSend={handleSend} />
+      </main>
       <FloatingCatAssistant />
-    </div>
+    </ChatPageLayout>
   );
 };
 
-// We are no longer using a custom getLayout for this page.
-// The full-screen styling will be applied within the main Layout component.
-// The ChatUIProvider wrapped in _app.js will handle the sidebar state.
+ChatPage.getLayout = function getLayout(page: React.ReactElement) {
+  return (
+    <div className="chat-page-wrapper">
+      <Navbar />
+      {page}
+    </div>
+  )
+}
 
 export default ChatPage;

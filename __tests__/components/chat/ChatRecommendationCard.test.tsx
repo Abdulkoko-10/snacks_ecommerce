@@ -39,6 +39,6 @@ describe('ChatRecommendationCard', () => {
         expect(link).toHaveAttribute('href', '/product/fd::pizza::uuid123');
 
         const image = screen.getByRole('img');
-        expect(image).toHaveAttribute('src', 'https://example.com/pizza.jpg');
+        expect(image.getAttribute('src')).toContain(encodeURIComponent('https://example.com/pizza.jpg'));
     });
 });

@@ -2,7 +2,6 @@ import { Layout } from "../components";
 import "../styles/globals.css";
 import "../styles/chat.css";
 import { StateContext } from "../context/StateContext";
-import { ChatUIProvider } from '../context/ChatUIContext';
 import { Toaster } from "react-hot-toast";
 import { ClerkProvider } from "@clerk/nextjs";
 // import { dark } from "@clerk/themes"; // Import a base theme if you want to use one - commented out as it's not used in clerkAppearance
@@ -132,10 +131,8 @@ export default function App(props) {
           {/* CssBaseline kickstarts an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline />
           <StateContext>
-            <ChatUIProvider>
-              <Toaster />
-              {getLayout(<Component {...pageProps} />)}
-            </ChatUIProvider>
+            <Toaster />
+            {getLayout(<Component {...pageProps} />)}
           </StateContext>
         </ThemeProvider>
       </CacheProvider>

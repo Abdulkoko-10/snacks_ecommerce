@@ -1,14 +1,16 @@
 import React from 'react';
-import { useChatUI } from '../../context/ChatUIContext';
 
-const ChatSidebar = () => {
-  const { isSidebarOpen, toggleSidebar } = useChatUI();
+interface ChatSidebarProps {
+  isOpen: boolean;
+  toggle: () => void;
+}
 
+const ChatSidebar = ({ isOpen, toggle }: ChatSidebarProps) => {
   return (
-    <aside className={`chat-sidebar ${isSidebarOpen ? 'open' : ''}`}>
+    <aside className={`chat-sidebar ${isOpen ? 'open' : ''}`}>
       <div className="sidebar-header">
         <h2>Chat History</h2>
-        <button onClick={toggleSidebar} className="close-sidebar-btn">&times;</button>
+        <button onClick={toggle} className="close-sidebar-btn">&times;</button>
       </div>
       {/* Placeholder for chat history items */}
     </aside>
