@@ -6,7 +6,7 @@ import ChatThread from '@/components/chat/ChatThread';
 import ChatInput from '@/components/chat/ChatInput';
 import FloatingCatAssistant from '@/components/chat/FloatingCatAssistant';
 import { ChatMessage, ChatRecommendationCard } from '@fd/schemas/chat';
-import { Layout } from '@/components';
+import Layout from '@/components/Layout';
 
 const ChatPage = () => {
   const { userId } = useAuth();

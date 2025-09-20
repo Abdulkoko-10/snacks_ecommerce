@@ -1,6 +1,7 @@
 import React from 'react';
 import { ChatRecommendationCard } from '@fd/schemas/chat';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface ChatRecommendationCardProps {
   card: ChatRecommendationCard;
@@ -10,7 +11,7 @@ const ChatRecommendationCardComponent = ({ card }: ChatRecommendationCardProps) 
   return (
     <Link href={`/product/${card.canonicalProductId}`} passHref>
       <div className="recommendation-card">
-        <img src={card.preview.image} alt={card.preview.title} />
+        <Image src={card.preview.image} alt={card.preview.title} width={80} height={80} />
         <div className="recommendation-card-details">
           <h3>{card.preview.title}</h3>
           <p>{card.reason}</p>
