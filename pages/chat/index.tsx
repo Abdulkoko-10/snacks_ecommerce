@@ -12,6 +12,11 @@ const ChatPage = () => {
   const { userId } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [recommendations, setRecommendations] = useState<Record<string, ChatRecommendationCard[]>>({});
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
   const handleSend = async (text: string) => {
     const userMessage: ChatMessage = {
@@ -62,13 +67,13 @@ const ChatPage = () => {
       <Navbar />
       <ChatPageLayout>
         <div className="chat-page-layout">
-          <ChatSidebar />
+          <ChatSidebar isOpen={isSidebarOpen} toggle={toggleSidebar} />
           <main className="chat-main">
             <ChatThread messages={messages} recommendations={recommendations} />
             <ChatInput onSend={handleSend} />
           </main>
         </div>
-        <FloatingCatAssistant />
+        <FloatingCatAssistant onClick={toggleSidebar} />
       </ChatPageLayout>
     </div>
   );

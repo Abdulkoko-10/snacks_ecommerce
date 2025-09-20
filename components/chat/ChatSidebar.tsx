@@ -1,9 +1,17 @@
 import React from 'react';
 
-const ChatSidebar = () => {
+interface ChatSidebarProps {
+  isOpen: boolean;
+  toggle: () => void;
+}
+
+const ChatSidebar = ({ isOpen, toggle }: ChatSidebarProps) => {
   return (
-    <aside className="chat-sidebar">
-      <h2>Chat History</h2>
+    <aside className={`chat-sidebar ${isOpen ? 'open' : ''}`}>
+      <div className="sidebar-header">
+        <h2>Chat History</h2>
+        <button onClick={toggle} className="close-sidebar-btn">&times;</button>
+      </div>
       {/* Placeholder for chat history items */}
     </aside>
   );
