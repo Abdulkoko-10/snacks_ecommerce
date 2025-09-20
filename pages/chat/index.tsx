@@ -6,17 +6,12 @@ import ChatThread from '@/components/chat/ChatThread';
 import ChatInput from '@/components/chat/ChatInput';
 import FloatingCatAssistant from '@/components/chat/FloatingCatAssistant';
 import { ChatMessage, ChatRecommendationCard } from '@fd/schemas/chat';
-import Navbar from '@/components/Navbar';
+import { Layout } from '@/components';
 
 const ChatPage = () => {
   const { userId } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [recommendations, setRecommendations] = useState<Record<string, ChatRecommendationCard[]>>({});
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
 
   const handleSend = async (text: string) => {
     const userMessage: ChatMessage = {
@@ -64,19 +59,20 @@ const ChatPage = () => {
 
   return (
     <div className="chat-page-container">
-      <Navbar />
       <ChatPageLayout>
-        <div className="chat-page-layout">
-          <ChatSidebar isOpen={isSidebarOpen} toggle={toggleSidebar} />
-          <main className="chat-main">
-            <ChatThread messages={messages} recommendations={recommendations} />
-            <ChatInput onSend={handleSend} />
-          </main>
-        </div>
-        <FloatingCatAssistant onClick={toggleSidebar} />
+        <ChatSidebar />
+        <main className="chat-main">
+          <ChatThread messages={messages} recommendations={recommendations} />
+          <ChatInput onSend={handleSend} />
+        </main>
       </ChatPageLayout>
+      <FloatingCatAssistant />
     </div>
   );
 };
+
+// We are no longer using a custom getLayout for this page.
+// The full-screen styling will be applied within the main Layout component.
+// The ChatUIProvider wrapped in _app.js will handle the sidebar state.
 
 export default ChatPage;

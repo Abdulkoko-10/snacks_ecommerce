@@ -4,18 +4,25 @@ import '@testing-library/jest-dom';
 import ChatPage from '../../../pages/chat';
 import { ChatMessage, ChatRecommendationPayload } from '@fd/schemas/chat';
 import { StateContext } from '../../../context/StateContext';
+import { ChatUIProvider } from '../../../context/ChatUIContext';
 
 // Mock Clerk's useAuth hook
 jest.mock('@clerk/nextjs', () => ({
   useAuth: () => ({ userId: 'user_123' }),
 }));
 
-// Mock Next.js Link component
+// Mock Next.js Link and Router
 jest.mock('next/link', () => {
     return ({ children, href }) => {
         return <a href={href}>{children}</a>;
     };
 });
+jest.mock('next/router', () => ({
+  useRouter: () => ({
+    pathname: '/',
+    // other properties you might need
+  }),
+}));
 
 global.fetch = jest.fn();
 
@@ -57,7 +64,9 @@ describe('ChatPage Integration Test', () => {
 
     render(
       <StateContext>
-        <ChatPage />
+        <ChatUIProvider>
+          <ChatPage />
+        </ChatUIProvider>
       </StateContext>
     );
 

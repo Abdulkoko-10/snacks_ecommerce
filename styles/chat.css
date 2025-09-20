@@ -1,5 +1,6 @@
 .chat-page-container {
-  height: 100vh;
+  /* This container will be a child of the main-container in Layout.jsx */
+  height: calc(100vh - var(--navbar-height) - 40px); /* Full viewport height minus navbar and some padding */
   display: flex;
   flex-direction: column;
 }
@@ -9,7 +10,6 @@
   display: flex;
   flex-grow: 1;
   overflow: hidden;
-  padding: 20px;
   gap: 20px;
 }
 
@@ -206,14 +206,14 @@
     z-index: 1000;
     transform: translateX(-100%);
     transition: transform 0.3s ease-in-out;
-    border-right: 1px solid var(--glass-edge-highlight-color); /* Keep border */
-    width: 80%; /* Take up most of the screen */
+    border-right: 1px solid var(--glass-edge-highlight-color);
+    width: 80%;
     max-width: 300px;
   }
 
   .chat-sidebar.open {
     transform: translateX(0);
-    box-shadow: 0 0 20px rgba(0,0,0,0.3); /* Add more prominent shadow when open */
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
   }
 
   .chat-main {
@@ -221,13 +221,17 @@
   }
 
   .floating-cat-assistant {
-    display: flex; /* Ensure it's visible on mobile */
+    display: block; /* Different from flex, just needs to be visible */
   }
 }
 
-/* Hide cat on desktop if sidebar is visible */
 @media screen and (min-width: 801px) {
   .floating-cat-assistant {
     display: none;
+  }
+  .chat-sidebar.open {
+    /* On desktop, the sidebar is always "open" (i.e., visible),
+       so we don't need any special transform. */
+    transform: none;
   }
 }

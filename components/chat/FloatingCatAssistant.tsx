@@ -1,12 +1,8 @@
 import React from 'react';
 
-interface FloatingCatAssistantProps {
-  onClick: () => void;
-}
-
-const FloatingCatAssistant = ({ onClick }: FloatingCatAssistantProps) => {
+const FloatingCatAssistant = () => {
   return (
-    <div className="floating-cat-assistant" onClick={onClick}>
+    <div className="floating-cat-assistant">
       {/* Placeholder for cat assistant image */}
       <span>🐱</span>
     </div>

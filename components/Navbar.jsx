@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { AiOutlineShopping } from 'react-icons/ai';
-import { FiSun, FiMoon, FiDroplet, FiMoreHorizontal } from 'react-icons/fi'; // Import Feather icons
+import { FiSun, FiMoon, FiDroplet, FiMoreHorizontal, FiMenu } from 'react-icons/fi'; // Import Feather icons
 import { UserButton, SignInButton, SignedIn, SignedOut } from '@clerk/nextjs';
 import dynamic from 'next/dynamic';
 
 // import { Cart } from './'; // Static import removed
 import { useStateContext } from '../context/StateContext';
+import { useChatUI } from '../context/ChatUIContext';
 
 const DynamicCart = dynamic(() => import('./Cart'), {
   ssr: false, // Cart is client-side interactive
@@ -56,6 +57,7 @@ const hexToRgba = (hex, alpha) => {
 
 const Navbar = () => {
   const { showCart, setShowCart, totalQuantities } = useStateContext();
+  const { toggleSidebar } = useChatUI();
   const [themeMode, setThemeMode] = useState('light'); // 'light', 'dark', 'rgb'
   const [rgbColor, setRgbColor] = useState('#324d67'); // Default RGB color
   const [rgbInputColor, setRgbInputColor] = useState(rgbColor); // For the color picker input
@@ -254,7 +256,15 @@ const Navbar = () => {
       </p>
 
       <div className="nav-items-right">
-        <Link href="/chat" className="nav-link">Chat</Link>
+        <button
+          type="button"
+          className="hamburger-menu"
+          onClick={toggleSidebar}
+          title="Toggle Chat History"
+          aria-label="Toggle Chat History"
+        >
+          <FiMenu size={22} />
+        </button>
         <button 
           type="button" 
           className="theme-icon-button" 

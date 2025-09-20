@@ -430,14 +430,19 @@ span.text-red {
   font-weight: 700;
 }
 
-.nav-link {
+.hamburger-menu {
+  display: none; /* Hidden by default */
+  background: none;
+  border: none;
   color: var(--text-color);
-  font-weight: 600;
-  transition: color 0.3s ease;
+  cursor: pointer;
+  padding: 5px;
 }
 
-.nav-link:hover {
-  color: var(--accent-color);
+@media screen and (max-width: 800px) {
+  .hamburger-menu {
+    display: block; /* Visible on mobile */
+  }
 }
 .cart-icon {
   font-size: 25px;
