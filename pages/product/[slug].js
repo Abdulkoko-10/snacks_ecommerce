@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import Head from 'next/head'; // Import Head
-import { useRouter } from 'next/router'; // To get current path for URL
-import Image from 'next/image'; // Ensure Image is imported
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+import Image from 'next/image';
 
 import {
   AiOutlineMinus,
@@ -10,12 +10,11 @@ import {
   AiOutlineStar,
 } from "react-icons/ai";
 
-import { readClient, urlFor, previewClient } from "../../lib/client";
+import { urlFor, previewClient } from "../../lib/client"; // Keep previewClient for reviews for now
+import { getProducts, getProductBySlug } from "../../lib/data-access"; // NEW: Import data access functions
 import Product from "../../components/Product";
 import { useStateContext } from "../../context/StateContext";
-import StarRating from '../../components/StarRating'; // Import StarRating
-// import ReviewList from '../../components/ReviewList';   // Static import removed
-// import ReviewForm from '../../components/ReviewForm';   // Static import removed
+import StarRating from '../../components/StarRating';
 import dynamic from 'next/dynamic';
 
 const DynamicReviewList = dynamic(() => import('../../components/ReviewList'), {
@@ -27,43 +26,25 @@ const DynamicReviewForm = dynamic(() => import('../../components/ReviewForm'), {
 
 const DynamicMayLikeProducts = dynamic(() => import('../../components/MayLikeProducts'), {
   ssr: false,
-  // Optional: loading: () => <p>Loading suggestions...</p>
 });
 
-// Swiper imports (REMOVED - now in MayLikeProducts.jsx)
-// import { Swiper, SwiperSlide } from 'swiper/react';
-// import { Navigation, Pagination, A11y } from 'swiper/modules';
-
-// Import Swiper styles (REMOVED - now in MayLikeProducts.jsx)
-// import 'swiper/css';
-// import 'swiper/css/navigation';
-// import 'swiper/css/pagination';
 import useSWR from 'swr';
 
-// Fetcher function for SWR
+// Fetcher function for SWR (for reviews, still from Sanity)
 const fetchReviews = async (keyWithProductId) => {
-  const productId = keyWithProductId[1]; // Extract productId from the key array
-  console.log(`[fetchReviews] Fetching reviews for productId: ${productId}`);
-
-  if (!productId) {
-    console.warn('[fetchReviews] No productId provided.');
-    return []; // Or throw an error if preferred
-  }
-
+  const productId = keyWithProductId[1];
+  if (!productId) return [];
   const reviewsQuery = `*[_type == "review" && product._ref == $productId && approved == true] | order(createdAt desc)`;
   try {
     const reviews = await previewClient.fetch(reviewsQuery, { productId });
-    console.log(`[fetchReviews] Found ${reviews.length} approved reviews for productId: ${productId}.`);
-    // console.log(`[fetchReviews] Data for ${productId}:`, reviews); // Optional: log full data
     return reviews;
   } catch (error) {
-    console.error(`[fetchReviews] Error fetching reviews for productId ${productId}:`, error);
-    throw error; // Re-throw error so SWR can catch it
+    console.error(`Error fetching reviews for productId ${productId}:`, error);
+    throw error;
   }
 };
 
 const ProductDetails = ({ product, products }) => {
-  // 1. Call ALL hooks unconditionally at the top
   const [index, setIndex] = useState(0);
   const { decQty, incQty, qty, onAdd, setShowCart } = useStateContext();
   const router = useRouter();
@@ -71,8 +52,7 @@ const ProductDetails = ({ product, products }) => {
   const [isBuyNowFeedback, setIsBuyNowFeedback] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
 
-  // SWR hook - product._id might be undefined if product is null initially
-  // The key is conditional (product?._id), which is correct for SWR.
+  // SWR hook for reviews (still from Sanity)
   const {
     data: currentReviews,
     error: reviewsError,
@@ -84,44 +64,12 @@ const ProductDetails = ({ product, products }) => {
     { fallbackData: [] }
   );
 
-  // useEffect for logging SWR errors
-  useEffect(() => {
-    if (reviewsError) {
-      console.error('SWR Reviews Fetch Error:', reviewsError);
-      // Log additional info if available (SWR errors might have info/status)
-      if (reviewsError.info) {
-        console.error('SWR Error Info:', reviewsError.info);
-      }
-      if (reviewsError.status) {
-        console.error('SWR Error Status:', reviewsError.status);
-      }
-    }
-  }, [reviewsError]);
-
-  // Log currentReviews when it changes
-  useEffect(() => {
-    if (product?._id) { // Only log if we expect reviews for a product
-      console.log(`[ProductDetails] currentReviews for product ${product._id}:`, currentReviews);
-      if (reviewsLoading) {
-        console.log(`[ProductDetails] Reviews are currently loading for product ${product._id}.`);
-      }
-      if (!reviewsLoading && currentReviews) {
-        console.log(`[ProductDetails] Received ${currentReviews.length} reviews from SWR for product ${product._id}.`);
-      }
-    }
-  }, [currentReviews, product?._id, reviewsLoading]);
-
-  // 2. Handle loading/not found state for the product *after* all hooks
-  if (!product) {
-    // Customize this loading/not found state as needed
-    // router.isFallback can be checked here if using ISR with fallback: true
+  if (router.isFallback || !product) {
     return <div>Loading product details or product not found...</div>;
   }
 
-  // 3. Safe destructuring now that product is confirmed to exist
   const { _id, image, name, details, price, slug } = product;
 
-  // Event handlers and other logic that depend on product properties
   const handleAddToCartWithFeedback = () => {
     onAdd(product, qty);
     setIsAddedFeedback(true);
@@ -139,7 +87,7 @@ const ProductDetails = ({ product, products }) => {
     }, 1000);
   };
 
-  const aggregateRating = currentReviews.reduce(
+  const aggregateRating = (currentReviews || []).reduce(
     (acc, review) => {
       acc.totalRating += review.rating;
       acc.count += 1;
@@ -150,22 +98,14 @@ const ProductDetails = ({ product, products }) => {
 
   const averageRating = aggregateRating.count > 0 ? aggregateRating.totalRating / aggregateRating.count : 0;
 
-  // Basic handler for when a review is submitted.
-  // In a real app, you might want to re-fetch reviews or optimistically update the list.
   const handleReviewSubmitSuccess = async () => {
-    setShowReviewForm(false); // Optionally hide form
-    // After successful review submission via API (not shown here, but assumed)
-    // Trigger SWR to re-fetch reviews
+    setShowReviewForm(false);
     await mutateReviews();
-    // No need for: const updatedReviews = await client.fetch...
-    // No need for: setCurrentReviews(updatedReviews);
-    // Could also add a "Thank you for your review, it's awaiting approval" message.
   };
 
-  // Construct JSON-LD data
   const siteBaseUrl = typeof window !== 'undefined' 
     ? window.location.origin 
-    : 'https://yourwebsite.com'; // Fallback, replace with actual env var if possible
+    : 'https://yourwebsite.com';
   
   const currentProductUrl = `${siteBaseUrl}${router.asPath}`;
 
@@ -175,52 +115,23 @@ const ProductDetails = ({ product, products }) => {
     "name": name,
     "image": image ? image.map(img => urlFor(img).url()) : [],
     "description": details,
-    "sku": _id, // Using Sanity document ID as SKU
-    "brand": {
-      "@type": "Brand",
-      "name": "SnacksCo" // Static brand name for now
-    },
+    "sku": _id,
+    "brand": { "@type": "Brand", "name": "SnacksCo" },
     "offers": {
       "@type": "Offer",
       "url": currentProductUrl,
-      "priceCurrency": "NGN", // Assuming NGN based on price format "N{price}"
-      "price": price.toString(), // Ensure price is a string
-      "availability": "https://schema.org/InStock", // Assuming all products are InStock
+      "priceCurrency": "NGN",
+      "price": price.toString(),
+      "availability": "https://schema.org/InStock",
       "itemCondition": "https://schema.org/NewCondition"
     },
-    "aggregateRating": aggregateRating.count > 0 ? {
-      "@type": "AggregateRating",
-      "ratingValue": averageRating.toFixed(1), // Format to one decimal place
-      "reviewCount": aggregateRating.count
-    } : undefined, // Omit aggregateRating if no reviews
-    "review": currentReviews.map(review => ({
-      "@type": "Review",
-      "author": { "@type": "Person", "name": review.user || "Anonymous" },
-      "datePublished": review.createdAt ? new Date(review.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-      "reviewRating": {
-        "@type": "Rating",
-        "ratingValue": review.rating.toString() // Ensure ratingValue is a string
-      },
-      "name": review.reviewTitle || `Review for ${name}`, // Fallback review title
-      "description": review.comment
-    }))
   };
-  // Remove aggregateRating if not applicable
-  if (!jsonLdData.aggregateRating) {
-    delete jsonLdData.aggregateRating;
-  }
-  // Remove review array if empty, as per some validators' preferences
-  if (jsonLdData.review && jsonLdData.review.length === 0) {
-    delete jsonLdData.review;
-  }
-
 
   return (
     <div>
       <Head>
         <title>{`${name} - SnacksCo`}</title>
         <meta name="description" content={details} />
-        {/* Add other meta tags as needed */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdData) }}
@@ -229,29 +140,30 @@ const ProductDetails = ({ product, products }) => {
       <div className="product-detail-container">
         <div>
           <div className="image-container">
-            {image && image[index] && ( // Check if image and image[index] exist
+            {image && image[index] && (
               <Image
-                src={urlFor(image[index]).url()}
+                // NOTE: urlFor will not work if `image` is not a Sanity image object.
+                // This will need to be addressed if image sources change.
+                // For now, assuming the seeded data structure is compatible.
+                src={image[index]?.asset?._ref ? urlFor(image[index]).url() : '/placeholder.png'}
                 alt={name}
-                width={400} // From CSS .product-detail-image
-                height={400} // From CSS .product-detail-image
+                width={400}
+                height={400}
                 className="product-detail-image"
-                priority // Main product image, likely LCP
+                priority
               />
             )}
           </div>
           <div className="small-images-container">
             {image?.map((item, i) => (
-              item && ( // Ensure item exists before rendering Image
+              item?.asset?._ref && (
                 <Image
                   key={i}
                   src={urlFor(item).url()}
                   alt={`${name} - view ${i + 1}`}
-                  width={70} // From CSS .small-image
-                  height={70} // From CSS .small-image
-                  className={
-                    i === index ? "small-image selected-image" : "small-image"
-                  }
+                  width={70}
+                  height={70}
+                  className={i === index ? "small-image selected-image" : "small-image"}
                   onMouseEnter={() => setIndex(i)}
                 />
               )
@@ -281,30 +193,16 @@ const ProductDetails = ({ product, products }) => {
           <div className="quantity">
             <h3>Quantity: </h3>
             <p className="quantity-desc">
-              <span className="minus" onClick={decQty}>
-                <AiOutlineMinus />
-              </span>
+              <span className="minus" onClick={decQty}><AiOutlineMinus /></span>
               <span className="num">{qty}</span>
-              <span className="plus" onClick={incQty}>
-                <AiOutlinePlus />
-              </span>
+              <span className="plus" onClick={incQty}><AiOutlinePlus /></span>
             </p>
           </div>
           <div className="buttons">
-            <button
-              type="button"
-              className={`add-to-cart ${isAddedFeedback ? 'added-feedback' : ''}`}
-              onClick={handleAddToCartWithFeedback}
-              disabled={isAddedFeedback}
-            >
+            <button type="button" className={`add-to-cart ${isAddedFeedback ? 'added-feedback' : ''}`} onClick={handleAddToCartWithFeedback} disabled={isAddedFeedback}>
               {isAddedFeedback ? "✓ Added!" : "Add to Cart"}
             </button>
-            <button 
-              type="button" 
-              className={`buy-now ${isBuyNowFeedback ? 'added-feedback' : ''}`} 
-              onClick={handleBuyNow}
-              disabled={isBuyNowFeedback}
-            >
+            <button type="button" className={`buy-now ${isBuyNowFeedback ? 'added-feedback' : ''}`} onClick={handleBuyNow} disabled={isBuyNowFeedback}>
               {isBuyNowFeedback ? "✓ Adding..." : "Buy Now"}
             </button>
           </div>
@@ -313,77 +211,52 @@ const ProductDetails = ({ product, products }) => {
 
       <div className="reviews-section">
         <DynamicReviewList reviews={currentReviews} />
-        <button 
-          type="button" 
-          className="btn btn-toggle-review-form" 
-          onClick={() => setShowReviewForm(!showReviewForm)}
-        >
+        <button type="button" className="btn btn-toggle-review-form" onClick={() => setShowReviewForm(!showReviewForm)}>
           {showReviewForm ? 'Cancel Review' : 'Write a Review'}
         </button>
         {showReviewForm && (
-          <DynamicReviewForm
-            productId={product._id} 
-            onSubmitSuccess={handleReviewSubmitSuccess} 
-          />
+          <DynamicReviewForm productId={product._id} onSubmitSuccess={handleReviewSubmitSuccess} />
         )}
       </div>
 
-      {/* "You may also like" section now dynamically imported */}
       <DynamicMayLikeProducts products={products} />
     </div>
   );
 };
 
 export const getStaticPaths = async () => {
-  const query = `*[_type == "product"] {
-    slug {
-      current
-    }
-  }`;
-
-  const products = await previewClient.fetch(query);
-
-  const paths = products.map((product) => ({
-    params: {
-      slug: product.slug.current,
-    },
-  }));
+  const products = await getProducts(); // Fetch all products from MongoDB
+  const paths = products
+    .filter(p => p.slug && p.slug.current) // Ensure slug exists
+    .map((product) => ({
+      params: {
+        slug: product.slug.current,
+      },
+    }));
 
   return {
     paths,
-    fallback: "blocking", // can also be true or 'blocking'
+    fallback: "blocking",
   };
 };
 
-// Export a constant named getStaticProps that is an async function
-// which takes in an object containing a property of 'params' with a property of 'slug'
 export const getStaticProps = async ({ params: { slug } }) => {
-  // Create a query for the product with the given slug
-  const query = `*[_type == "product" && slug.current == '${slug}'][0]`;
-  // Fetch the product with the given slug
-  const product = await previewClient.fetch(query);
+  // Fetch the specific product from MongoDB by its slug
+  const product = await getProductBySlug(slug);
 
-  // Reviews are no longer fetched here; they will be fetched client-side with SWR.
-  let products = []; // For "You may also like"
-
-  if (product && product._id) {
-    // Fetch "You may also like" products (4 other products, excluding the current one)
-    const currentProductId = product._id;
-    const productsQuery = `*[_type == "product" && _id != $currentProductId] | order(_createdAt desc) [0...4]`;
-    products = await previewClient.fetch(productsQuery, { currentProductId });
-  } else {
-    // Fallback: If product is not found, fetch any 4 products for "You may also like"
-    const productsQuery = `*[_type == "product"] | order(_createdAt desc) [0...4]`;
-    products = await previewClient.fetch(productsQuery);
-    // 'product' will be null or undefined.
-    // The page component should handle the case where 'product' is not available.
+  if (!product) {
+    return {
+      notFound: true,
+    };
   }
 
+  // Fetch other products for the "You may also like" section, excluding the current one.
+  const allProducts = await getProducts();
+  const products = allProducts.filter(p => p.slug.current !== slug).slice(0, 4);
+
   return {
-    // Pass product and products (for "You may also like") as props
-    // Reviews will be fetched client-side by the component using SWR
     props: { product, products },
-    revalidate: 60, // Optionally, add revalidation if using ISR
+    revalidate: 60,
   };
 };
 

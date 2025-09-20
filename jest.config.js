@@ -31,10 +31,11 @@ const customJestConfig = {
   // if using TypeScript with a baseUrl set to the root directory then you need the below for alias' to work
   moduleDirectories: ['node_modules', '<rootDir>/'],
   
-  // If you're using SWC, you might not need to configure Babel separately.
-  // transform: {
-  //   '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
-  // },
+  // Add this to handle ESM packages like mongodb
+  transformIgnorePatterns: [
+      "/node_modules/(?!.pnpm|mongodb|bson|react-icons)",
+      "^.+\\.module\\.(css|sass|scss)$"
+  ],
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

@@ -1,5 +1,6 @@
 import React from "react";
 import { readClient } from "../lib/client";
+import { getProducts } from '../lib/data-access'; // Import new data access function
 
 import { Product, FooterBanner, HeroBanner } from "../components";
 
@@ -24,22 +25,18 @@ const Home = ({ products, bannerData }) => {
     </div>
   );
 };
-// Export a constant named getStaticProps which is an async function
-export const getStaticProps = async () => {
-  // Create a query for the 10 newest products
-  const query = `*[_type == "product"] | order(_createdAt desc) [0...10]`;
-  // Fetch all products using the query
-  const products = await readClient.fetch(query);
 
-  // Create a query for all banners
+export const getStaticProps = async () => {
+  // Fetch products from MongoDB
+  const products = await getProducts();
+
+  // Keep fetching banner data from Sanity for now
   const bannerQuery = `*[_type == "banner"]`;
-  // Fetch all banners using the query
   const bannerData = await readClient.fetch(bannerQuery);
 
-  // Return an object containing the products and bannerData as props
   return {
     props: { products, bannerData },
-    revalidate: 60, // Regenerate the page at most once every 60 seconds
+    revalidate: 60,
   };
 };
 
