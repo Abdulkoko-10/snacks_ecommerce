@@ -135,3 +135,24 @@ This is the structure of the `recommendations` payload returned by the chat endp
     ```
 -   **Success Response (202 Accepted):**
     -   **Body:** An empty body, indicating the data has been accepted for asynchronous processing.
+
+---
+
+## 5. WebSocket Events
+
+In addition to the REST API, the system will use WebSocket events for real-time UI updates.
+
+### Cat Action Event (UI Trigger)
+-   **Description:** An event payload that can be sent from the backend (e.g., via the orchestrator) to the frontend to trigger an animation on the `FloatingCatAssistant` component.
+-   **Example Payload:**
+    ```json
+    {
+      "type": "cat_action",
+      "action": "celebrate",
+      "trigger": "recommendation_shown",
+      "payload": {
+        "productId": "fd::pizza::uuid123"
+      }
+    }
+    ```
+-   **Possible Actions:** `idle`, `wave`, `point`, `celebrate`, `thinking`.
