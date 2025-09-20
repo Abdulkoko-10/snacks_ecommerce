@@ -23,7 +23,11 @@ const customJestConfig = {
     '^.+\\.(png|jpg|jpeg|gif|webp|avif|ico|bmp|svg)$/i': `<rootDir>/__mocks__/fileMock.js`,
     
     // Handle module aliases (if you have them in your jsconfig.json or tsconfig.json)
-    // Example: '^@/components/(.*)$': '<rootDir>/components/$1',
+    '^@/components/(.*)$': '<rootDir>/components/$1',
+    '^@/context/(.*)$': '<rootDir>/context/$1',
+    '^@/lib/(.*)$': '<rootDir>/lib/$1',
+    '^@/styles/(.*)$': '<rootDir>/styles/$1',
+    '^@fd/schemas/(.*)$': '<rootDir>/schemas/$1',
   },
   // Add more setup options before each test is run
   // setupFilesAfterEnv: ['<rootDir>/jest.setup.js'], // Already included above

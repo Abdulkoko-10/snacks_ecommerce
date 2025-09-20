@@ -1,0 +1,158 @@
+/* Chat Page Layout */
+.chat-page-layout {
+  display: flex;
+  height: calc(100vh - var(--navbar-height));
+  overflow: hidden;
+}
+
+/* Chat Sidebar */
+.chat-sidebar {
+  width: 250px;
+  background: var(--secondary-background-color);
+  padding: 20px;
+  border-right: 1px solid var(--glass-edge-highlight-color);
+  color: var(--text-color);
+}
+
+.chat-sidebar h2 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+/* Main Chat Window */
+.chat-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--primary-background-color);
+}
+
+/* Chat Thread */
+.chat-thread {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Chat Bubble */
+.chat-bubble {
+  padding: 10px 15px;
+  border-radius: 20px;
+  max-width: 70%;
+  color: var(--text-color-dark);
+}
+
+.chat-bubble.user {
+  background-color: var(--accent-color);
+  color: var(--text-on-accent-color);
+  align-self: flex-end;
+  border-bottom-right-radius: 5px;
+}
+
+.chat-bubble.assistant {
+  background-color: var(--secondary-background-light);
+  color: var(--text-color-dark);
+  align-self: flex-start;
+  border-bottom-left-radius: 5px;
+}
+
+/* Chat Input */
+.chat-input {
+  display: flex;
+  padding: 10px 20px;
+  border-top: 1px solid var(--glass-edge-highlight-color);
+  background: var(--secondary-background-color);
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 20px;
+  border: 1px solid var(--glass-edge-highlight-color);
+  background-color: var(--primary-background-color);
+  color: var(--text-color);
+  font-size: 1rem;
+}
+
+.chat-input input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+.chat-input button {
+  margin-left: 10px;
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: none;
+  background-color: var(--accent-color);
+  color: var(--text-on-accent-color);
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+/* Recommendation Card */
+.recommendation-card {
+  display: flex;
+  gap: 15px;
+  padding: 10px;
+  border-radius: 15px;
+  background: var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  box-shadow: var(--glass-box-shadow-color);
+  color: var(--text-color);
+  margin-top: 10px;
+}
+
+.recommendation-card img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.recommendation-card-details h3 {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.recommendation-card-details p {
+  font-size: 0.9rem;
+  margin: 5px 0;
+}
+
+.recommendation-card-footer {
+  display: flex;
+  gap: 15px;
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+
+/* Floating Cat Assistant */
+.floating-cat-assistant {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background-color: var(--accent-color);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 800px) {
+  .chat-sidebar {
+    display: none; /* Hide sidebar on mobile by default */
+  }
+
+  /* Add styles for a drawer if needed */
+}

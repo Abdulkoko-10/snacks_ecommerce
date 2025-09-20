@@ -1,5 +1,6 @@
 import { Layout } from "../components";
 import "../styles/globals.css";
+import "../styles/chat.css";
 import { StateContext } from "../context/StateContext";
 import { Toaster } from "react-hot-toast";
 import { ClerkProvider } from "@clerk/nextjs";
