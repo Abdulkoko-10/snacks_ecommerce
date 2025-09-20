@@ -6,7 +6,7 @@ import ChatThread from '@/components/chat/ChatThread';
 import ChatInput from '@/components/chat/ChatInput';
 import FloatingCatAssistant from '@/components/chat/FloatingCatAssistant';
 import { ChatMessage, ChatRecommendationCard } from '@fd/schemas/chat';
-import Layout from '@/components/Layout';
+import Navbar from '@/components/Navbar';
 
 const ChatPage = () => {
   const { userId } = useAuth();
@@ -58,7 +58,8 @@ const ChatPage = () => {
   };
 
   return (
-    <Layout>
+    <div className="chat-page-container">
+      <Navbar />
       <ChatPageLayout>
         <div className="chat-page-layout">
           <ChatSidebar />
@@ -69,7 +70,7 @@ const ChatPage = () => {
         </div>
         <FloatingCatAssistant />
       </ChatPageLayout>
-    </Layout>
+    </div>
   );
 };
 

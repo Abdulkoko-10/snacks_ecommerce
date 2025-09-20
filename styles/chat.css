@@ -1,17 +1,32 @@
+.chat-page-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 /* Chat Page Layout */
 .chat-page-layout {
   display: flex;
-  height: calc(100vh - var(--navbar-height));
+  flex-grow: 1;
   overflow: hidden;
+  padding: 20px;
+  gap: 20px;
 }
 
 /* Chat Sidebar */
 .chat-sidebar {
-  width: 250px;
-  background: var(--secondary-background-color);
+  width: 300px;
+  flex-shrink: 0;
   padding: 20px;
-  border-right: 1px solid var(--glass-edge-highlight-color);
   color: var(--text-color);
+
+  /* Glass effect */
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  border-radius: 15px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
 }
 
 .chat-sidebar h2 {
@@ -24,7 +39,15 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: var(--primary-background-color);
+  border-radius: 15px;
+  overflow: hidden; /* To keep children within the rounded borders */
+
+  /* Glass effect */
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color), inset 0 -1px 1px 0 var(--glass-inner-shadow-color), 0 10px 35px -5px var(--glass-box-shadow-color);
 }
 
 /* Chat Thread */
@@ -42,7 +65,8 @@
   padding: 10px 15px;
   border-radius: 20px;
   max-width: 70%;
-  color: var(--text-color-dark);
+  color: var(--text-color-dark); /* Default dark text */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .chat-bubble.user {
@@ -53,8 +77,8 @@
 }
 
 .chat-bubble.assistant {
-  background-color: var(--secondary-background-light);
-  color: var(--text-color-dark);
+  background-color: var(--secondary-background-color);
+  color: var(--text-color);
   align-self: flex-start;
   border-bottom-left-radius: 5px;
 }
@@ -62,9 +86,9 @@
 /* Chat Input */
 .chat-input {
   display: flex;
-  padding: 10px 20px;
+  padding: 15px;
   border-top: 1px solid var(--glass-edge-highlight-color);
-  background: var(--secondary-background-color);
+  background-color: rgba(0,0,0,0.1); /* Slightly darken the bottom for separation */
 }
 
 .chat-input input {
