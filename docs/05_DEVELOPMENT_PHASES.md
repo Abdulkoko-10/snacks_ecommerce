@@ -104,14 +104,29 @@ This document adapts the original high-level implementation plan to the context 
 
 ## Phase 5: Reliability, Scaling & Observability
 
-**Goal:** Harden the system for production use.
+**Goal:** Ensure the system is robust, secure, and maintainable for production use.
 
-1.  **Implement Circuit Breakers:** Add circuit breakers (e.g., using a library like `opossum`) in the orchestrator for all calls to external services (connectors, Gemini).
-2.  **Health Checks:** Add `/health` endpoints to the orchestrator and each connector.
-3.  **Monitoring & Tracing:**
-    -   Integrate a monitoring tool (e.g., Prometheus/Grafana, Datadog) to track key metrics (latency, error rates, etc.).
-    -   Implement distributed tracing by propagating a `requestId` across all services.
-4.  **Contract & Integration Tests:**
-    -   Write automated contract tests (e.g., using Pact) for the frontend-orchestrator and orchestrator-connector communication.
-5.  **Feature Flags:**
-    -   Implement a feature flag system to safely roll out new connectors or major features like the Gemini-powered recommendations.
+1.  **Reliability & Safety:**
+    -   **Retry/Circuit Breakers:** Implement exponential backoff and circuit breakers (e.g., using `opossum`) for all flaky provider endpoints in the connectors and orchestrator.
+    -   **Rate Limiting:** Implement server-side rate limiting for both per-user requests and provider-level quotas to prevent abuse and cascading failures. Properly handle `429 Too Many Requests` responses.
+    -   **Idempotency:** Ensure critical write operations (like posting comments) use idempotency keys.
+    -   **Feature Flags:** Implement a robust feature flag system (e.g., using a DB or environment variables) to gate new provider connectors, cat animations, and the Gemini rollout.
+
+2.  **Testing & Validation:**
+    -   **Unit Tests:** Ensure high coverage for critical business logic in connectors (transformation logic) and the canonicalizer service.
+    -   **Integration Tests:** Write integration tests for all orchestrator endpoints, mocking the responses from provider connectors and the Gemini service.
+    -   **Contract Tests:** Implement contract tests (e.g., using Pact) to formally verify the contracts between the `frontend ↔ orchestrator` and the `orchestrator ↔ provider connectors`.
+    -   **E2E Tests:** Create end-to-end tests for the critical user flow: chat → recommendation → product page.
+    -   **Synthetic Monitoring:** Set up a scheduled script that runs hourly, hitting the core search, product, and chat flows, and alerts on any failures.
+
+3.  **Observability & Operations:**
+    -   **Health Checks:** Add `/health` endpoints to the orchestrator and all connector services. Configure alerts for failures.
+    -   **Monitoring & Metrics:** Instrument all services to collect key metrics: request rates, latencies, error rates, cache hit ratio, and provider-specific error rates.
+    -   **Distributed Tracing:** Propagate a unique `requestId` from the initial frontend request through the orchestrator and down to the connectors to allow for easy debugging of the entire request lifecycle.
+    -   **Structured Logging:** Implement structured JSON logs across all services. Each log entry must include the `requestId`, and `userId` if available, to correlate user activity.
+    -   **Runbooks:** Create operational runbooks for common failure scenarios, such as a provider connector failing or the cache needing to be warmed.
+
+4.  **Security & Privacy:**
+    -   **Provider Tokens:** Verify that all provider tokens are stored securely in the secrets manager and are never exposed to the client-side application.
+    -   **Data Retention:** Define and implement a formal data retention policy for user data, logs, and comments.
+    -   **PII Protection:** Ensure all services have mechanisms to protect Personally Identifiable Information (PII) and that no unnecessary PII is sent to third-party services like Gemini.
