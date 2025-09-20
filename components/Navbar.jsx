@@ -254,6 +254,7 @@ const Navbar = () => {
       </p>
 
       <div className="nav-items-right">
+        <Link href="/chat" className="nav-link">Chat</Link>
         <button 
           type="button" 
           className="theme-icon-button" 

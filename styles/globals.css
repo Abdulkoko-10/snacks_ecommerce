@@ -429,6 +429,16 @@ span.text-red {
   font-size: 24px;
   font-weight: 700;
 }
+
+.nav-link {
+  color: var(--text-color);
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: var(--accent-color);
+}
 .cart-icon {
   font-size: 25px;
   color: var(--text-color); /* Use themed text color */
