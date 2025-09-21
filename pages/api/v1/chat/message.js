@@ -74,7 +74,7 @@ export default async function handler(req, res) {
     const contents = [instruction, ...history];
 
     const result = await genAI.models.generateContent({
-        model: "gemini-pro",
+        model: "gemini-2.5-pro",
         contents: contents,
     });
     const geminiText = result.text;
