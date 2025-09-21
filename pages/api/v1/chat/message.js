@@ -37,7 +37,7 @@ export default async function handler(req, res) {
     // The new SDK uses a different pattern:
     // We call generateContent directly on the client's `models` service.
     const result = await genAI.models.generateContent({
-        model: "gemini-1.5-pro-latest", // Using a valid, recent model name
+        model: "gemini-2.5-flash-lite", // Using a valid, recent model name
         contents: [{ role: "user", parts: [{ text: prompt }] }],
     });
 
