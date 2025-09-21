@@ -34,16 +34,14 @@ export default async function handler(req, res) {
 
     const prompt = `You are a helpful and friendly food discovery assistant. A user said: "${userMessageText}". Respond to them in a conversational way.`;
 
-    // The new SDK uses a different pattern:
-    // We call generateContent directly on the client's `models` service.
     // The new SDK returns the response object directly from generateContent.
     const result = await genAI.models.generateContent({
         model: "gemini-1.5-pro-latest",
         contents: [{ role: "user", parts: [{ text: prompt }] }],
     });
 
-    // The .text() method is called on the response object from the result.
-    const geminiText = result.response.text();
+    // The response object has a `text` property containing the message.
+    const geminiText = result.text;
 
     /** @type {ChatMessage} */
     const assistantMessage = {
