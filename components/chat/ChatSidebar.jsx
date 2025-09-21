@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import Link from 'next/link';
-import { IoClose, IoAddCircleOutline } from 'react-icons/io5';
+import { IoClose, IoAddCircleOutline, IoTrashOutline, IoCreateOutline } from 'react-icons/io5';
 
 const SidebarContainer = styled.aside`
   width: 280px;
@@ -81,7 +81,7 @@ const SidebarContent = styled.div`
   flex-grow: 1;
 `;
 
-const NewChatButton = styled.a`
+const NewChatButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -115,46 +115,114 @@ const ChatHistoryList = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 5px;
+`;
 
-  li a {
-    display: block;
+const ChatHistoryItem = styled.li`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: var(--glass-inner-shadow-color);
+    .actions {
+      opacity: 1;
+    }
+  }
+
+  a {
+    flex-grow: 1;
     padding: 10px 15px;
-    border-radius: 8px;
     color: var(--text-color);
     text-decoration: none;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    transition: background-color 0.2s ease;
-
-    &:hover {
-      background-color: var(--glass-inner-shadow-color);
-    }
 
     &.active {
       background-color: var(--accent-color);
       color: var(--text-on-accent-color);
+      border-radius: 8px;
+    }
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    padding-right: 10px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+
+    button {
+      background: none;
+      border: none;
+      color: var(--text-color);
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 5px;
+      border-radius: 50%;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
     }
   }
 `;
 
-const mockChatHistory = [
-  { id: 'chat_1', title: 'Pizza recommendations' },
-  { id: 'chat_2', title: 'Best burgers in town' },
-  { id: 'chat_3', title: 'Late night snack ideas' },
-  { id: 'chat_4', title: 'Healthy breakfast options' },
-  { id: 'chat_5', title: 'Desserts near me' },
-];
-
-/**
- * Renders the chat history sidebar.
- * @param {{isOpen: boolean, onClose: () => void}} props
- */
 const ChatSidebar = ({ isOpen, onClose }) => {
+  const [threads, setThreads] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchThreads = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/v1/chat/threads');
+        if (response.ok) {
+          const data = await response.json();
+          setThreads(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch chat threads:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchThreads();
+  }, []);
+
+  const handleNewChat = () => {
+    window.location.href = '/chat';
+    onClose();
+  };
+
+  const handleDelete = async (threadId) => {
+    if (!confirm('Are you sure you want to delete this chat?')) {
+      return;
+    }
+    try {
+      const response = await fetch(`/api/v1/chat/threads/${threadId}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        setThreads(prev => prev.filter(t => t.threadId !== threadId));
+      } else {
+        alert('Failed to delete chat.');
+      }
+    } catch (error) {
+      console.error("Failed to delete chat:", error);
+      alert('An error occurred while deleting the chat.');
+    }
+  };
+
   return (
     <>
       <SidebarOverlay className={isOpen ? 'open' : ''} onClick={onClose} />
-
       <SidebarContainer className={isOpen ? 'open' : ''}>
         <SidebarHeader>
           <h3>Chat History</h3>
@@ -163,20 +231,31 @@ const ChatSidebar = ({ isOpen, onClose }) => {
           </CloseButton>
         </SidebarHeader>
         <SidebarContent>
-          <Link href="/chat" passHref>
-            <NewChatButton onClick={onClose}>
-              <IoAddCircleOutline /> New Chat
-            </NewChatButton>
-          </Link>
-          <ChatHistoryList>
-            {mockChatHistory.map((chat) => (
-              <li key={chat.id}>
-                <Link href={`/chat?id=${chat.id}`}>
-                  <a onClick={onClose}>{chat.title}</a>
-                </Link>
-              </li>
-            ))}
-          </ChatHistoryList>
+          <NewChatButton onClick={handleNewChat}>
+            <IoAddCircleOutline /> New Chat
+          </NewChatButton>
+
+          {loading ? (
+            <p>Loading...</p>
+          ) : (
+            <ChatHistoryList>
+              {threads.map((chat) => (
+                <ChatHistoryItem key={chat.threadId}>
+                  <Link href={`/chat?threadId=${chat.threadId}`} passHref>
+                    <a onClick={onClose}>{chat.title}</a>
+                  </Link>
+                  <div className="actions">
+                    <button disabled title="Rename not implemented yet">
+                      <IoCreateOutline />
+                    </button>
+                    <button onClick={() => handleDelete(chat.threadId)}>
+                      <IoTrashOutline />
+                    </button>
+                  </div>
+                </ChatHistoryItem>
+              ))}
+            </ChatHistoryList>
+          )}
         </SidebarContent>
       </SidebarContainer>
     </>

@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 import styled from '@emotion/styled';
+import { SignIn } from '@clerk/nextjs';
 import ChatBubble from './ChatBubble';
 import ChatRecommendationCard from './ChatRecommendationCard';
 
@@ -56,6 +57,14 @@ const RecommendationCarousel = styled.div`
   }
 `;
 
+const AuthWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  margin-top: 10px;
+`;
+
 /**
  * Renders a scrollable thread of chat messages and their recommendations.
  * @param {{
@@ -68,6 +77,17 @@ const ChatThread = ({ messages = [], recommendationsByMessageId = {} }) => {
     <ThreadContainer>
       <ScrollableArea>
         {messages.map((message) => {
+          if (message.type === 'auth') {
+            return (
+              <Fragment key={message.id}>
+                <ChatBubble message={message} />
+                <AuthWrapper>
+                  <SignIn signUpUrl="/sign-up" redirectUrl="/chat" />
+                </AuthWrapper>
+              </Fragment>
+            );
+          }
+
           const recommendations = recommendationsByMessageId[message.id];
           const hasRecommendations = recommendations && recommendations.length > 0;
 

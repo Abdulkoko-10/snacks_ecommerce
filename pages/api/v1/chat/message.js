@@ -56,10 +56,26 @@ export default async function handler(req, res) {
 
     // --- Call Gemini API ---
     const genAI = new GoogleGenAI(apiKey);
-    const prompt = `You are a helpful and friendly food discovery assistant. A user said: "${userMessageText}". Respond to them in a conversational way.`;
+
+    // Convert our app's chat history to the format Gemini expects.
+    // We also need to add the system prompt/instruction.
+    const instruction = {
+      role: "user", // Using 'user' role for the system instruction as per some examples
+      parts: [{ text: "You are a helpful and friendly food discovery assistant. Please respond to the user in a conversational way." }],
+    };
+    const history = chatHistory
+      .filter(msg => msg.role === 'user' || msg.role === 'assistant') // Filter out system messages
+      .map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'model', // Map our 'assistant' role to 'model'
+        parts: [{ text: msg.text }],
+      }));
+
+    // The last message is the new user prompt, which is already in the history.
+    const contents = [instruction, ...history];
+
     const result = await genAI.models.generateContent({
-        model: "gemini-2.5-pro",
-        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        model: "gemini-pro",
+        contents: contents,
     });
     const geminiText = result.text;
 

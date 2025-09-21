@@ -91,6 +91,15 @@ const ChatPage = () => {
             [assistantMessage.id]: recommendationPayload.recommendations,
           }));
         }
+      } else if (response.status === 401) {
+        const authMessage = {
+          id: `auth_msg_${Date.now()}`,
+          role: 'system',
+          type: 'auth',
+          text: 'Please sign in or sign up to continue the conversation.',
+          createdAt: new Date().toISOString(),
+        };
+        setMessages((prev) => [...prev, authMessage]);
       } else {
         throw new Error('API request failed');
       }
