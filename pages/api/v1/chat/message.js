@@ -58,7 +58,7 @@ export default async function handler(req, res) {
     const genAI = new GoogleGenAI(apiKey);
     const prompt = `You are a helpful and friendly food discovery assistant. A user said: "${userMessageText}". Respond to them in a conversational way.`;
     const result = await genAI.models.generateContent({
-        model: "gemini-pro",
+        model: "gemini-2.5-pro",
         contents: [{ role: "user", parts: [{ text: prompt }] }],
     });
     const geminiText = result.text;
