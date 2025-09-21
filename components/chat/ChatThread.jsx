@@ -68,7 +68,7 @@ const AuthWrapper = styled.div`
 /**
  * Renders a scrollable thread of chat messages and their recommendations.
  * @param {{
- *   messages: import('../../schemas/chat').ChatMessage[],
+ *   messages: { id: string, role: string, stableText: string, liveText: string, type?: string }[],
  *   recommendationsByMessageId?: Record<string, import('../../schemas/chat').ChatRecommendationCard[]>
  * }} props
  */

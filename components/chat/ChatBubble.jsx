@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from '@emotion/styled';
+import { keyframes } from '@emotion/react';
 
 const BubbleWrapper = styled.div`
   /* This wrapper can be simplified as it no longer contains a carousel */
@@ -52,21 +53,44 @@ const BubbleText = styled.p`
   font-size: 1rem;
 `;
 
+const liveHighlight = keyframes`
+  0% {
+    text-shadow: 0 0 8px rgba(var(--accent-color-rgb-values), 0.7), 0 0 12px rgba(var(--accent-color-rgb-values), 0.5);
+    color: var(--accent-color-light);
+  }
+  100% {
+    text-shadow: none;
+    color: var(--text-color);
+  }
+`;
+
+const LiveHighlightSpan = styled.span`
+  animation: ${liveHighlight} 1.5s ease-out;
+`;
+
+
 /**
  * Renders a single chat message bubble.
  * @param {{
- *   message: import('../../schemas/chat').ChatMessage
+ *   message: { role: string, text: string, stableText?: string, liveText?: string }
  * }} props
  */
 const ChatBubble = ({ message }) => {
-  const { role, text } = message;
+  const { role, text, stableText, liveText } = message;
   const isUser = role === 'user';
+
+  // The text prop is now split into stableText and liveText for streaming effect.
+  // We fall back to the original `text` prop for non-streamed or history messages.
+  const displayText = stableText !== undefined ? stableText : text;
 
   return (
     <BubbleWrapper data-testid="chat-bubble-wrapper">
       <BubbleContainer className={isUser ? 'user' : 'assistant'}>
         <Bubble className={isUser ? 'user-bubble' : 'assistant-bubble'}>
-          <BubbleText>{text}</BubbleText>
+          <BubbleText>
+            {displayText}
+            {liveText && <LiveHighlightSpan>{liveText}</LiveHighlightSpan>}
+          </BubbleText>
         </Bubble>
       </BubbleContainer>
     </BubbleWrapper>

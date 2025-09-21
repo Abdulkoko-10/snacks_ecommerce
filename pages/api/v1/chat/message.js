@@ -32,45 +32,37 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Bad Request: "text" is required in the request body.' });
     }
 
-    // --- Get AI Response First ---
+    let threadId = currentThreadId;
+    let isNewThread = !threadId;
+    if (isNewThread) {
+      threadId = new ObjectId().toString();
+    }
+
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Thread-Id', threadId); // Send threadId back as a header
+
+    // --- Start Streaming AI Response ---
     const genAI = new GoogleGenAI(apiKey);
     const instruction = { role: "user", parts: [{ text: "You are a helpful and friendly food discovery assistant. Please respond to the user in a conversational way." }] };
     const history = (chatHistory || [])
       .filter(msg => msg.role === 'user' || msg.role === 'assistant')
-      .map(msg => ({
-        role: msg.role === 'user' ? 'user' : 'model',
-        parts: [{ text: msg.text }],
-      }));
+      .map(msg => ({ role: msg.role === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] }));
     history.push({ role: 'user', parts: [{ text: userMessageText }] });
     const contents = [instruction, ...history];
 
-    const result = await genAI.models.generateContent({ model: "gemini-2.5-pro", contents });
-    const geminiText = result.text;
-    const recommendationPayload = null; // Placeholder
+    const result = await genAI.models.generateContentStream({ model: "gemini-2.5-pro", contents });
 
-    // --- Respond to User Immediately ---
-    let threadId = currentThreadId;
-    let isNewThread = !threadId;
-
-    // If it's a new thread, we'll need to generate an ID for the response,
-    // which will be confirmed by the database write later.
-    if (isNewThread) {
-        threadId = new ObjectId().toString();
+    let fullResponseText = '';
+    for await (const chunk of result.stream) {
+      const chunkText = chunk.text();
+      fullResponseText += chunkText;
+      res.write(chunkText);
     }
 
-    const assistantMessage = {
-      id: `asst_msg_${Date.now()}`,
-      role: 'assistant',
-      text: geminiText,
-      userId,
-      threadId,
-      createdAt: new Date(),
-      ...(recommendationPayload && { recommendationPayload }),
-    };
+    res.end();
 
-    res.status(200).json({ message: assistantMessage, recommendationPayload, threadId });
-
-    // --- Perform Database Writes in the Background ---
+    // --- Perform Database Writes After Streaming ---
     const saveToDb = async () => {
       try {
         const client = await clientPromise;
@@ -91,7 +83,7 @@ export default async function handler(req, res) {
         }
 
         const userMessage = {
-          id: `user_msg_${Date.now()}`, // Note: this ID is different from the one in frontend state
+          id: `user_msg_${Date.now()}`,
           role: 'user',
           text: userMessageText,
           userId,
@@ -99,17 +91,29 @@ export default async function handler(req, res) {
           createdAt: new Date(),
         };
 
+        const assistantMessage = {
+          id: `asst_msg_${Date.now()}`,
+          role: 'assistant',
+          text: fullResponseText, // Save the complete response
+          userId,
+          threadId,
+          createdAt: new Date(),
+        };
+
         await messagesCollection.insertOne(userMessage);
-        await messagesCollection.insertOne(assistantMessage); // Save the same assistant message we sent
+        await messagesCollection.insertOne(assistantMessage);
       } catch (dbError) {
         console.error("Error saving chat conversation to DB:", dbError);
       }
     };
 
-    saveToDb(); // Fire and forget
+    saveToDb();
 
   } catch (error) {
     console.error('Error in chat message handler:', error);
-    res.status(500).json({ error: 'Failed to process chat message.' });
+    // If headers are not sent, we can send an error response.
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'Failed to process chat message.' });
+    }
   }
 }

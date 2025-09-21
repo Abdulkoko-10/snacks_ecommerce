@@ -49,6 +49,8 @@ const ChatPage = () => {
               id: 'init_msg_0',
               role: 'assistant',
               text: 'Hello! How can I help you discover amazing food today?',
+              stableText: 'Hello! How can I help you discover amazing food today?',
+              liveText: '',
               createdAt: new Date().toISOString(),
             }]);
           }
@@ -59,6 +61,8 @@ const ChatPage = () => {
           id: 'init_msg_0',
           role: 'assistant',
           text: 'Hello! How can I help you discover amazing food today?',
+          stableText: 'Hello! How can I help you discover amazing food today?',
+          liveText: '',
           createdAt: new Date().toISOString(),
         }]);
       }
@@ -72,7 +76,9 @@ const ChatPage = () => {
     const userMessage = {
       id: `user_msg_${Date.now()}`,
       role: 'user',
-      text,
+      text: text, // Keep original text for history
+      stableText: text,
+      liveText: '',
       createdAt: new Date().toISOString(),
     };
 
@@ -87,45 +93,94 @@ const ChatPage = () => {
         body: JSON.stringify({ text, chatHistory: newMessages, threadId }),
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        const { message: assistantMessage, recommendationPayload, threadId: newThreadId } = data;
-
-        // If a new thread was created, update the URL
-        if (newThreadId && newThreadId !== threadId) {
-          setThreadId(newThreadId);
-          router.push(`/chat?threadId=${newThreadId}`, undefined, { shallow: true });
+      if (!response.ok) {
+        if (response.status === 401) {
+          const authMessage = {
+            id: `auth_msg_${Date.now()}`,
+            role: 'system',
+            type: 'auth',
+            text: 'Please sign in or sign up to continue the conversation.',
+            stableText: 'Please sign in or sign up to continue the conversation.',
+            liveText: '',
+            createdAt: new Date().toISOString(),
+          };
+          setMessages((prev) => [...prev, authMessage]);
+        } else {
+          throw new Error('API request failed');
         }
-
-        setMessages((prev) => [...prev, assistantMessage]);
-
-        if (recommendationPayload && recommendationPayload.recommendations.length > 0) {
-          setRecommendationsByMessageId((prev) => ({
-            ...prev,
-            [assistantMessage.id]: recommendationPayload.recommendations,
-          }));
-        }
-      } else if (response.status === 401) {
-        const authMessage = {
-          id: `auth_msg_${Date.now()}`,
-          role: 'system',
-          type: 'auth',
-          text: 'Please sign in or sign up to continue the conversation.',
-          createdAt: new Date().toISOString(),
-        };
-        setMessages((prev) => [...prev, authMessage]);
-      } else {
-        throw new Error('API request failed');
+        return;
       }
+
+      const newThreadId = response.headers.get('X-Thread-Id');
+      if (newThreadId && newThreadId !== threadId) {
+        setThreadId(newThreadId);
+        router.push(`/chat?threadId=${newThreadId}`, undefined, { shallow: true });
+      }
+
+      const assistantMessageId = `asst_msg_${Date.now()}`;
+      const assistantMessage = {
+        id: assistantMessageId,
+        role: 'assistant',
+        stableText: '',
+        liveText: '',
+        createdAt: new Date().toISOString(),
+      };
+      setMessages((prev) => [...prev, assistantMessage]);
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let done = false;
+      let liveTextBuffer = '';
+      let highlightTimer = null;
+
+      const commitLiveText = () => {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === assistantMessageId
+              ? { ...msg, stableText: msg.stableText + liveTextBuffer, liveText: '' }
+              : msg
+          )
+        );
+        liveTextBuffer = '';
+      };
+
+      while (!done) {
+        const { value, done: readerDone } = await reader.read();
+        done = readerDone;
+        const chunk = decoder.decode(value, { stream: true });
+
+        liveTextBuffer += chunk;
+
+        clearTimeout(highlightTimer);
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === assistantMessageId ? { ...msg, liveText: liveTextBuffer } : msg
+          )
+        );
+
+        highlightTimer = setTimeout(commitLiveText, 1000);
+      }
+      clearTimeout(highlightTimer);
+      commitLiveText();
+
     } catch (error) {
       console.error("Failed to send message:", error);
       const errorAssistantMessage = {
         id: `asst_msg_err_${Date.now()}`,
         role: 'assistant',
         text: 'Sorry, I seem to be having some trouble right now. Please try again later.',
+        stableText: 'Sorry, I seem to be having some trouble right now. Please try again later.',
+        liveText: '',
         createdAt: new Date().toISOString(),
       };
-      setMessages((prev) => [...prev, errorAssistantMessage]);
+      setMessages((prev) => {
+        const lastMessage = prev[prev.length - 1];
+        // If the last message was the empty assistant shell, remove it before adding error
+        if(lastMessage.id.startsWith('asst_msg_') && lastMessage.text === '') {
+          return [...prev.slice(0, -1), errorAssistantMessage];
+        }
+        return [...prev, errorAssistantMessage];
+      });
     } finally {
       setIsLoading(false);
     }
