@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 const { ChatMessage, ChatRecommendationPayload } = require('../../../../schemas/chat');
 
-const GEMINI_API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent`;
+const GEMINI_API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent`;
 
 /**
  * Handles incoming chat messages, sends them to the Gemini REST API, and returns the response.
