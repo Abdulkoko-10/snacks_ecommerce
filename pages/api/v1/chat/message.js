@@ -74,7 +74,7 @@ export default async function handler(req, res) {
     history.push({ role: 'user', parts: [{ text: userMessageText }] });
 
     const contents = [instruction, ...history];
-    const result = await genAI.models.generateContent({ model: "gemini-pro", contents });
+    const result = await genAI.models.generateContent({ model: "gemini-2.5-pro", contents });
     const geminiText = result.text;
     const recommendationPayload = null;
 
