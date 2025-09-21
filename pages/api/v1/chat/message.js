@@ -1,9 +1,9 @@
-const { GoogleGenerativeAI } = require('@google/genai');
+// Note: We cannot use top-level import/require for @google/genai due to ESM/CJS compatibility issues
+// in the Next.js API route environment. We will use a dynamic import() inside the handler.
+
 // eslint-disable-next-line no-unused-vars
 const { ChatMessage, ChatRecommendationPayload } = require('../../../../schemas/chat');
 
-// Initialize the Gemini client
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 /**
  * Handles incoming chat messages, sends them to Gemini, and returns the response.
@@ -23,6 +23,12 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Dynamically import the GoogleGenerativeAI class
+    const { GoogleGenerativeAI } = await import('@google/genai');
+
+    // Initialize the Gemini client inside the handler
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
     const { text: userMessageText } = req.body;
 
     if (!userMessageText) {
@@ -52,6 +58,11 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('Error calling Gemini API:', error);
+    // Check for a specific constructor error to give a more helpful message
+    if (error instanceof TypeError && error.message.includes('is not a constructor')) {
+        console.error("This might be an ESM/CJS compatibility issue with the @google/genai package.");
+        return res.status(500).json({ error: 'Internal server error: Failed to initialize AI service.' });
+    }
     res.status(500).json({ error: 'Failed to get response from AI service.' });
   }
 }
