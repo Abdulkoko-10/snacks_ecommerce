@@ -175,11 +175,25 @@ const ChatHistoryItem = styled.li`
   }
 `;
 
+const RenameInput = styled.input`
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid var(--glass-edge-highlight-color);
+  background-color: var(--secondary-background-color);
+  color: var(--text-color);
+  font-size: 1rem;
+  margin-top: 10px;
+`;
+
 const ChatSidebar = ({ isOpen, onClose }) => {
   const [threads, setThreads] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setModalOpen] = useState(false);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [threadToDelete, setThreadToDelete] = useState(null);
+  const [isRenameModalOpen, setRenameModalOpen] = useState(false);
+  const [threadToRename, setThreadToRename] = useState(null);
+  const [newThreadTitle, setNewThreadTitle] = useState('');
 
   useEffect(() => {
     const fetchThreads = async () => {
@@ -206,7 +220,7 @@ const ChatSidebar = ({ isOpen, onClose }) => {
 
   const handleDeleteClick = (thread) => {
     setThreadToDelete(thread);
-    setModalOpen(true);
+    setDeleteModalOpen(true);
   };
 
   const confirmDelete = async () => {
@@ -224,29 +238,37 @@ const ChatSidebar = ({ isOpen, onClose }) => {
       console.error("Failed to delete chat:", error);
       alert('An error occurred while deleting the chat.');
     } finally {
-      setModalOpen(false);
+      setDeleteModalOpen(false);
       setThreadToDelete(null);
     }
   };
 
-  const handleRename = async (threadId, currentTitle) => {
-    const newTitle = prompt('Enter a new name for this chat:', currentTitle);
-    if (newTitle && newTitle.trim() !== '' && newTitle !== currentTitle) {
-      try {
-        const response = await fetch(`/api/v1/chat/threads/${threadId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title: newTitle }),
-        });
-        if (response.ok) {
-          setThreads(prev => prev.map(t => t._id === threadId ? { ...t, title: newTitle } : t));
-        } else {
-          alert('Failed to rename chat.');
-        }
-      } catch (error) {
-        console.error("Failed to rename chat:", error);
-        alert('An error occurred while renaming the chat.');
+  const handleRenameClick = (thread) => {
+    setThreadToRename(thread);
+    setNewThreadTitle(thread.title);
+    setRenameModalOpen(true);
+  };
+
+  const confirmRename = async () => {
+    if (!threadToRename || !newThreadTitle.trim()) return;
+    try {
+      const response = await fetch(`/api/v1/chat/threads/${threadToRename._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: newThreadTitle }),
+      });
+      if (response.ok) {
+        setThreads(prev => prev.map(t => t._id === threadToRename._id ? { ...t, title: newThreadTitle } : t));
+      } else {
+        alert('Failed to rename chat.');
       }
+    } catch (error) {
+      console.error("Failed to rename chat:", error);
+      alert('An error occurred while renaming the chat.');
+    } finally {
+      setRenameModalOpen(false);
+      setThreadToRename(null);
+      setNewThreadTitle('');
     }
   };
 
@@ -275,7 +297,7 @@ const ChatSidebar = ({ isOpen, onClose }) => {
                     <a onClick={onClose}>{chat.title}</a>
                   </Link>
                   <div className="actions">
-                    <button onClick={() => handleRename(chat._id, chat.title)}>
+                    <button onClick={() => handleRenameClick(chat)}>
                       <IoCreateOutline />
                     </button>
                     <button onClick={() => handleDeleteClick(chat)}>
@@ -288,13 +310,15 @@ const ChatSidebar = ({ isOpen, onClose }) => {
           )}
         </SidebarContent>
       </SidebarContainer>
+
+      {/* Delete Confirmation Modal */}
       <Modal
-        isOpen={isModalOpen}
-        onClose={() => setModalOpen(false)}
+        isOpen={isDeleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
         title="Delete Chat"
         footer={
           <>
-            <ModalButton className="secondary" onClick={() => setModalOpen(false)}>
+            <ModalButton className="secondary" onClick={() => setDeleteModalOpen(false)}>
               Cancel
             </ModalButton>
             <ModalButton className="danger" onClick={confirmDelete}>
@@ -305,6 +329,31 @@ const ChatSidebar = ({ isOpen, onClose }) => {
       >
         <p>Are you sure you want to delete this chat? This action cannot be undone.</p>
         {threadToDelete && <p><strong>&quot;{threadToDelete.title}&quot;</strong></p>}
+      </Modal>
+
+      {/* Rename Chat Modal */}
+      <Modal
+        isOpen={isRenameModalOpen}
+        onClose={() => setRenameModalOpen(false)}
+        title="Rename Chat"
+        footer={
+          <>
+            <ModalButton className="secondary" onClick={() => setRenameModalOpen(false)}>
+              Cancel
+            </ModalButton>
+            <ModalButton className="primary" onClick={confirmRename}>
+              Rename
+            </ModalButton>
+          </>
+        }
+      >
+        <p>Enter a new title for this chat session.</p>
+        <RenameInput
+          type="text"
+          value={newThreadTitle}
+          onChange={(e) => setNewThreadTitle(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && confirmRename()}
+        />
       </Modal>
     </>
   );

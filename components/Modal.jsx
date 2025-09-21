@@ -19,10 +19,10 @@ const ModalContent = styled.div`
   border: 1px solid var(--glass-edge-highlight-color);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  padding: 25px 30px;
+  padding: 20px;
   border-radius: 12px;
   width: 90%;
-  max-width: 450px;
+  max-width: 380px;
   box-shadow: 0 8px 32px 0 var(--glass-box-shadow-color);
 `;
 
