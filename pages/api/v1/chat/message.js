@@ -36,7 +36,7 @@ export default async function handler(req, res) {
 
     // The new SDK returns the response object directly from generateContent.
     const result = await genAI.models.generateContent({
-        model: "gemini-2.0-flash", //gemini-1.5-pro-latest is deprecated 
+        model: "gemini-1.5-pro-latest",
         contents: [{ role: "user", parts: [{ text: prompt }] }],
     });
 

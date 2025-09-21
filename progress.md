@@ -1,50 +1,125 @@
 # Project Progress Tracker
 
-This document tracks the progress of the Food Discovery Platform revamp.
+This document tracks the progress of the Food Discovery Platform revamp. It is designed to be a living document, updated by the development team and AI agents.
 
-## Phases
+---
 
-- [x] **Phase -1: Documentation & Planning**
-  - [x] Analyze existing codebase
-  - [x] Create comprehensive architecture & planning documents
+## Phase -1: Documentation & Planning
 
-- [ ] **Phase 0: Preparatory Work**
-  - [ ] Scaffold new service directories (`orchestrator`, `connectors`)
-  - [x] Set up shared schemas package (`@fd/schemas`)
-  - [ ] Set up secrets management
-  - [ ] Configure CI/CD for new services
+**Status:** `[DONE]`
 
-- [ ] **Phase 1: Unified Schema & First Connector**
-  - [ ] Build Canonicalizer Service & Persistent DB
-  - [ ] Build first provider connector
-  - [ ] Implement core orchestrator endpoints (`/search`, `/product/:id`)
-  - [ ] Migrate existing Sanity data
-  - [ ] Adapt frontend to use new API
+- `[DONE]` Analyze existing codebase
+- `[DONE]` Create comprehensive architecture & planning documents
 
-- [x] **Phase 2: Chat Page & Recommendations**
-  - [x] Build Chat UI Components (Complete, including layout, styling, and responsiveness)
-  - [ ] Implement real-time WebSocket communication
-  - [x] Implement end-to-end chat flow (with mock backend first)
-  - [x] UI Polish: Refined recommendation card design and implemented full-bleed carousel.
-  - [x] Integrate with Gemini for recommendations.
+---
 
-- [ ] **Phase 3: Personalization & Advanced Recommendations**
-  - [ ] **(In Progress)** Implement embedding pipeline
-  - [ ] Develop user intent modeling
-  - [ ] Enhance recommendation logic with embeddings and scoring
-  - [ ] Implement "reasons" generation
+## Phase 0: Preparatory Work
 
-- [ ] **Phase 4: Native Comments & Content Merging**
-  - [ ] Implement native comments API
-  - [ ] Update frontend to display unified comments
-  - [ ] Refine data merging logic
+**Status:** `[IN PROGRESS]`
 
-- [ ] **Phase 5: Reliability, Scaling & Observability**
-  - [ ] Implement circuit breakers, rate limiting, etc.
-  - [ ] Implement comprehensive testing (unit, integration, contract, E2E)
-  - [ ] Set up monitoring, logging, and tracing
+- `[TODO]` Scaffold new service directories (`orchestrator`, `connectors`)
+- `[DONE]` Set up shared schemas package (`@fd/schemas`)
+- `[TODO]` Set up secrets management
+- `[TODO]` Configure CI/CD for new services
+
+---
+
+## Phase 1: Unified Schema & First Connector
+
+**Status:** `[TODO]`
+**Depends on:** Phase 0
+
+1.  **Core Implementation:**
+    - `[TODO]` Build Canonicalizer Service & Persistent DB
+    - `[TODO]` Build first provider connector
+    - `[TODO]` Implement core orchestrator endpoints (`/search`, `/product/:id`)
+    - `[TODO]` Migrate existing Sanity data
+    - `[TODO]` Adapt frontend to use new API
+2.  **QA & Testing:**
+    - `[TODO]` Unit tests for canonicalizer service logic.
+    - `[TODO]` Integration tests for the first provider connector.
+    - `[TODO]` Contract tests between frontend and orchestrator for `/search` and `/product/:id`.
+3.  **Integration Points Checklist:**
+    - `[ ]` Does the orchestrator handle the unified schema correctly?
+    - `[ ]` Is the frontend consuming the new API as expected?
+
+---
+
+## Phase 2: Chat Page & Recommendations
+
+**Status:** `[IN PROGRESS]`
+**Depends on:** Phase 1
+
+1.  **Core Implementation:**
+    - `[DONE]` Build Chat UI Components (Complete, including layout, styling, and responsiveness)
+    - `[IN PROGRESS]` Implement real-time WebSocket communication
+    - `[DONE]` Implement end-to-end chat flow (with mock backend first)
+    - `[DONE]` UI Polish: Refined recommendation card design and implemented full-bleed carousel.
+    - `[DONE]` Integrate with Gemini for recommendations.
+2.  **QA & Testing:**
+    - `[TODO]` Unit tests for Chat UI components.
+    - `[TODO]` E2E tests for the chat flow (from user message to recommendation display).
+3.  **Integration Points Checklist:**
+    - `[x]` Does the Gemini API fully integrate here for basic responses?
+    - `[ ]` Is the WebSocket connection stable and performant?
+    - `[ ]` Does the frontend correctly render `ChatRecommendationPayload`?
+
+---
+
+## Phase 3: Personalization & Advanced Recommendations
+
+**Status:** `[TODO]`
+**Depends on:** Phase 1 & Phase 2
+
+1.  **Core Implementation:**
+    - `[TODO]` Implement embedding pipeline
+    - `[TODO]` Develop user intent modeling
+    - `[TODO]` Enhance recommendation logic with embeddings and scoring
+    - `[TODO]` Implement "reasons" generation
+2.  **QA & Testing:**
+    - `[TODO]` Unit tests for embedding generation.
+    - `[TODO]` Integration tests for vector DB similarity lookups.
+    - `[TODO]` E2E tests for personalized recommendation flow.
+3.  **Integration Points Checklist:**
+    - `[ ]` Are embeddings being generated and stored correctly?
+    - `[ ]` Does the orchestrator use embeddings for candidate selection?
+    - `[ ]` Does the Gemini "reasons" generation work as expected?
+
+---
+
+## Phase 4: Native Comments & Content Merging
+
+**Status:** `[TODO]`
+**Depends on:** Phase 1
+
+1.  **Core Implementation:**
+    - `[TODO]` Implement native comments API
+    - `[TODO]` Update frontend to display unified comments
+    - `[TODO]` Refine data merging logic
+2.  **QA & Testing:**
+    - `[TODO]` Unit tests for the comments API.
+    - `[TODO]` Frontend tests for the unified comments display.
+3.  **Integration Points Checklist:**
+    - `[ ]` Does the orchestrator correctly merge comments from different sources?
+    - `[ ]` Is the frontend displaying the unified comment list correctly?
+
+---
+
+## Phase 5: Reliability, Scaling & Observability
+
+**Status:** `[TODO]`
+**Depends on:** All previous phases
+
+1.  **Core Implementation:**
+    - `[TODO]` Implement circuit breakers, rate limiting, etc.
+    - `[TODO]` Set up monitoring, logging, and tracing
+2.  **QA & Testing:**
+    - `[TODO]` Implement comprehensive testing (unit, integration, contract, E2E) across all services.
+    - `[TODO]` Set up synthetic monitoring for critical user flows.
+
+---
 
 ## Current Focus
 
-- **Feature:** Implement embedding pipeline
+- **Feature:** Implement real-time WebSocket communication for the chat.
 - **Status:** Planning and initial setup.
