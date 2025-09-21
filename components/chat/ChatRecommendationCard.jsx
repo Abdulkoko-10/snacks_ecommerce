@@ -4,40 +4,67 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { FaStar } from 'react-icons/fa';
 
-const CardLink = styled.a`
-  display: inline-block;
-  border-radius: 12px;
-  overflow: hidden;
-  text-decoration: none;
-  color: var(--text-color);
-  background: var(--secondary-background-color);
-  border: 1px solid var(--glass-edge-highlight-color);
-  box-shadow: 0 4px 15px -2px var(--glass-box-shadow-color);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  cursor: pointer;
-  width: 250px; /* Fixed width for carousel items */
+const CardWrapper = styled.div`
+  width: 180px;
   flex-shrink: 0;
+`;
+
+const ProductCard = styled.div` /* Changed from styled.a */
+  display: block;
+  cursor: pointer;
+  transform: scale(1, 1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  color: var(--text-color);
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  border-radius: 15px;
+  padding: 10px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color),
+              inset 0 -1px 1px 0 var(--glass-inner-shadow-color),
+              0 10px 35px -5px var(--glass-box-shadow-color);
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px -4px var(--glass-box-shadow-color);
+    transform: scale(1.05);
+    box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color),
+                inset 0 -1px 1px 0 var(--glass-inner-shadow-color),
+                0 12px 40px -5px var(--glass-box-shadow-color);
   }
 `;
 
 const ImageContainer = styled.div`
   position: relative;
-  width: 100%;
-  padding-top: 70%; /* Aspect ratio for the image (70% of the card height) */
+  border-radius: 10px;
   background-color: var(--secondary-background-color);
+  overflow: hidden;
+  padding-top: 93.33%;
+`;
+
+const ProductName = styled.p`
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-color);
+  margin: 8px 0 4px 0;
+`;
+
+const ProductPrice = styled.p`
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin: 0;
+  color: var(--text-color);
+  opacity: 0.8;
 `;
 
 const OverlayTag = styled.div`
   position: absolute;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.4);
   color: white;
-  padding: 4px 8px;
+  padding: 3px 10px;
   border-radius: 12px;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
@@ -59,43 +86,8 @@ const RatingTag = styled(OverlayTag)`
   gap: 4px;
 `;
 
-const CentralBadge = styled(OverlayTag)`
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 8px 12px;
-  font-size: 1rem;
-  border-radius: 8px;
-`;
-
-const TextContainer = styled.div`
-  padding: 12px;
-`;
-
-const Title = styled.h4`
-  font-family: 'Quicksand', sans-serif;
-  font-weight: 700;
-  font-size: 1rem;
-  margin: 0 0 4px 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const SubText = styled.p`
-  font-size: 0.85rem;
-  margin: 0;
-  line-height: 1.4;
-  opacity: 0.8;
-`;
-
-const Price = styled.span`
-  font-weight: 500;
-  margin-left: 8px;
-`;
-
 /**
- * Renders a single recommendation card based on the new design.
+ * Renders a recommendation card styled like a Product card.
  * @param {{card: import('../../schemas/chat').ChatRecommendationCard}} props
  */
 const ChatRecommendationCard = ({ card }) => {
@@ -103,36 +95,30 @@ const ChatRecommendationCard = ({ card }) => {
     return null;
   }
 
-  const { canonicalProductId, preview, reason } = card;
-  // Mock data for new design elements
-  const discount = "20% off";
-  const centralBenefit = "Happy";
+  const { canonicalProductId, preview } = card;
+  const discount = "15% off";
 
   return (
-    <Link href={`/product/${canonicalProductId}`} passHref>
-      <CardLink>
-        <ImageContainer>
-          <Image
-            src={preview.image}
-            alt={preview.title}
-            layout="fill"
-            objectFit="cover"
-          />
-          {discount && <DiscountTag>{discount}</DiscountTag>}
-          <RatingTag>
-            <FaStar size={12} /> {preview.rating.toFixed(1)}
-          </RatingTag>
-          {centralBenefit && <CentralBadge>{centralBenefit}</CentralBadge>}
-        </ImageContainer>
-        <TextContainer>
-          <Title>{preview.title}</Title>
-          <SubText>
-            {preview.originSummary ? preview.originSummary.join(', ') : 'Various Cuisines'}
-            <Price>${preview.minPrice.toFixed(2)}</Price>
-          </SubText>
-        </TextContainer>
-      </CardLink>
-    </Link>
+    <CardWrapper>
+      <Link href={`/product/${canonicalProductId}`}>
+        <ProductCard>
+          <ImageContainer>
+            <Image
+              src={preview.image}
+              alt={preview.title}
+              layout="fill"
+              objectFit="cover"
+            />
+            {discount && <DiscountTag>{discount}</DiscountTag>}
+            <RatingTag>
+              <FaStar size={12} /> {preview.rating.toFixed(1)}
+            </RatingTag>
+          </ImageContainer>
+          <ProductName>{preview.title}</ProductName>
+          <ProductPrice>${preview.minPrice.toFixed(2)}</ProductPrice>
+        </ProductCard>
+      </Link>
+    </CardWrapper>
   );
 };
 

@@ -1,6 +1,12 @@
 import React from 'react';
 import styled from '@emotion/styled';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, A11y } from 'swiper/modules';
 import ChatRecommendationCard from './ChatRecommendationCard';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
 
 const BubbleWrapper = styled.div`
   display: flex;
@@ -32,11 +38,11 @@ const BubbleWrapper = styled.div`
 const BubbleAndCardsContainer = styled.div`
   display: flex;
   flex-direction: column;
-  max-width: 85%; /* Set a max-width for the entire bubble group */
-  min-width: 0; /* Prevent flexbox from growing beyond its container */
+  max-width: 85%;
+  min-width: 0;
 
   @media screen and (max-width: 800px) {
-    max-width: 90%;
+    max-width: 95%;
   }
 `;
 
@@ -51,7 +57,7 @@ const Bubble = styled.div`
   color: var(--text-color);
   word-wrap: break-word;
   box-sizing: border-box;
-  width: fit-content; /* Bubble should only be as wide as its content */
+  width: fit-content;
   max-width: 100%;
 
   .assistant & {
@@ -61,7 +67,7 @@ const Bubble = styled.div`
   .user & {
     border-bottom-right-radius: 5px;
     background: rgba(var(--accent-color-rgb-values, 255, 165, 0), 0.2);
-    align-self: flex-end; /* Align the bubble itself to the right */
+    align-self: flex-end;
   }
 `;
 
@@ -72,36 +78,13 @@ const BubbleText = styled.p`
   font-size: 1rem;
 `;
 
-const RecommendationsCarousel = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 15px;
-  margin-top: 10px;
-  overflow-x: auto;
-  padding-bottom: 15px;
+const CarouselContainer = styled.div`
   width: 100%;
-  box-sizing: border-box;
+  margin-top: 15px;
+  perspective: 1000px; /* For the 3D effect */
 
-  /* This makes the carousel container itself not grow beyond the parent */
-  max-width: 100%;
-
-  .user & {
-    align-self: flex-end; /* Align the carousel to the right for user bubbles */
-  }
-
-  /* Custom scrollbar for a sleeker look */
-  &::-webkit-scrollbar {
-    height: 6px;
-  }
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  &::-webkit-scrollbar-thumb {
-    background-color: var(--glass-edge-highlight-color);
-    border-radius: 6px;
-  }
-  &::-webkit-scrollbar-thumb:hover {
-    background-color: var(--accent-color);
+  .swiper-slide {
+    transition: transform 0.5s;
   }
 `;
 
@@ -124,11 +107,30 @@ const ChatBubble = ({ message, recommendations }) => {
           <BubbleText>{text}</BubbleText>
         </Bubble>
         {hasRecommendations && (
-          <RecommendationsCarousel>
-            {recommendations.map((card) => (
-              <ChatRecommendationCard key={card.canonicalProductId} card={card} />
-            ))}
-          </RecommendationsCarousel>
+          <CarouselContainer>
+            <Swiper
+              modules={[Navigation, A11y]}
+              spaceBetween={15}
+              slidesPerView={'auto'}
+              navigation
+              className="you-may-also-like-swiper" // Reuse existing styles for nav buttons
+              onSlideChange={(swiper) => {
+                // 3D "coming out of page" effect
+                swiper.slides.forEach(slide => {
+                  const slideInView = slide.progress > -1 && slide.progress < 1;
+                  const rotate = slide.progress * -30; // Rotate based on progress
+                  const z = (1 - Math.abs(slide.progress)) * 100 - 100; // Move in Z-axis
+                  slide.style.transform = slideInView ? `rotateY(${rotate}deg) translateZ(${z}px)` : 'transform: none;';
+                });
+              }}
+            >
+              {recommendations.map((card) => (
+                <SwiperSlide key={card.canonicalProductId} style={{ width: 'auto' }}>
+                  <ChatRecommendationCard card={card} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </CarouselContainer>
         )}
       </BubbleAndCardsContainer>
     </BubbleWrapper>

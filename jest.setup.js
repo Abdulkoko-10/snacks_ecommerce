@@ -43,3 +43,7 @@ global.fetch = jest.fn(() =>
     json: () => Promise.resolve({ message: 'Success' }), // Default success response
   })
 );
+
+// Mock CSS imports for libraries like Swiper
+jest.mock('swiper/css', () => ({}));
+jest.mock('swiper/css/navigation', () => ({}));
