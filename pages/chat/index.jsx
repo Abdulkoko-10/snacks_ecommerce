@@ -26,13 +26,36 @@ const ChatPage = () => {
   }, []);
 
   useEffect(() => {
-    const initialMessage = {
-      id: 'init_msg_0',
-      role: 'assistant',
-      text: 'Hello! How can I help you discover amazing food today?',
-      createdAt: new Date().toISOString(),
+    const fetchHistory = async () => {
+      try {
+        const response = await fetch('/api/v1/chat/history');
+        if (response.ok) {
+          const { messages: historyMessages, recommendationsByMessageId: historyRecs } = await response.json();
+          if (historyMessages && historyMessages.length > 0) {
+            setMessages(historyMessages);
+            setRecommendationsByMessageId(historyRecs || {});
+          } else {
+            // Set initial message if no history
+            setMessages([{
+              id: 'init_msg_0',
+              role: 'assistant',
+              text: 'Hello! How can I help you discover amazing food today?',
+              createdAt: new Date().toISOString(),
+            }]);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch chat history:", error);
+        // Set initial message on error
+        setMessages([{
+          id: 'init_msg_0',
+          role: 'assistant',
+          text: 'Hello! How can I help you discover amazing food today?',
+          createdAt: new Date().toISOString(),
+        }]);
+      }
     };
-    setMessages([initialMessage]);
+    fetchHistory();
   }, []);
 
   const handleSend = async (text) => {
@@ -42,20 +65,26 @@ const ChatPage = () => {
       text,
       createdAt: new Date().toISOString(),
     };
-    setMessages((prev) => [...prev, userMessage]);
+
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
     setIsLoading(true);
 
     try {
       const response = await fetch('/api/v1/chat/message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text, chatHistory: newMessages }),
       });
 
       if (response.ok) {
         const data = await response.json();
         const { message: assistantMessage, recommendationPayload } = data;
+
+        // The API now returns the assistant message which was already saved,
+        // so we just add it to our state.
         setMessages((prev) => [...prev, assistantMessage]);
+
         if (recommendationPayload && recommendationPayload.recommendations.length > 0) {
           setRecommendationsByMessageId((prev) => ({
             ...prev,
