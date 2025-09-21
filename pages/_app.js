@@ -127,7 +127,7 @@ export default function App(props) {
           {/* CssBaseline kickstarts an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline />
           <StateContext>
-            <Layout>
+            <Layout hideFooter={Component.hideFooter}>
               <Toaster />
               <Component {...pageProps} />
             </Layout>

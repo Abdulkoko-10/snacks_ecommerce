@@ -1,18 +1,23 @@
-import React, { useState, useEffect, useRef } from 'react';
-import Head from 'next/head';
-import { Navbar } from '../../components';
+import React, { useState, useEffect } from 'react';
+import styled from '@emotion/styled';
 import ChatPageLayout from '../../components/chat/ChatPageLayout';
 import ChatInput from '../../components/chat/ChatInput';
 import FloatingCatAssistant from '../../components/chat/FloatingCatAssistant';
+
+const ChatPageWrapper = styled.div`
+  height: calc(100vh - var(--navbar-height) - 40px); /* Full viewport height minus navbar and some padding */
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden; /* This is key to preventing the main page scroll */
+`;
 
 const ChatPage = () => {
   const [messages, setMessages] = useState([]);
   const [recommendationsByMessageId, setRecommendationsByMessageId] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const chatThreadRef = useRef(null);
 
-  // Add a class to the body when the chat page is active
   useEffect(() => {
     document.body.classList.add('chat-page-active');
     return () => {
@@ -20,14 +25,6 @@ const ChatPage = () => {
     };
   }, []);
 
-  // Scroll to the bottom on new messages
-  useEffect(() => {
-    if (chatThreadRef.current) {
-      chatThreadRef.current.scrollTop = chatThreadRef.current.scrollHeight;
-    }
-  }, [messages]);
-
-  // Fetch an initial greeting from the assistant
   useEffect(() => {
     const initialMessage = {
       id: 'init_msg_0',
@@ -58,9 +55,7 @@ const ChatPage = () => {
       if (response.ok) {
         const data = await response.json();
         const { message: assistantMessage, recommendationPayload } = data;
-
         setMessages((prev) => [...prev, assistantMessage]);
-
         if (recommendationPayload && recommendationPayload.recommendations.length > 0) {
           setRecommendationsByMessageId((prev) => ({
             ...prev,
@@ -85,24 +80,19 @@ const ChatPage = () => {
   };
 
   return (
-    <div className="page-wrapper-for-chat">
-      <Head>
-        <title>Chat | Snacks</title>
-      </Head>
-      <Navbar />
-      <div className="chat-page-container" ref={chatThreadRef}>
-        <ChatPageLayout
-          messages={messages}
-          recommendationsByMessageId={recommendationsByMessageId}
-          isSidebarOpen={isSidebarOpen}
-          setSidebarOpen={setSidebarOpen}
-        />
-        <ChatInput onSend={handleSend} disabled={isLoading} />
-        {/* The FloatingCatAssistant is now only for desktop as per the new design */}
-        <FloatingCatAssistant onClick={() => console.log('Floating cat clicked!')} />
-      </div>
-    </div>
+    <ChatPageWrapper>
+      <ChatPageLayout
+        messages={messages}
+        recommendationsByMessageId={recommendationsByMessageId}
+        isSidebarOpen={isSidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+      />
+      <ChatInput onSend={handleSend} disabled={isLoading} />
+      <FloatingCatAssistant onClick={() => setSidebarOpen(true)} />
+    </ChatPageWrapper>
   );
 };
+
+ChatPage.hideFooter = true;
 
 export default ChatPage;

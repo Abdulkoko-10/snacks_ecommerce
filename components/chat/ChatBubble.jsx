@@ -6,6 +6,8 @@ const BubbleWrapper = styled.div`
   display: flex;
   margin-bottom: 10px;
   animation: fadeIn 0.3s ease-out;
+  width: 100%;
+  box-sizing: border-box;
 
   &.assistant {
     justify-content: flex-start;
@@ -30,19 +32,15 @@ const BubbleWrapper = styled.div`
 const BubbleAndCardsContainer = styled.div`
   display: flex;
   flex-direction: column;
-  max-width: 90%; /* Max width for the entire bubble + recommendations block */
+  max-width: 85%; /* Set a max-width for the entire bubble group */
+  min-width: 0; /* Prevent flexbox from growing beyond its container */
 
-  .user & {
-    align-items: flex-end;
-  }
-
-  .assistant & {
-    align-items: flex-start;
+  @media screen and (max-width: 800px) {
+    max-width: 90%;
   }
 `;
 
 const Bubble = styled.div`
-  max-width: 75%;
   padding: 12px 18px;
   border-radius: 20px;
   background: var(--glass-background-color);
@@ -52,6 +50,9 @@ const Bubble = styled.div`
               0 4px 8px -2px var(--glass-box-shadow-color);
   color: var(--text-color);
   word-wrap: break-word;
+  box-sizing: border-box;
+  width: fit-content; /* Bubble should only be as wide as its content */
+  max-width: 100%;
 
   .assistant & {
     border-bottom-left-radius: 5px;
@@ -60,6 +61,7 @@ const Bubble = styled.div`
   .user & {
     border-bottom-right-radius: 5px;
     background: rgba(var(--accent-color-rgb-values, 255, 165, 0), 0.2);
+    align-self: flex-end; /* Align the bubble itself to the right */
   }
 `;
 
@@ -76,8 +78,16 @@ const RecommendationsCarousel = styled.div`
   gap: 15px;
   margin-top: 10px;
   overflow-x: auto;
-  padding-bottom: 15px; /* For scrollbar visibility */
+  padding-bottom: 15px;
   width: 100%;
+  box-sizing: border-box;
+
+  /* This makes the carousel container itself not grow beyond the parent */
+  max-width: 100%;
+
+  .user & {
+    align-self: flex-end; /* Align the carousel to the right for user bubbles */
+  }
 
   /* Custom scrollbar for a sleeker look */
   &::-webkit-scrollbar {
