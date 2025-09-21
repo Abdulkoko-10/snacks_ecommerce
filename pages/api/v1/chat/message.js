@@ -23,7 +23,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Initialize the client with the API key
+    // Initialize the main AI client
     const genAI = new GoogleGenAI(apiKey);
 
     const { text: userMessageText } = req.body;
@@ -32,12 +32,15 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Bad Request: "text" is required in the request body.' });
     }
 
-    // Get the generative model
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" });
-
     const prompt = `You are a helpful and friendly food discovery assistant. A user said: "${userMessageText}". Respond to them in a conversational way.`;
 
-    const result = await model.generateContent(prompt);
+    // The new SDK uses a different pattern:
+    // We call generateContent directly on the client's `models` service.
+    const result = await genAI.models.generateContent({
+        model: "gemini-1.5-pro-latest", // Using a valid, recent model name
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+    });
+
     const response = await result.response;
     const geminiText = response.text();
 
