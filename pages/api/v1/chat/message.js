@@ -1,6 +1,6 @@
-import { GoogleGenerativeAI } from '@google/genai';
+const { GoogleGenerativeAI } = require('@google/genai');
 // eslint-disable-next-line no-unused-vars
-import { ChatMessage, ChatRecommendationPayload } from '../../../../schemas/chat';
+const { ChatMessage, ChatRecommendationPayload } = require('../../../../schemas/chat');
 
 // Initialize the Gemini client
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
