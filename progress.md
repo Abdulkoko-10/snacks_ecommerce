@@ -25,8 +25,15 @@ This document tracks the progress of the Food Discovery Platform revamp.
   - [x] Build Chat UI Components (Complete, including layout, styling, and responsiveness)
   - [ ] Implement real-time WebSocket communication
   - [x] Implement end-to-end chat flow (with mock backend first)
-  - [x] **(Just Completed)** UI Polish: Refined recommendation card design and implemented full-bleed carousel.
-  - [ ] Integrate with Gemini for recommendations
+  - [x] UI Polish: Refined recommendation card design and implemented full-bleed carousel.
+  - [x] **(In Progress)** Integrate with Gemini for recommendations.
+    - **Status:** Debugging integration issues.
+    - **History:**
+        - Initial implementation failed due to ESM/CJS module conflicts with `@google/generative-ai`.
+        - Switched to a direct REST API call, which resolved module issues but used an incorrect model name, causing a `404` error.
+        - Migrated to the new `@google/genai` SDK, which resolved the `404` but caused a `429` quota error.
+        - User resolved the quota issue, revealing a `TypeError` due to incorrect parsing of the successful API response.
+    - **Next Step:** Correct the response parsing logic in the API handler.
 
 - [ ] **Phase 3: Personalization & Advanced Recommendations**
   - [ ] Implement embedding pipeline
@@ -46,5 +53,5 @@ This document tracks the progress of the Food Discovery Platform revamp.
 
 ## Current Focus
 
-- **Feature:** Chat Page - Backend Integration
-- **Status:** Integrating the chat frontend with the Gemini AI for real-time recommendations.
+- **Feature:** Finalize Gemini API Integration
+- **Status:** Implementing the final fix for the API response parsing.

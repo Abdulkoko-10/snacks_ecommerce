@@ -36,13 +36,14 @@ export default async function handler(req, res) {
 
     // The new SDK uses a different pattern:
     // We call generateContent directly on the client's `models` service.
+    // The new SDK returns the response object directly from generateContent.
     const result = await genAI.models.generateContent({
-        model: "gemini-2.5-flash-lite", // Using a valid, recent model name
+        model: "gemini-1.5-pro-latest",
         contents: [{ role: "user", parts: [{ text: prompt }] }],
     });
 
-    const response = await result.response;
-    const geminiText = response.text();
+    // The .text() method is called on the response object from the result.
+    const geminiText = result.response.text();
 
     /** @type {ChatMessage} */
     const assistantMessage = {
