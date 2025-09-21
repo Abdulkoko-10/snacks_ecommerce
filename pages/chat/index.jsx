@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Layout } from '../../components';
+import Head from 'next/head';
+import { Navbar } from '../../components';
 import ChatPageLayout from '../../components/chat/ChatPageLayout';
 import ChatInput from '../../components/chat/ChatInput';
 import FloatingCatAssistant from '../../components/chat/FloatingCatAssistant';
@@ -14,13 +15,16 @@ const ChatPage = () => {
   // Add a class to the body when the chat page is active
   useEffect(() => {
     document.body.classList.add('chat-page-active');
-    // Scroll to the bottom on new messages
-    if (chatThreadRef.current) {
-      chatThreadRef.current.scrollTop = chatThreadRef.current.scrollHeight;
-    }
     return () => {
       document.body.classList.remove('chat-page-active');
     };
+  }, []);
+
+  // Scroll to the bottom on new messages
+  useEffect(() => {
+    if (chatThreadRef.current) {
+      chatThreadRef.current.scrollTop = chatThreadRef.current.scrollHeight;
+    }
   }, [messages]);
 
   // Fetch an initial greeting from the assistant
@@ -81,7 +85,11 @@ const ChatPage = () => {
   };
 
   return (
-    <Layout>
+    <div className="page-wrapper-for-chat">
+      <Head>
+        <title>Chat | Snacks</title>
+      </Head>
+      <Navbar />
       <div className="chat-page-container" ref={chatThreadRef}>
         <ChatPageLayout
           messages={messages}
@@ -90,9 +98,10 @@ const ChatPage = () => {
           setSidebarOpen={setSidebarOpen}
         />
         <ChatInput onSend={handleSend} disabled={isLoading} />
-        <FloatingCatAssistant onClick={() => setSidebarOpen(true)} />
+        {/* The FloatingCatAssistant is now only for desktop as per the new design */}
+        <FloatingCatAssistant onClick={() => console.log('Floating cat clicked!')} />
       </div>
-    </Layout>
+    </div>
   );
 };
 

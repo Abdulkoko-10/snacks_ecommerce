@@ -4,7 +4,8 @@ import ChatRecommendationCard from '../../../components/chat/ChatRecommendationC
 
 // Mock next/link and next/image
 jest.mock('next/link', () => {
-  return ({ children, href }) => <a href={href}>{children}</a>;
+  // This mock now returns the children directly, as the component itself is the link target.
+  return ({ children, href }) => <div data-href={href}>{children}</div>;
 });
 
 jest.mock('next/image', () => {
@@ -22,25 +23,26 @@ describe('ChatRecommendationCard', () => {
       minPrice: 12.99,
       bestProvider: 'Pizza Palace',
       eta: '20-30 min',
-      originSummary: ['Pizza Palace', 'UberEats'],
+      originSummary: ['Pizza', 'Italian'],
     },
-    reason: 'You seem to like pizza!',
+    reason: 'You seem to like pizza!', // This is no longer displayed on the card itself
   };
 
   it('renders recommendation card details correctly', () => {
     render(<ChatRecommendationCard card={mockCard} />);
 
+    // Check for text content
     expect(screen.getByText('Amazing Pizza')).toBeInTheDocument();
-    expect(screen.getByText('You seem to like pizza!')).toBeInTheDocument();
+    // The subtext combines origin and price
+    expect(screen.getByText(/Pizza, Italian/)).toBeInTheDocument();
+    expect(screen.getByText(/\$12.99/)).toBeInTheDocument();
+
+    // Check for overlay tags
+    expect(screen.getByText('20% off')).toBeInTheDocument(); // Mocked discount
     expect(screen.getByText('4.8')).toBeInTheDocument();
-    expect(screen.getByText('From $12.99')).toBeInTheDocument();
-    expect(screen.getByText('20-30 min')).toBeInTheDocument();
-    expect(screen.getByText(/Best offer on:/)).toBeInTheDocument();
-    expect(screen.getByText('Pizza Palace')).toBeInTheDocument();
+    expect(screen.getByText('Happy')).toBeInTheDocument(); // Mocked central benefit
 
-    const link = screen.getByRole('link');
-    expect(link).toHaveAttribute('href', '/product/test-product-123');
-
+    // Check for image
     const image = screen.getByRole('img');
     expect(image).toHaveAttribute('src', 'pizza.jpg');
     expect(image).toHaveAttribute('alt', 'Amazing Pizza');

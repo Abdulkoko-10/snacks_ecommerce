@@ -27,10 +27,18 @@ const BubbleWrapper = styled.div`
   }
 `;
 
-const BubbleContainer = styled.div`
+const BubbleAndCardsContainer = styled.div`
   display: flex;
   flex-direction: column;
-  max-width: 100%;
+  max-width: 90%; /* Max width for the entire bubble + recommendations block */
+
+  .user & {
+    align-items: flex-end;
+  }
+
+  .assistant & {
+    align-items: flex-start;
+  }
 `;
 
 const Bubble = styled.div`
@@ -62,19 +70,28 @@ const BubbleText = styled.p`
   font-size: 1rem;
 `;
 
-const RecommendationsContainer = styled.div`
+const RecommendationsCarousel = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-direction: row;
+  gap: 15px;
   margin-top: 10px;
-  max-width: 450px;
+  overflow-x: auto;
+  padding-bottom: 15px; /* For scrollbar visibility */
+  width: 100%;
 
-  .assistant & {
-    align-self: flex-start;
+  /* Custom scrollbar for a sleeker look */
+  &::-webkit-scrollbar {
+    height: 6px;
   }
-
-  .user & {
-    align-self: flex-end;
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--glass-edge-highlight-color);
+    border-radius: 6px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--accent-color);
   }
 `;
 
@@ -92,18 +109,18 @@ const ChatBubble = ({ message, recommendations }) => {
 
   return (
     <BubbleWrapper data-testid="chat-bubble-wrapper" className={isUser ? 'user' : 'assistant'}>
-      <BubbleContainer>
+      <BubbleAndCardsContainer>
         <Bubble>
           <BubbleText>{text}</BubbleText>
         </Bubble>
         {hasRecommendations && (
-          <RecommendationsContainer>
+          <RecommendationsCarousel>
             {recommendations.map((card) => (
               <ChatRecommendationCard key={card.canonicalProductId} card={card} />
             ))}
-          </RecommendationsContainer>
+          </RecommendationsCarousel>
         )}
-      </BubbleContainer>
+      </BubbleAndCardsContainer>
     </BubbleWrapper>
   );
 };
