@@ -1,6 +1,6 @@
 import { getAuth } from '@clerk/nextjs/server';
 import { ObjectId } from 'mongodb';
-import clientPromise from '../../../../lib/mongodb';
+import clientPromise from '../../../../../lib/mongodb';
 
 const dbName = process.env.MONGODB_DB_NAME || 'food-discovery';
 

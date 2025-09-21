@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import Link from 'next/link';
 import { IoClose, IoAddCircleOutline, IoTrashOutline, IoCreateOutline } from 'react-icons/io5';
-import Modal, { ModalButton } from './Modal';
+import Modal, { ModalButton } from '../Modal';
 
 const SidebarContainer = styled.aside`
   width: 280px;

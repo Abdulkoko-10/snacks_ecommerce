@@ -1,6 +1,6 @@
 import { getAuth } from '@clerk/nextjs/server';
 import { ObjectId } from 'mongodb';
-import clientPromise from '../../../lib/mongodb';
+import clientPromise from '../../../../lib/mongodb';
 const { GoogleGenAI } = require('@google/genai');
 
 // eslint-disable-next-line no-unused-vars
