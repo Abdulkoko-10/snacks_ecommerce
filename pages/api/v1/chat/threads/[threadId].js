@@ -1,7 +1,7 @@
 import { getAuth } from '@clerk/nextjs/server';
-import { MongoClient } from 'mongodb';
+import { ObjectId } from 'mongodb';
+import clientPromise from '../../../../lib/mongodb';
 
-const uri = process.env.MONGODB_URI;
 const dbName = process.env.MONGODB_DB_NAME || 'food-discovery';
 
 export default async function handler(req, res) {
@@ -12,34 +12,41 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  const client = new MongoClient(uri);
-
   try {
-    await client.connect();
+    const client = await clientPromise;
     const db = client.db(dbName);
-    const collection = db.collection('chat_messages');
+    const threadsCollection = db.collection('threads');
+    const messagesCollection = db.collection('chat_messages');
 
     if (req.method === 'PUT') {
-      // Renaming a thread is complex with the current schema, as the title is
-      // derived from the first message. A proper implementation would likely
-      // involve a separate `threads` collection with a dedicated title field.
-      // For now, we'll return a "Not Implemented" status.
       const { title } = req.body;
       if (!title) {
         return res.status(400).json({ error: 'Title is required' });
       }
-      // TODO: Implement renaming logic, possibly by adding a `title` field
-      // to a new `threads` collection or updating the first message.
-      return res.status(501).json({ error: 'Renaming not implemented' });
+
+      const result = await threadsCollection.updateOne(
+        { _id: new ObjectId(threadId), userId },
+        { $set: { title } }
+      );
+
+      if (result.matchedCount === 0) {
+        return res.status(404).json({ error: 'Thread not found or you do not have permission to rename it.' });
+      }
+
+      return res.status(200).json({ message: 'Thread renamed successfully' });
 
     } else if (req.method === 'DELETE') {
-      const result = await collection.deleteMany({ userId, threadId });
-
-      if (result.deletedCount === 0) {
+      // Ensure the user owns the thread before deleting
+      const thread = await threadsCollection.findOne({ _id: new ObjectId(threadId), userId });
+      if (!thread) {
         return res.status(404).json({ error: 'Thread not found or you do not have permission to delete it.' });
       }
 
-      return res.status(200).json({ message: 'Thread deleted successfully' });
+      // Perform deletions
+      await messagesCollection.deleteMany({ userId, threadId });
+      await threadsCollection.deleteOne({ _id: new ObjectId(threadId), userId });
+
+      return res.status(200).json({ message: 'Thread and all its messages deleted successfully' });
 
     } else {
       res.setHeader('Allow', ['PUT', 'DELETE']);
@@ -49,7 +56,5 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error(`Failed to handle thread request for threadId ${threadId}:`, error);
     res.status(500).json({ error: 'An error occurred while processing your request.' });
-  } finally {
-    await client.close();
   }
 }

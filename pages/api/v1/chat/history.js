@@ -1,7 +1,6 @@
 import { getAuth } from '@clerk/nextjs/server';
-import { MongoClient } from 'mongodb';
+import clientPromise from '../../../lib/mongodb';
 
-const uri = process.env.MONGODB_URI;
 const dbName = process.env.MONGODB_DB_NAME || 'food-discovery';
 
 export default async function handler(req, res) {
@@ -15,19 +14,23 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  if (!uri) {
-    return res.status(500).json({ error: 'Server configuration error: Missing MONGODB_URI' });
-  }
-
-  const client = new MongoClient(uri);
-
   try {
-    await client.connect();
+    const client = await clientPromise;
     const db = client.db(dbName);
     const collection = db.collection('chat_messages');
+    const { threadId } = req.query;
 
-    // Find all messages for the user, sort by creation date
-    const messages = await collection.find({ userId }).sort({ createdAt: 1 }).toArray();
+    let query = { userId };
+    if (threadId) {
+      query.threadId = threadId;
+    } else {
+      // If no threadId is provided, what should we do?
+      // For now, let's return an empty history. The frontend will show the initial message.
+      return res.status(200).json({ messages: [], recommendationsByMessageId: {} });
+    }
+
+    // Find all messages for the user and thread, sort by creation date
+    const messages = await collection.find(query).sort({ createdAt: 1 }).toArray();
 
     // We also need to fetch the recommendations associated with each message.
     // For simplicity, we'll assume recommendations are stored with the assistant's message.
@@ -47,7 +50,5 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error('Failed to fetch chat history:', error);
     res.status(500).json({ error: 'Failed to fetch chat history.' });
-  } finally {
-    await client.close();
   }
 }

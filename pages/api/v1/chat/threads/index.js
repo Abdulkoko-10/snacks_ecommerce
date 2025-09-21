@@ -1,7 +1,6 @@
 import { getAuth } from '@clerk/nextjs/server';
-import { MongoClient } from 'mongodb';
+import clientPromise from '../../../../lib/mongodb';
 
-const uri = process.env.MONGODB_URI;
 const dbName = process.env.MONGODB_DB_NAME || 'food-discovery';
 
 export default async function handler(req, res) {
@@ -15,42 +14,18 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  const client = new MongoClient(uri);
-
   try {
-    await client.connect();
+    const client = await clientPromise;
     const db = client.db(dbName);
-    const collection = db.collection('chat_messages');
+    const collection = db.collection('threads');
 
-    // This aggregation pipeline groups messages by threadId, finds the first message
-    // to use as a title, and gets the last updated time for sorting.
-    const threads = await collection.aggregate([
-      { $match: { userId } },
-      { $sort: { createdAt: 1 } },
-      {
-        $group: {
-          _id: "$threadId",
-          title: { $first: "$text" },
-          lastUpdated: { $last: "$createdAt" },
-        }
-      },
-      { $sort: { lastUpdated: -1 } },
-      {
-        $project: {
-          threadId: "$_id",
-          title: 1,
-          lastUpdated: 1,
-          _id: 0
-        }
-      }
-    ]).toArray();
+    // Find all threads for the user, sort by last updated
+    const threads = await collection.find({ userId }).sort({ lastUpdated: -1 }).toArray();
 
     res.status(200).json(threads);
 
   } catch (error) {
     console.error('Failed to fetch chat threads:', error);
     res.status(500).json({ error: 'Failed to fetch chat threads.' });
-  } finally {
-    await client.close();
   }
 }

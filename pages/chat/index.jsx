@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import styled from '@emotion/styled';
 import ChatPageLayout from '../../components/chat/ChatPageLayout';
 import ChatInput from '../../components/chat/ChatInput';
@@ -13,6 +14,8 @@ const ChatPageWrapper = styled.div`
 `;
 
 const ChatPage = () => {
+  const router = useRouter();
+  const [threadId, setThreadId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [recommendationsByMessageId, setRecommendationsByMessageId] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -26,16 +29,22 @@ const ChatPage = () => {
   }, []);
 
   useEffect(() => {
+    const currentThreadId = router.query.threadId;
+    if (currentThreadId) {
+      setThreadId(currentThreadId);
+    }
+
     const fetchHistory = async () => {
+      // Use a different endpoint if we have a threadId
+      const historyUrl = currentThreadId ? `/api/v1/chat/history?threadId=${currentThreadId}` : '/api/v1/chat/history';
       try {
-        const response = await fetch('/api/v1/chat/history');
+        const response = await fetch(historyUrl);
         if (response.ok) {
           const { messages: historyMessages, recommendationsByMessageId: historyRecs } = await response.json();
           if (historyMessages && historyMessages.length > 0) {
             setMessages(historyMessages);
             setRecommendationsByMessageId(historyRecs || {});
           } else {
-            // Set initial message if no history
             setMessages([{
               id: 'init_msg_0',
               role: 'assistant',
@@ -46,7 +55,6 @@ const ChatPage = () => {
         }
       } catch (error) {
         console.error("Failed to fetch chat history:", error);
-        // Set initial message on error
         setMessages([{
           id: 'init_msg_0',
           role: 'assistant',
@@ -55,8 +63,10 @@ const ChatPage = () => {
         }]);
       }
     };
+
     fetchHistory();
-  }, []);
+    // Re-fetch history if the threadId in the URL changes
+  }, [router.query.threadId]);
 
   const handleSend = async (text) => {
     const userMessage = {
@@ -74,15 +84,19 @@ const ChatPage = () => {
       const response = await fetch('/api/v1/chat/message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, chatHistory: newMessages }),
+        body: JSON.stringify({ text, chatHistory: newMessages, threadId }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        const { message: assistantMessage, recommendationPayload } = data;
+        const { message: assistantMessage, recommendationPayload, threadId: newThreadId } = data;
 
-        // The API now returns the assistant message which was already saved,
-        // so we just add it to our state.
+        // If a new thread was created, update the URL
+        if (newThreadId && newThreadId !== threadId) {
+          setThreadId(newThreadId);
+          router.push(`/chat?threadId=${newThreadId}`, undefined, { shallow: true });
+        }
+
         setMessages((prev) => [...prev, assistantMessage]);
 
         if (recommendationPayload && recommendationPayload.recommendations.length > 0) {

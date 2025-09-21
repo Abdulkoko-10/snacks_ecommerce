@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import Link from 'next/link';
 import { IoClose, IoAddCircleOutline, IoTrashOutline, IoCreateOutline } from 'react-icons/io5';
+import Modal, { ModalButton } from './Modal';
 
 const SidebarContainer = styled.aside`
   width: 280px;
@@ -177,6 +178,8 @@ const ChatHistoryItem = styled.li`
 const ChatSidebar = ({ isOpen, onClose }) => {
   const [threads, setThreads] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [threadToDelete, setThreadToDelete] = useState(null);
 
   useEffect(() => {
     const fetchThreads = async () => {
@@ -201,22 +204,49 @@ const ChatSidebar = ({ isOpen, onClose }) => {
     onClose();
   };
 
-  const handleDelete = async (threadId) => {
-    if (!confirm('Are you sure you want to delete this chat?')) {
-      return;
-    }
+  const handleDeleteClick = (thread) => {
+    setThreadToDelete(thread);
+    setModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!threadToDelete) return;
     try {
-      const response = await fetch(`/api/v1/chat/threads/${threadId}`, {
+      const response = await fetch(`/api/v1/chat/threads/${threadToDelete._id}`, {
         method: 'DELETE',
       });
       if (response.ok) {
-        setThreads(prev => prev.filter(t => t.threadId !== threadId));
+        setThreads(prev => prev.filter(t => t._id !== threadToDelete._id));
       } else {
         alert('Failed to delete chat.');
       }
     } catch (error) {
       console.error("Failed to delete chat:", error);
       alert('An error occurred while deleting the chat.');
+    } finally {
+      setModalOpen(false);
+      setThreadToDelete(null);
+    }
+  };
+
+  const handleRename = async (threadId, currentTitle) => {
+    const newTitle = prompt('Enter a new name for this chat:', currentTitle);
+    if (newTitle && newTitle.trim() !== '' && newTitle !== currentTitle) {
+      try {
+        const response = await fetch(`/api/v1/chat/threads/${threadId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: newTitle }),
+        });
+        if (response.ok) {
+          setThreads(prev => prev.map(t => t._id === threadId ? { ...t, title: newTitle } : t));
+        } else {
+          alert('Failed to rename chat.');
+        }
+      } catch (error) {
+        console.error("Failed to rename chat:", error);
+        alert('An error occurred while renaming the chat.');
+      }
     }
   };
 
@@ -240,15 +270,15 @@ const ChatSidebar = ({ isOpen, onClose }) => {
           ) : (
             <ChatHistoryList>
               {threads.map((chat) => (
-                <ChatHistoryItem key={chat.threadId}>
-                  <Link href={`/chat?threadId=${chat.threadId}`} passHref>
+                <ChatHistoryItem key={chat._id}>
+                  <Link href={`/chat?threadId=${chat._id}`} passHref>
                     <a onClick={onClose}>{chat.title}</a>
                   </Link>
                   <div className="actions">
-                    <button disabled title="Rename not implemented yet">
+                    <button onClick={() => handleRename(chat._id, chat.title)}>
                       <IoCreateOutline />
                     </button>
-                    <button onClick={() => handleDelete(chat.threadId)}>
+                    <button onClick={() => handleDeleteClick(chat)}>
                       <IoTrashOutline />
                     </button>
                   </div>
@@ -258,6 +288,24 @@ const ChatSidebar = ({ isOpen, onClose }) => {
           )}
         </SidebarContent>
       </SidebarContainer>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Delete Chat"
+        footer={
+          <>
+            <ModalButton className="secondary" onClick={() => setModalOpen(false)}>
+              Cancel
+            </ModalButton>
+            <ModalButton className="danger" onClick={confirmDelete}>
+              Delete
+            </ModalButton>
+          </>
+        }
+      >
+        <p>Are you sure you want to delete this chat? This action cannot be undone.</p>
+        {threadToDelete && <p><strong>&quot;{threadToDelete.title}&quot;</strong></p>}
+      </Modal>
     </>
   );
 };
