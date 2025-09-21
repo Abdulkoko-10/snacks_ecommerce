@@ -1,10 +1,12 @@
+// Using the new Google GenAI SDK.
+// We use `require` to avoid ESM/CJS compatibility issues in the Next.js API route environment.
+const { GoogleGenAI } = require('@google/genai');
+
 // eslint-disable-next-line no-unused-vars
 const { ChatMessage, ChatRecommendationPayload } = require('../../../../schemas/chat');
 
-const GEMINI_API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent`;
-
 /**
- * Handles incoming chat messages, sends them to the Gemini REST API, and returns the response.
+ * Handles incoming chat messages, sends them to the Gemini API using the new SDK, and returns the response.
  * @param {import('next').NextApiRequest} req
  * @param {import('next').NextApiResponse<({ message: ChatMessage, recommendationPayload: ChatRecommendationPayload | null }) | { error: string }>} res
  */
@@ -21,40 +23,23 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Initialize the client with the API key
+    const genAI = new GoogleGenAI(apiKey);
+
     const { text: userMessageText } = req.body;
 
     if (!userMessageText) {
       return res.status(400).json({ error: 'Bad Request: "text" is required in the request body.' });
     }
 
+    // Get the generative model
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" });
+
     const prompt = `You are a helpful and friendly food discovery assistant. A user said: "${userMessageText}". Respond to them in a conversational way.`;
 
-    const requestBody = {
-      contents: [
-        {
-          parts: [{ text: prompt }],
-        },
-      ],
-    };
-
-    const apiResponse = await fetch(`${GEMINI_API_ENDPOINT}?key=${apiKey}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestBody),
-    });
-
-    if (!apiResponse.ok) {
-      const errorBody = await apiResponse.text();
-      console.error('Gemini API request failed:', apiResponse.status, errorBody);
-      throw new Error(`Gemini API request failed with status ${apiResponse.status}`);
-    }
-
-    const responseData = await apiResponse.json();
-
-    // Safely access the text from the response
-    const geminiText = responseData.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't generate a response.";
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const geminiText = response.text();
 
     /** @type {ChatMessage} */
     const assistantMessage = {
@@ -67,7 +52,7 @@ export default async function handler(req, res) {
     res.status(200).json({ message: assistantMessage, recommendationPayload: null });
 
   } catch (error) {
-    console.error('Error in chat handler:', error);
+    console.error('Error calling Gemini API with the new SDK:', error);
     res.status(500).json({ error: 'Failed to get response from AI service.' });
   }
 }
