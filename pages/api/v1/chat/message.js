@@ -54,8 +54,8 @@ export default async function handler(req, res) {
     const result = await genAI.models.generateContentStream({ model: "gemini-2.5-pro", contents });
 
     let fullResponseText = '';
-    for await (const chunk of result.stream) {
-      const chunkText = chunk.text();
+    for await (const chunk of result) {
+      const chunkText = chunk.text;
       fullResponseText += chunkText;
       res.write(chunkText);
     }
