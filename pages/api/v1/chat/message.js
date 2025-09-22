@@ -67,7 +67,7 @@ export default async function handler(req, res) {
     const fullResponseText = response.text();
 
     // --- Fetch Product Recommendations from Sanity ---
-    const productsQuery = `*[_type == "product"] | order(_createdAt desc) [0...3]`;
+    const productsQuery = `*[_type == "product"]{_id, name, image, price, details, slug} | order(_createdAt desc) [0...3]`;
     const sanityProducts = await previewClient.fetch(productsQuery);
 
     const recommendations = sanityProducts.map(p => ({
@@ -80,6 +80,8 @@ export default async function handler(req, res) {
         bestProvider: "SnacksCo", // Mock provider
         eta: "15-25 min", // Mock ETA
         originSummary: ["SnacksCo"], // Mock origin
+        slug: p.slug?.current,
+        details: p.details,
       },
       reason: "Based on our conversation, you might like this!", // Generic reason
       meta: {
