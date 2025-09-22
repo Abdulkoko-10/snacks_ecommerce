@@ -30,6 +30,8 @@
     "react-dom": "^18.0.0",
     "react-hot-toast": "^2.2.0",
     "react-icons": "^4.3.1",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
     "stripe": "^8.209.0",
     "swiper": "^11.2.8",
     "swr": "^2.2.5"

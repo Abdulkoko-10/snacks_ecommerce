@@ -56,6 +56,7 @@ This document tracks the progress of the Food Discovery Platform revamp. It is d
     - `[DONE]` Implement end-to-end chat flow (with mock backend first)
     - `[DONE]` UI Polish: Refined recommendation card design and implemented full-bleed carousel.
     - `[DONE]` Integrate with Gemini for recommendations.
+    - `[IN PROGRESS]` Polish and bugfix chat UI (Markdown rendering, modals, performance).
 2.  **QA & Testing:**
     - `[TODO]` Unit tests for Chat UI components.
     - `[TODO]` E2E tests for the chat flow (from user message to recommendation display).
@@ -121,5 +122,5 @@ This document tracks the progress of the Food Discovery Platform revamp. It is d
 
 ## Current Focus
 
-- **Feature:** Implement real-time WebSocket communication for the chat.
-- **Status:** Planning and initial setup.
+- **Feature:** Polish and Finalize Chat Page
+- **Status:** Fixing streaming format, improving modals, and optimizing performance.

@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { keyframes } from '@emotion/react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(10px); }
@@ -37,30 +39,19 @@ const Bubble = styled.div`
   }
 `;
 
-const BubbleText = styled.p`
+const BubbleText = styled.div`
   margin: 0;
   white-space: pre-wrap;
   line-height: 1.5;
   font-size: 1rem;
-`;
 
-const fadeInWord = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  p {
+    margin: 0 0 0.5rem 0;
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 `;
-
-const AnimatedWord = styled.span`
-  display: inline-block;
-  opacity: 0;
-  animation: ${fadeInWord} 0.5s ease-out forwards;
-`;
-
 
 /**
  * Renders a single chat message bubble.
@@ -72,22 +63,12 @@ const ChatBubble = ({ message }) => {
   const { role, text } = message;
   const isUser = role === 'user';
 
-  // For assistant messages that are streaming, apply the word-by-word animation.
-  // For user messages or messages already loaded from history, render them normally.
-  const isStreaming = role === 'assistant' && message.id.startsWith('asst_msg_');
-
   return (
     <BubbleWrapper data-testid="chat-bubble-wrapper">
       <BubbleContainer className={isUser ? 'user' : 'assistant'}>
         <Bubble className={isUser ? 'user-bubble' : 'assistant-bubble'}>
           <BubbleText>
-            {isStreaming
-              ? text.split(' ').map((word, index) => (
-                  <AnimatedWord key={index} style={{ animationDelay: `${index * 0.08}s` }}>
-                    {word}{' '}
-                  </AnimatedWord>
-                ))
-              : text}
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>
           </BubbleText>
         </Bubble>
       </BubbleContainer>
