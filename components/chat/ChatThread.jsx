@@ -117,10 +117,7 @@ const ChatThread = ({ messages = [], recommendationsByMessageId = {} }) => {
                   >
                     {recommendations.map((card) => (
                       <SwiperSlide key={card.canonicalProductId}>
-                        {/* This wrapper is the key to the fix. It gives Swiper a stable box to measure. */}
-                        <div style={{ width: '280px', height: '100%' }}>
-                          <ChatRecommendationCard card={card} />
-                        </div>
+                        <ChatRecommendationCard card={card} />
                       </SwiperSlide>
                     ))}
                   </Swiper>
