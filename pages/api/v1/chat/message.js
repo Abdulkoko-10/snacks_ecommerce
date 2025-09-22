@@ -44,6 +44,8 @@ export default async function handler(req, res) {
 
     // --- Start Streaming AI Response ---
     const genAI = new GoogleGenAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
+
     const instruction = { role: "user", parts: [{ text: "You are a helpful and friendly food discovery assistant. Please respond to the user in a conversational way." }] };
     const history = (chatHistory || [])
       .filter(msg => msg.role === 'user' || msg.role === 'assistant')
@@ -51,7 +53,7 @@ export default async function handler(req, res) {
     history.push({ role: 'user', parts: [{ text: userMessageText }] });
     const contents = [instruction, ...history];
 
-    const result = await genAI.models.generateContentStream({ model: "gemini-2.5-pro", contents });
+    const result = await generateWithRetry(model, contents);
 
     let fullResponseText = '';
     for await (const chunk of result) {
@@ -114,6 +116,25 @@ export default async function handler(req, res) {
     // If headers are not sent, we can send an error response.
     if (!res.headersSent) {
       res.status(500).json({ error: 'Failed to process chat message.' });
+    }
+  }
+}
+
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+async function generateWithRetry(model, contents, maxRetries = 3) {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const result = await model.generateContentStream({ contents });
+      return result; // Success
+    } catch (error) {
+      if (error.status === 503 && i < maxRetries - 1) {
+        const waitTime = Math.pow(2, i) * 1000; // Exponential backoff: 1s, 2s, 4s
+        console.warn(`Gemini API overloaded. Retrying in ${waitTime / 1000}s... (Attempt ${i + 1}/${maxRetries})`);
+        await delay(waitTime);
+      } else {
+        throw error; // Re-throw if it's not a 503 or if it's the last retry
+      }
     }
   }
 }
