@@ -67,7 +67,7 @@ export default async function handler(req, res) {
     const fullResponseText = response.text();
 
     // --- Fetch Product Recommendations from Sanity ---
-    const productsQuery = `*[_type == "product"]{_id, name, image, price, details, slug} | order(_createdAt desc) [0...3]`;
+    const productsQuery = `*[_type == "product" && defined(slug.current)]{_id, name, image, price, details, slug} | order(_createdAt desc) [0...3]`;
     const sanityProducts = await previewClient.fetch(productsQuery);
 
     const recommendations = sanityProducts.map(p => ({
