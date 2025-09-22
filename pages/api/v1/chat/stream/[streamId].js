@@ -57,7 +57,7 @@ export default async function handler(req, res) {
 
     let fullResponseText = '';
     for await (const chunk of result) {
-      const chunkText = chunk.text();
+      const chunkText = chunk.text;
       if (chunkText) {
         fullResponseText += chunkText;
         res.write(`event: text-chunk\ndata: ${JSON.stringify({ text: chunkText })}\n\n`);
