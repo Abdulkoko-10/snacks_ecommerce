@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import styled from '@emotion/styled';
 import ChatPageLayout from '../../components/chat/ChatPageLayout';
@@ -20,11 +20,26 @@ const ChatPage = () => {
   const [recommendationsByMessageId, setRecommendationsByMessageId] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const assistantMessageUpdater = useRef(null);
+  const eventSourceRef = useRef(null);
 
   useEffect(() => {
     document.body.classList.add('chat-page-active');
     return () => {
       document.body.classList.remove('chat-page-active');
+    };
+  }, []);
+
+  useEffect(() => {
+    // Clean up the updater and event source when the component unmounts
+    return () => {
+      if (assistantMessageUpdater.current) {
+        assistantMessageUpdater.current.flush();
+        clearTimeout(assistantMessageUpdater.current.timer);
+      }
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+      }
     };
   }, []);
 
@@ -69,6 +84,8 @@ const ChatPage = () => {
   }, [router.query.threadId]);
 
   const handleSend = async (text) => {
+    if (isLoading) return;
+
     const userMessage = {
       id: `user_msg_${Date.now()}`,
       role: 'user',
@@ -81,14 +98,15 @@ const ChatPage = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/v1/chat/message', {
+      // Step 1: Initiate the stream and get a streamId
+      const initResponse = await fetch('/api/v1/chat/initiate-stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text, chatHistory: newMessages, threadId }),
       });
 
-      if (!response.ok) {
-        if (response.status === 401) {
+      if (!initResponse.ok) {
+        if (initResponse.status === 401) {
           const authMessage = {
             id: `auth_msg_${Date.now()}`,
             role: 'system',
@@ -98,12 +116,14 @@ const ChatPage = () => {
           };
           setMessages((prev) => [...prev, authMessage]);
         } else {
-          throw new Error('API request failed');
+          throw new Error('API request to initiate stream failed');
         }
+        setIsLoading(false);
         return;
       }
 
-      const newThreadId = response.headers.get('X-Thread-Id');
+      const { streamId, threadId: newThreadId } = await initResponse.json();
+
       if (newThreadId && newThreadId !== threadId) {
         setThreadId(newThreadId);
         router.push(`/chat?threadId=${newThreadId}`, undefined, { shallow: true });
@@ -116,22 +136,55 @@ const ChatPage = () => {
         text: '',
         createdAt: new Date().toISOString(),
       };
+
+      assistantMessageUpdater.current = {
+        textBuffer: '',
+        timer: null,
+        flush: () => {
+          if (assistantMessageUpdater.current.textBuffer.length > 0) {
+            setMessages((prev) =>
+              prev.map((msg) =>
+                msg.id === assistantMessageId
+                  ? { ...msg, text: msg.text + assistantMessageUpdater.current.textBuffer }
+                  : msg
+              )
+            );
+            assistantMessageUpdater.current.textBuffer = '';
+          }
+          clearTimeout(assistantMessageUpdater.current.timer);
+          assistantMessageUpdater.current.timer = null;
+        },
+        update: (chunk) => {
+          assistantMessageUpdater.current.textBuffer += chunk;
+          if (!assistantMessageUpdater.current.timer) {
+            assistantMessageUpdater.current.timer = setTimeout(assistantMessageUpdater.current.flush, 200);
+          }
+        },
+      };
+
       setMessages((prev) => [...prev, assistantMessage]);
 
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let done = false;
+      // Step 2: Connect to the SSE stream
+      eventSourceRef.current = new EventSource(`/api/v1/chat/stream/${streamId}`);
 
-      while (!done) {
-        const { value, done: readerDone } = await reader.read();
-        done = readerDone;
-        const chunk = decoder.decode(value, { stream: true });
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === assistantMessageId ? { ...msg, text: msg.text + chunk } : msg
-          )
-        );
-      }
+      eventSourceRef.current.addEventListener('text-chunk', (event) => {
+        const data = JSON.parse(event.data);
+        assistantMessageUpdater.current.update(data.text);
+      });
+
+      eventSourceRef.current.addEventListener('end', () => {
+        assistantMessageUpdater.current.flush();
+        eventSourceRef.current.close();
+        setIsLoading(false);
+      });
+
+      eventSourceRef.current.onerror = (error) => {
+        console.error('EventSource failed:', error);
+        assistantMessageUpdater.current.flush();
+        eventSourceRef.current.close();
+        setMessages(messages); // Rollback optimistic messages
+        throw new Error('EventSource failed');
+      };
 
     } catch (error) {
       console.error("Failed to send message:", error);
