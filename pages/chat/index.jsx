@@ -120,18 +120,46 @@ const ChatPage = () => {
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      let done = false;
+      let buffer = '';
 
-      while (!done) {
-        const { value, done: readerDone } = await reader.read();
-        done = readerDone;
-        const chunk = decoder.decode(value, { stream: true });
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === assistantMessageId ? { ...msg, text: msg.text + chunk } : msg
-          )
-        );
-      }
+      // This is the core of the new streaming logic.
+      // We process the stream line by line.
+      const processStream = async () => {
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+
+          // Keep the last partial line in the buffer
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (line.trim() === '') continue;
+
+            try {
+              // It's a JSON payload for recommendations
+              const payload = JSON.parse(line);
+              if (payload.type === 'recommendations' && payload.data) {
+                setRecommendationsByMessageId((prev) => ({
+                  ...prev,
+                  [payload.messageId]: payload.data,
+                }));
+              }
+            } catch (e) {
+              // It's a plain text chunk for the message
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === assistantMessageId ? { ...msg, text: msg.text + line } : msg
+                )
+              );
+            }
+          }
+        }
+      };
+
+      await processStream();
 
     } catch (error) {
       console.error("Failed to send message:", error);
