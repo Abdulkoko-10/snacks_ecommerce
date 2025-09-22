@@ -45,19 +45,17 @@ export default async function handler(req, res) {
     const genAI = new GoogleGenAI(apiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    const instruction = { role: "user", parts: [{ text: "You are a helpful and friendly food discovery assistant. Please respond to the user in a conversational way." }] };
+    const instruction = { role: "system", content: "You are a helpful and friendly food discovery assistant. Please respond to the user in a conversational way." };
     const history = (chatHistory || [])
       .filter(msg => msg.role === 'user' || msg.role === 'assistant')
-      .map(msg => ({ role: msg.role === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] }));
+      .map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.text }]
+      }));
 
-    const chat = model.startChat({
-      history: [instruction, ...history],
-      generationConfig: {
-        maxOutputTokens: 500,
-      },
-    });
+    const contents = [...history, { role: 'user', parts: [{ text: userMessageText }] }];
 
-    const result = await chat.sendMessage(userMessageText);
+    const result = await model.generateContent({ contents: [instruction, ...contents] });
     const response = result.response;
     const fullResponseText = response.text();
 
