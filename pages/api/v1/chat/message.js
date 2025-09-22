@@ -2,10 +2,10 @@ import { getAuth } from '@clerk/nextjs/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '../../../../lib/mongodb';
 import { readClient, urlFor } from '../../../../lib/client'; // Import Sanity client and urlFor
-const { GoogleGenerativeAI } = require('@google/genai');
+import { GoogleGenerativeAI } from '@google/genai';
 
 // eslint-disable-next-line no-unused-vars
-const { ChatMessage, ChatRecommendationPayload, ChatRecommendationCard } = require('../../../../schemas/chat');
+import { ChatMessage, ChatRecommendationPayload, ChatRecommendationCard } from '../../../../schemas/chat';
 
 const dbName = process.env.MONGODB_DB_NAME || 'food-discovery';
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
