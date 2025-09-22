@@ -232,18 +232,18 @@ const ChatRecommendationCard = ({ card }) => {
   const [isLoadingComments, setIsLoadingComments] = useState(false);
   const [hasFetched, setHasFetched] = useState(false);
 
-  if (!card) {
-    return null;
-  }
-
-  const { canonicalProductId, preview, reason } = card;
-
   useEffect(() => {
     // If we just finished loading comments, flip the card.
     if (!isLoadingComments && hasFetched) {
       setIsFlipped(true);
     }
   }, [isLoadingComments, hasFetched]);
+
+  if (!card) {
+    return null;
+  }
+
+  const { canonicalProductId, preview, reason } = card;
 
 
   const handleFlip = async (e) => {
