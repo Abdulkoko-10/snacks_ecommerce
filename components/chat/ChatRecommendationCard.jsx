@@ -1,18 +1,96 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FaStar } from 'react-icons/fa';
+import { IoInformationCircleOutline } from 'react-icons/io5';
+import { readClient } from '../../lib/client';
 
-const CardWrapper = styled.div`
-  /* This wrapper now takes the full width of the swiper slide */
+const CardScene = styled.div`
   width: 100%;
   height: 100%;
+  perspective: 1000px;
+  position: relative; /* New: for positioning the flip icon */
+`;
+
+const CardFlipper = styled.div`
+  width: 100%;
+  height: 100%;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+
+  &.is-flipped {
+    transform: rotateY(180deg);
+  }
+`;
+
+const CardFace = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
   display: flex;
   flex-direction: column;
-  /* The classname is added in ChatThread.jsx */
-  &.card-wrapper {
-    /* This empty class is for targeting from parent */
+`;
+
+const CardFront = styled(CardFace)``;
+
+const CommentList = styled.div`
+  font-size: 0.8rem;
+  line-height: 1.4;
+  flex-grow: 1;
+  overflow-y: auto;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const Comment = styled.div`
+  border-bottom: 1px solid var(--glass-inner-shadow-color);
+  padding-bottom: 8px;
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const CardBack = styled(CardFace)`
+  transform: rotateY(180deg);
+  padding: 15px;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--text-color);
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-sheen-color) 0%, transparent 70%), var(--glass-background-color);
+  border: 1px solid var(--glass-edge-highlight-color);
+  border-radius: 15px;
+  box-shadow: inset 0 1px 1px 0 var(--glass-inner-highlight-color),
+              inset 0 -1px 1px 0 var(--glass-inner-shadow-color),
+              0 10px 35px -5px var(--glass-box-shadow-color);
+`;
+
+const FlipIconButton = styled.button`
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2; /* Ensure it's above the card content */
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  padding: 0;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.5);
   }
 `;
 
@@ -149,12 +227,55 @@ const ProviderName = styled.span`
 const Eta = styled.span``;
 
 const ChatRecommendationCard = ({ card }) => {
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [isLoadingComments, setIsLoadingComments] = useState(false);
+  const [hasFetched, setHasFetched] = useState(false);
+
   if (!card) {
     return null;
   }
 
-  const { preview, reason } = card;
-  // const discount = "15% off"; // This is still mock data - REMOVED
+  const { canonicalProductId, preview, reason } = card;
+
+  useEffect(() => {
+    // If we just finished loading comments, flip the card.
+    if (!isLoadingComments && hasFetched) {
+      setIsFlipped(true);
+    }
+  }, [isLoadingComments, hasFetched]);
+
+
+  const handleFlip = async (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    if (isFlipped) {
+      // If card is already flipped, just flip it back.
+      setIsFlipped(false);
+      return;
+    }
+
+    if (hasFetched) {
+      // If we have already fetched data, just flip.
+      setIsFlipped(true);
+      return;
+    }
+
+    // Fetch comments for the first time
+    setIsLoadingComments(true);
+    setHasFetched(true); // Mark that we have attempted a fetch
+    const commentsQuery = `*[_type == "review" && product._ref == $productId && approved == true] | order(_createdAt desc) [0...2]`;
+    try {
+      const fetchedComments = await readClient.fetch(commentsQuery, { productId: canonicalProductId });
+      setComments(fetchedComments || []);
+    } catch (error) {
+      console.error("Failed to fetch comments for card:", error);
+      setComments([]); // Reset on error
+    } finally {
+      setIsLoadingComments(false);
+    }
+  };
 
   if (!preview.slug) {
     // Don't render a card if it can't link anywhere.
@@ -163,34 +284,57 @@ const ChatRecommendationCard = ({ card }) => {
   }
 
   return (
-    <CardWrapper className="card-wrapper">
-      <Link href={`/product/${preview.slug}`} passHref>
-        <ProductCard as="a"> {/* Use `as="a"` for semantics with Next.js Link */}
-          <ImageContainer>
-            <Image
-              src={preview.image}
-              alt={preview.title}
-              layout="fill"
-              objectFit="cover"
-            />
-            <RatingTag>
-              <FaStar size={12} /> {preview.rating.toFixed(1)}
-            </RatingTag>
-          </ImageContainer>
-          <TextContainer>
-            <TextContent>
-              <ProductName>{preview.title}</ProductName>
-              <ProductReason>{reason}</ProductReason>
-            </TextContent>
-            <ProviderAndEta>
-              <ProviderName>{preview.bestProvider}</ProviderName>
-              <Eta>~{preview.eta}</Eta>
-            </ProviderAndEta>
-            <ProductPrice>~N{preview.minPrice.toFixed(2)}</ProductPrice>
-          </TextContainer>
-        </ProductCard>
-      </Link>
-    </CardWrapper>
+    <CardScene>
+      <FlipIconButton onClick={handleFlip} disabled={isLoadingComments}>
+        {isLoadingComments ? '...' : <IoInformationCircleOutline />}
+      </FlipIconButton>
+      <CardFlipper className={isFlipped ? 'is-flipped' : ''}>
+        <CardFront>
+          <Link href={`/product/${preview.slug}`} passHref>
+            <ProductCard as="a">
+              <ImageContainer>
+                <Image
+                  src={preview.image}
+                  alt={preview.title}
+                  layout="fill"
+                  objectFit="cover"
+                />
+                <RatingTag>
+                  <FaStar size={12} /> {preview.rating.toFixed(1)}
+                </RatingTag>
+              </ImageContainer>
+              <TextContainer>
+                <TextContent>
+                  <ProductName>{preview.title}</ProductName>
+                  <ProductReason>{reason}</ProductReason>
+                </TextContent>
+                <ProviderAndEta>
+                  <ProviderName>{preview.bestProvider}</ProviderName>
+                  <Eta>~{preview.eta}</Eta>
+                </ProviderAndEta>
+                <ProductPrice>~N{preview.minPrice.toFixed(2)}</ProductPrice>
+              </TextContainer>
+            </ProductCard>
+          </Link>
+        </CardFront>
+        <CardBack>
+          <TextContent>
+            <ProductName>Recent Comments</ProductName>
+            {isLoadingComments && <p>Loading...</p>}
+            {!isLoadingComments && comments.length === 0 && <p>No comments yet.</p>}
+            {!isLoadingComments && comments.length > 0 && (
+              <CommentList>
+                {comments.map(comment => (
+                  <Comment key={comment._id}>
+                    <strong>{comment.user || 'Anonymous'}:</strong> {comment.comment}
+                  </Comment>
+                ))}
+              </CommentList>
+            )}
+          </TextContent>
+        </CardBack>
+      </CardFlipper>
+    </CardScene>
   );
 };
 
