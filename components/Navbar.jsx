@@ -249,13 +249,18 @@ const Navbar = () => {
 
   return (
     <div className={`navbar-container ${isScrolled ? 'scrolled-navbar' : ''}`}>
-      <p className="logo">
-        <Link href="/">Snacks</Link>
-      </p>
+      <div className="nav-items-left">
+        <p className="logo">
+          <Link href="/">Snacks</Link>
+        </p>
+        <p className="nav-link">
+          <Link href="/chat">Chat</Link>
+        </p>
+      </div>
 
       <div className="nav-items-right">
-        <button 
-          type="button" 
+        <button
+          type="button"
           className="theme-icon-button" 
           onClick={toggleTheme}
           title={themeIconTitle}

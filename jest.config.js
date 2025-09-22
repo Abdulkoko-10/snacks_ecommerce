@@ -35,6 +35,12 @@ const customJestConfig = {
   // transform: {
   //   '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
   // },
+
+  // This is the crucial part:
+  // By default, jest ignores node_modules. We need to tell it to *not* ignore swiper and its dependencies.
+  transformIgnorePatterns: [
+    '/node_modules/(?!swiper|ssr-window|dom7).+\\.js$'
+  ],
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
