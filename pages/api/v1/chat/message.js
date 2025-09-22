@@ -1,13 +1,39 @@
 import { getAuth } from '@clerk/nextjs/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '../../../../lib/mongodb';
-const { GoogleGenAI } = require('@google/genai');
+import { readClient, urlFor } from '../../../../lib/client'; // Import Sanity client and urlFor
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 // eslint-disable-next-line no-unused-vars
-const { ChatMessage, ChatRecommendationPayload } = require('../../../../schemas/chat');
+const { ChatMessage, ChatRecommendationPayload, ChatRecommendationCard } = require('../../../../schemas/chat');
 
 const dbName = process.env.MONGODB_DB_NAME || 'food-discovery';
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
+// --- Helper function for Intent Detection ---
+async function getIntentAndEntity(userMessage) {
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const prompt = `
+    Analyze the user's message to determine their intent and identify any specific food items.
+    Respond with a single, minified JSON object with two keys: "intent" and "entity".
+    - The "intent" can be "RECOMMENDATION", "QUESTION", or "OTHER".
+    - The "entity" should be the food item mentioned (e.g., "samosa", "meatpie"), normalized to be URL-friendly, or null if no specific item is found.
+
+    User message: "${userMessage}"
+  `;
+  try {
+    const result = await model.generateContent(prompt);
+    const responseText = result.response.text();
+    // Clean the response to ensure it's valid JSON
+    const jsonString = responseText.replace(/```json|```/g, '').trim();
+    return JSON.parse(jsonString);
+  } catch (error) {
+    console.error("Error getting intent from Gemini:", error);
+    return { intent: "OTHER", entity: null }; // Fallback
+  }
+}
+
+// --- Main Handler ---
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', ['POST']);
@@ -19,122 +45,134 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    console.error('Server configuration error: Missing API key.');
-    return res.status(500).json({ error: 'Server configuration error.' });
-  }
-
   try {
     const { text: userMessageText, chatHistory, threadId: currentThreadId } = req.body;
-
     if (!userMessageText) {
-      return res.status(400).json({ error: 'Bad Request: "text" is required in the request body.' });
+      return res.status(400).json({ error: 'Bad Request: "text" is required.' });
     }
 
-    let threadId = currentThreadId;
-    let isNewThread = !threadId;
-    if (isNewThread) {
-      threadId = new ObjectId().toString();
-    }
+    let threadId = currentThreadId || new ObjectId().toString();
+    const isNewThread = !currentThreadId;
 
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
     res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('X-Thread-Id', threadId); // Send threadId back as a header
+    res.setHeader('X-Thread-Id', threadId);
 
-    // --- Start Streaming AI Response ---
-    const genAI = new GoogleGenAI(apiKey);
-    const model = "gemini-2.0-flash";
+    const { intent, entity } = await getIntentAndEntity(userMessageText);
+    const targetProducts = ['samosa', 'meat-pie', 'chicken-roll']; // URL-friendly slugs
 
-    const instruction = { role: "user", parts: [{ text: "You are a helpful and friendly food discovery assistant. Please respond to the user in a conversational way." }] };
-    const history = (chatHistory || [])
-      .filter(msg => msg.role === 'user' || msg.role === 'assistant')
-      .map(msg => ({ role: msg.role === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] }));
-    history.push({ role: 'user', parts: [{ text: userMessageText }] });
-    const contents = [instruction, ...history];
+    if (intent === 'RECOMMENDATION' && entity && targetProducts.includes(entity)) {
+      // --- Handle Recommendation Flow ---
+      const assistantMessageId = `asst_msg_${Date.now()}`;
+      const conversationalText = `Of course! Here is a recommendation for ${entity.replace('-', ' ')}:`;
 
-    const result = await generateWithRetry(genAI, model, contents);
+      // Stream the conversational text first
+      res.write(conversationalText + '\n');
 
-    let fullResponseText = '';
-    for await (const chunk of result) {
-      const chunkText = chunk.text;
-      fullResponseText += chunkText;
-      res.write(chunkText);
-    }
+      // Fetch product from Sanity
+      const productQuery = `*[_type == "product" && slug.current == $slug][0]`;
+      const product = await readClient.fetch(productQuery, { slug: entity });
 
-    res.end();
-
-    // --- Perform Database Writes After Streaming ---
-    const saveToDb = async () => {
-      try {
-        const client = await clientPromise;
-        const db = client.db(dbName);
-        const messagesCollection = db.collection('chat_messages');
-        const threadsCollection = db.collection('threads');
-
-        if (isNewThread) {
-          await threadsCollection.insertOne({
-            _id: new ObjectId(threadId),
-            userId,
-            title: userMessageText.substring(0, 50),
-            createdAt: new Date(),
-            lastUpdated: new Date(),
-          });
-        } else {
-          await threadsCollection.updateOne({ _id: new ObjectId(threadId), userId }, { $set: { lastUpdated: new Date() } });
-        }
-
-        const userMessage = {
-          id: `user_msg_${Date.now()}`,
-          role: 'user',
-          text: userMessageText,
-          userId,
-          threadId,
-          createdAt: new Date(),
+      if (product) {
+        const recommendationCard = {
+          canonicalProductId: product._id,
+          preview: {
+            title: product.name,
+            image: product.image && product.image.length > 0 ? urlFor(product.image[0]).url() : '/default-image.jpg',
+            rating: product.rating || 4.5, // Mock rating if not present
+            minPrice: product.price,
+            bestProvider: 'FoodDiscovery',
+            eta: '5-10 min',
+            originSummary: ['FoodDiscovery'],
+          },
+          reason: `A top-rated choice, freshly made and ready for you!`,
         };
 
-        const assistantMessage = {
-          id: `asst_msg_${Date.now()}`,
-          role: 'assistant',
-          text: fullResponseText, // Save the complete response
-          userId,
-          threadId,
-          createdAt: new Date(),
+        const recommendationPayload = {
+          type: 'recommendations',
+          messageId: assistantMessageId,
+          data: [recommendationCard],
         };
 
-        await messagesCollection.insertOne(userMessage);
-        await messagesCollection.insertOne(assistantMessage);
-      } catch (dbError) {
-        console.error("Error saving chat conversation to DB:", dbError);
+        // Stream the JSON payload
+        res.write(JSON.stringify(recommendationPayload) + '\n');
       }
-    };
 
-    saveToDb();
+      res.end(); // End the response after sending data
 
+      // Save conversation to DB in the background
+      saveConversation(threadId, userId, isNewThread, userMessageText, conversationalText);
+
+    } else {
+      // --- Handle General Conversation Flow ---
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const chat = model.startChat({
+        history: (chatHistory || [])
+          .filter(msg => msg.role === 'user' || msg.role === 'assistant')
+          .map(msg => ({ role: msg.role === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] })),
+      });
+      const result = await chat.sendMessageStream(userMessageText);
+
+      let fullResponseText = '';
+      for await (const chunk of result.stream) {
+        const chunkText = chunk.text();
+        fullResponseText += chunkText;
+        res.write(chunkText);
+      }
+
+      res.end();
+
+      // Save conversation to DB in the background
+      saveConversation(threadId, userId, isNewThread, userMessageText, fullResponseText);
+    }
   } catch (error) {
     console.error('Error in chat message handler:', error);
-    // If headers are not sent, we can send an error response.
     if (!res.headersSent) {
       res.status(500).json({ error: 'Failed to process chat message.' });
     }
   }
 }
 
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+// --- Helper function for DB Operations ---
+async function saveConversation(threadId, userId, isNewThread, userMessageText, assistantResponseText) {
+  try {
+    const client = await clientPromise;
+    const db = client.db(dbName);
+    const messagesCollection = db.collection('chat_messages');
+    const threadsCollection = db.collection('threads');
 
-async function generateWithRetry(genAI, model, contents, maxRetries = 3) {
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      const result = await genAI.models.generateContentStream({ model, contents });
-      return result; // Success
-    } catch (error) {
-      if (error.status === 503 && i < maxRetries - 1) {
-        const waitTime = Math.pow(2, i) * 1000; // Exponential backoff: 1s, 2s, 4s
-        console.warn(`Gemini API overloaded. Retrying in ${waitTime / 1000}s... (Attempt ${i + 1}/${maxRetries})`);
-        await delay(waitTime);
-      } else {
-        throw error; // Re-throw if it's not a 503 or if it's the last retry
-      }
+    if (isNewThread) {
+      await threadsCollection.insertOne({
+        _id: new ObjectId(threadId),
+        userId,
+        title: userMessageText.substring(0, 50),
+        createdAt: new Date(),
+        lastUpdated: new Date(),
+      });
+    } else {
+      await threadsCollection.updateOne({ _id: new ObjectId(threadId), userId }, { $set: { lastUpdated: new Date() } });
     }
+
+    const userMessageDoc = {
+      _id: new ObjectId(),
+      role: 'user',
+      text: userMessageText,
+      userId,
+      threadId: new ObjectId(threadId),
+      createdAt: new Date(),
+    };
+
+    const assistantMessageDoc = {
+      _id: new ObjectId(),
+      role: 'assistant',
+      text: assistantResponseText,
+      userId,
+      threadId: new ObjectId(threadId),
+      createdAt: new Date(),
+    };
+
+    await messagesCollection.insertMany([userMessageDoc, assistantMessageDoc]);
+  } catch (dbError) {
+    console.error("Error saving chat conversation to DB:", dbError);
   }
 }
