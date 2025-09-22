@@ -2,7 +2,7 @@ import { getAuth } from '@clerk/nextjs/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '../../../../lib/mongodb';
 import { readClient, urlFor } from '../../../../lib/client'; // Import Sanity client and urlFor
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { GoogleGenerativeAI } = require('@google/genai');
 
 // eslint-disable-next-line no-unused-vars
 const { ChatMessage, ChatRecommendationPayload, ChatRecommendationCard } = require('../../../../schemas/chat');
