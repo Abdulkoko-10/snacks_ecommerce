@@ -44,7 +44,7 @@ export default async function handler(req, res) {
 
     // --- Start Streaming AI Response ---
     const genAI = new GoogleGenAI(apiKey);
-    const model = "gemini-2.5-pro";
+    const model = "gemini-2.0-flash";
 
     const instruction = { role: "user", parts: [{ text: "You are a helpful and friendly food discovery assistant. Please respond to the user in a conversational way." }] };
     const history = (chatHistory || [])
