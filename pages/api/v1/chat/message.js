@@ -53,7 +53,7 @@ export default async function handler(req, res) {
 
     // A more sophisticated prompt that asks for JSON when it finds food.
     const instruction = {
-      role: "system",
+      role: "user", // IMPORTANT: Gemini API requires 'user' or 'model' role, not 'system'
       parts: [{
         text: `You are a helpful and friendly food discovery assistant named Koko.
         - Always respond in a conversational and friendly tone.
@@ -92,7 +92,14 @@ export default async function handler(req, res) {
     const jsonRegex = /<<<JSON([\s\S]*?)JSON>>>/;
 
     for await (const chunk of result) {
-      let chunkText = chunk.text(); // Assuming chunk.text() is the correct method now
+      // Correctly access the text from the chunk
+      let chunkText = chunk.text;
+      if (typeof chunk.text !== 'function') {
+          chunkText = chunk.text;
+      } else {
+          chunkText = chunk.text();
+      }
+
 
       // Check if the chunk contains our special JSON block
       const match = chunkText.match(jsonRegex);
