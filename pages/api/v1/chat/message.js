@@ -44,7 +44,7 @@ export default async function handler(req, res) {
 
     // --- Start Streaming AI Response ---
     const genAI = new GoogleGenAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
+    const model = "gemini-2.5-pro";
 
     const instruction = { role: "user", parts: [{ text: "You are a helpful and friendly food discovery assistant. Please respond to the user in a conversational way." }] };
     const history = (chatHistory || [])
@@ -53,7 +53,7 @@ export default async function handler(req, res) {
     history.push({ role: 'user', parts: [{ text: userMessageText }] });
     const contents = [instruction, ...history];
 
-    const result = await generateWithRetry(model, contents);
+    const result = await generateWithRetry(genAI, model, contents);
 
     let fullResponseText = '';
     for await (const chunk of result) {
@@ -122,10 +122,10 @@ export default async function handler(req, res) {
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-async function generateWithRetry(model, contents, maxRetries = 3) {
+async function generateWithRetry(genAI, model, contents, maxRetries = 3) {
   for (let i = 0; i < maxRetries; i++) {
     try {
-      const result = await model.generateContentStream({ contents });
+      const result = await genAI.models.generateContentStream({ model, contents });
       return result; // Success
     } catch (error) {
       if (error.status === 503 && i < maxRetries - 1) {
