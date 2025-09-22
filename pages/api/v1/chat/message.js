@@ -38,30 +38,88 @@ export default async function handler(req, res) {
       threadId = new ObjectId().toString();
     }
 
-    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Content-Type', 'application/x-ndjson');
+    res.setHeader('Transfer-Encoding', 'chunked');
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-Thread-Id', threadId); // Send threadId back as a header
 
+    const sendEvent = (type, payload) => {
+      res.write(JSON.stringify({ type, payload }) + '\n');
+    };
+
     // --- Start Streaming AI Response ---
     const genAI = new GoogleGenAI(apiKey);
-    const model = "gemini-2.0-flash";
+    const model = "gemini-1.5-flash"; // Using a more recent model
 
-    const instruction = { role: "user", parts: [{ text: "You are a helpful and friendly food discovery assistant. Please respond to the user in a conversational way." }] };
+    // A more sophisticated prompt that asks for JSON when it finds food.
+    const instruction = {
+      role: "system",
+      parts: [{
+        text: `You are a helpful and friendly food discovery assistant named Koko.
+        - Always respond in a conversational and friendly tone.
+        - When you identify a specific food item that could be a good recommendation, find one or more items and embed a JSON object in your response.
+        - The JSON object must be on its own line and start with '<<<JSON'.
+        - The JSON object should conform to the ChatRecommendationPayload schema.
+        - Example: "That's a great question! I'd recommend trying the 'Spicy Tuna Roll'. It's a local favorite.
+        <<<JSON
+        {
+          "recommendations": [{
+            "canonicalProductId": "sushi-123",
+            "reason": "This matches your preference for spicy seafood and is highly rated by other users.",
+            "preview": { "title": "Spicy Tuna Roll", "image": "/sushi-preview.jpg", "rating": 4.8, "minPrice": 12.99 }
+          }]
+        }
+        JSON>>>
+        - Do not add any other text after the JSON block."`
+      }]
+    };
+
     const history = (chatHistory || [])
       .filter(msg => msg.role === 'user' || msg.role === 'assistant')
-      .map(msg => ({ role: msg.role === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] }));
+      .map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.text }]
+      }));
     history.push({ role: 'user', parts: [{ text: userMessageText }] });
-    const contents = [instruction, ...history];
 
+    const contents = [instruction, ...history];
     const result = await generateWithRetry(genAI, model, contents);
 
     let fullResponseText = '';
+    const recommendations = [];
+
+    // Regex to find the JSON block
+    const jsonRegex = /<<<JSON([\s\S]*?)JSON>>>/;
+
     for await (const chunk of result) {
-      const chunkText = chunk.text;
-      fullResponseText += chunkText;
-      res.write(chunkText);
+      let chunkText = chunk.text(); // Assuming chunk.text() is the correct method now
+
+      // Check if the chunk contains our special JSON block
+      const match = chunkText.match(jsonRegex);
+      if (match && match[1]) {
+        try {
+          const jsonPayload = JSON.parse(match[1]);
+          if (jsonPayload.recommendations) {
+            jsonPayload.recommendations.forEach(rec => {
+              recommendations.push(rec); // Store for DB
+              sendEvent('recommendation', rec);
+            });
+          }
+          // Remove the JSON block from the text stream
+          chunkText = chunkText.replace(jsonRegex, '').trim();
+        } catch (e) {
+          console.error("Failed to parse recommendation JSON:", e);
+          // Don't send a broken event, just send the text
+        }
+      }
+
+      if (chunkText) {
+        fullResponseText += chunkText;
+        sendEvent('text-chunk', chunkText);
+      }
     }
 
+    sendEvent('stream-end', { reason: 'completed' });
     res.end();
 
     // --- Perform Database Writes After Streaming ---
@@ -96,7 +154,8 @@ export default async function handler(req, res) {
         const assistantMessage = {
           id: `asst_msg_${Date.now()}`,
           role: 'assistant',
-          text: fullResponseText, // Save the complete response
+          text: fullResponseText,
+          recommendations: recommendations, // Save recommendations to DB
           userId,
           threadId,
           createdAt: new Date(),

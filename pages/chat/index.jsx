@@ -120,18 +120,58 @@ const ChatPage = () => {
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      let done = false;
+      let buffer = '';
 
-      while (!done) {
-        const { value, done: readerDone } = await reader.read();
-        done = readerDone;
-        const chunk = decoder.decode(value, { stream: true });
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === assistantMessageId ? { ...msg, text: msg.text + chunk } : msg
-          )
-        );
-      }
+      const processStream = async () => {
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) {
+            // If the stream ends but we still have buffer, it's an incomplete line
+            if (buffer.length > 0) console.warn('Incomplete data at stream end:', buffer);
+            break;
+          }
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop(); // Keep the last, possibly incomplete, line in buffer
+
+          for (const line of lines) {
+            if (line.trim() === '') continue; // Skip empty lines
+            try {
+              const event = JSON.parse(line);
+              switch (event.type) {
+                case 'text-chunk':
+                  setMessages((prev) =>
+                    prev.map((msg) =>
+                      msg.id === assistantMessageId
+                        ? { ...msg, text: msg.text + event.payload }
+                        : msg
+                    )
+                  );
+                  break;
+                case 'recommendation':
+                  setRecommendationsByMessageId((prev) => ({
+                    ...prev,
+                    [assistantMessageId]: [
+                      ...(prev[assistantMessageId] || []),
+                      event.payload,
+                    ],
+                  }));
+                  break;
+                case 'stream-end':
+                  setIsLoading(false);
+                  return; // Exit the processing loop
+              }
+            } catch (error) {
+              console.error('Failed to parse stream event:', error, 'Line:', line);
+            }
+          }
+        }
+        // Fallback in case stream ends without a stream-end event
+        setIsLoading(false);
+      };
+
+      await processStream();
 
     } catch (error) {
       console.error("Failed to send message:", error);
@@ -144,13 +184,12 @@ const ChatPage = () => {
       setMessages((prev) => {
         const lastMessage = prev[prev.length - 1];
         // If the last message was the empty assistant shell, remove it before adding error
-        if(lastMessage.id.startsWith('asst_msg_') && lastMessage.text === '') {
+        if (lastMessage.id.startsWith('asst_msg_') && lastMessage.text === '') {
           return [...prev.slice(0, -1), errorAssistantMessage];
         }
         return [...prev, errorAssistantMessage];
       });
-    } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Also stop loading on error
     }
   };
 
