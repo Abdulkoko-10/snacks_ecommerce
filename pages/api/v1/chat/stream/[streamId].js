@@ -57,8 +57,8 @@ export default async function handler(req, res) {
 
     let fullResponseText = '';
     for await (const chunk of result) {
-      console.log('Gemini Stream Chunk:', JSON.stringify(chunk, null, 2));
-      const chunkText = chunk.text;
+      // Using optional chaining for safety, in case the structure is unexpected.
+      const chunkText = chunk?.candidates?.[0]?.content?.parts?.[0]?.text;
       if (chunkText) {
         fullResponseText += chunkText;
         res.write(`event: text-chunk\ndata: ${JSON.stringify({ text: chunkText })}\n\n`);
