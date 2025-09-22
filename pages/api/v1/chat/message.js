@@ -1,7 +1,7 @@
 import { getAuth } from '@clerk/nextjs/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '../../../../lib/mongodb';
-import { readClient, urlFor } from '../../../../lib/client'; // Import Sanity client and urlFor
+import { readClient, urlFor } from '../../../../lib/client';
 import { GoogleGenAI } from '@google/genai';
 
 // eslint-disable-next-line no-unused-vars
@@ -12,7 +12,7 @@ const genAI = new GoogleGenAI(process.env.GEMINI_API_KEY);
 
 // --- Helper function for Intent Detection ---
 async function getIntentAndEntity(userMessage) {
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = "gemini-1.5-flash";
   const prompt = `
     Analyze the user's message to determine their intent and identify any specific food items.
     Respond with a single, minified JSON object with two keys: "intent" and "entity".
@@ -22,9 +22,11 @@ async function getIntentAndEntity(userMessage) {
     User message: "${userMessage}"
   `;
   try {
-    const result = await model.generateContent(prompt);
+    const result = await genAI.models.generateContent({
+        model,
+        contents: [{role: 'user', parts: [{text: prompt}]}],
+    });
     const responseText = result.response.text();
-    // Clean the response to ensure it's valid JSON
     const jsonString = responseText.replace(/```json|```/g, '').trim();
     return JSON.parse(jsonString);
   } catch (error) {
@@ -59,17 +61,14 @@ export default async function handler(req, res) {
     res.setHeader('X-Thread-Id', threadId);
 
     const { intent, entity } = await getIntentAndEntity(userMessageText);
-    const targetProducts = ['samosa', 'meat-pie', 'chicken-roll']; // URL-friendly slugs
+    const targetProducts = ['samosa', 'meat-pie', 'chicken-roll'];
 
     if (intent === 'RECOMMENDATION' && entity && targetProducts.includes(entity)) {
-      // --- Handle Recommendation Flow ---
       const assistantMessageId = `asst_msg_${Date.now()}`;
       const conversationalText = `Of course! Here is a recommendation for ${entity.replace('-', ' ')}:`;
 
-      // Stream the conversational text first
       res.write(conversationalText + '\n');
 
-      // Fetch product from Sanity
       const productQuery = `*[_type == "product" && slug.current == $slug][0]`;
       const product = await readClient.fetch(productQuery, { slug: entity });
 
@@ -79,7 +78,7 @@ export default async function handler(req, res) {
           preview: {
             title: product.name,
             image: product.image && product.image.length > 0 ? urlFor(product.image[0]).url() : '/default-image.jpg',
-            rating: product.rating || 4.5, // Mock rating if not present
+            rating: product.rating || 4.5,
             minPrice: product.price,
             bestProvider: 'FoodDiscovery',
             eta: '5-10 min',
@@ -94,19 +93,14 @@ export default async function handler(req, res) {
           data: [recommendationCard],
         };
 
-        // Stream the JSON payload
         res.write(JSON.stringify(recommendationPayload) + '\n');
       }
 
-      res.end(); // End the response after sending data
-
-      // Save conversation to DB in the background
+      res.end();
       saveConversation(threadId, userId, isNewThread, userMessageText, conversationalText);
 
     } else {
-      // --- Handle General Conversation Flow ---
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      const chat = model.startChat({
+      const chat = genAI.chats.startChat({
         history: (chatHistory || [])
           .filter(msg => msg.role === 'user' || msg.role === 'assistant')
           .map(msg => ({ role: msg.role === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] })),
@@ -121,8 +115,6 @@ export default async function handler(req, res) {
       }
 
       res.end();
-
-      // Save conversation to DB in the background
       saveConversation(threadId, userId, isNewThread, userMessageText, fullResponseText);
     }
   } catch (error) {
