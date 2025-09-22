@@ -1,6 +1,7 @@
 import { getAuth } from '@clerk/nextjs/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '../../../../lib/mongodb';
+import { previewClient, urlFor } from '../../../../lib/client'; // Import Sanity client
 const { GoogleGenAI } = require('@google/genai');
 
 // eslint-disable-next-line no-unused-vars
@@ -38,31 +39,57 @@ export default async function handler(req, res) {
       threadId = new ObjectId().toString();
     }
 
-    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-Thread-Id', threadId); // Send threadId back as a header
 
-    // --- Start Streaming AI Response ---
+    // --- Generate AI Response ---
     const genAI = new GoogleGenAI(apiKey);
-    const model = "gemini-2.0-flash";
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const instruction = { role: "user", parts: [{ text: "You are a helpful and friendly food discovery assistant. Please respond to the user in a conversational way." }] };
     const history = (chatHistory || [])
       .filter(msg => msg.role === 'user' || msg.role === 'assistant')
       .map(msg => ({ role: msg.role === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] }));
-    history.push({ role: 'user', parts: [{ text: userMessageText }] });
-    const contents = [instruction, ...history];
 
-    const result = await generateWithRetry(genAI, model, contents);
+    const chat = model.startChat({
+      history: [instruction, ...history],
+      generationConfig: {
+        maxOutputTokens: 500,
+      },
+    });
 
-    let fullResponseText = '';
-    for await (const chunk of result) {
-      const chunkText = chunk.text;
-      fullResponseText += chunkText;
-      res.write(chunkText);
-    }
+    const result = await chat.sendMessage(userMessageText);
+    const response = result.response;
+    const fullResponseText = response.text();
 
-    res.end();
+    // --- Fetch Product Recommendations from Sanity ---
+    const productsQuery = `*[_type == "product"] | order(_createdAt desc) [0...3]`;
+    const sanityProducts = await previewClient.fetch(productsQuery);
+
+    const recommendations = sanityProducts.map(p => ({
+      canonicalProductId: p._id,
+      preview: {
+        title: p.name,
+        image: p.image ? urlFor(p.image[0]).width(400).url() : '/default-product-image.png',
+        rating: 4.5, // Mock rating as it's not in the product schema
+        minPrice: p.price,
+        bestProvider: "SnacksCo", // Mock provider
+        eta: "15-25 min", // Mock ETA
+        originSummary: ["SnacksCo"], // Mock origin
+      },
+      reason: "Based on our conversation, you might like this!", // Generic reason
+      meta: {
+        generatedBy: "system-rule",
+        confidence: 0.9,
+      }
+    }));
+
+    // --- Response payload ---
+    const payload = {
+      fullText: fullResponseText,
+      recommendations: recommendations,
+    };
+
+    res.status(200).json(payload);
 
     // --- Perform Database Writes After Streaming ---
     const saveToDb = async () => {
@@ -116,25 +143,6 @@ export default async function handler(req, res) {
     // If headers are not sent, we can send an error response.
     if (!res.headersSent) {
       res.status(500).json({ error: 'Failed to process chat message.' });
-    }
-  }
-}
-
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-async function generateWithRetry(genAI, model, contents, maxRetries = 3) {
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      const result = await genAI.models.generateContentStream({ model, contents });
-      return result; // Success
-    } catch (error) {
-      if (error.status === 503 && i < maxRetries - 1) {
-        const waitTime = Math.pow(2, i) * 1000; // Exponential backoff: 1s, 2s, 4s
-        console.warn(`Gemini API overloaded. Retrying in ${waitTime / 1000}s... (Attempt ${i + 1}/${maxRetries})`);
-        await delay(waitTime);
-      } else {
-        throw error; // Re-throw if it's not a 503 or if it's the last retry
-      }
     }
   }
 }

@@ -132,13 +132,29 @@ const RatingTag = styled(OverlayTag)`
  * Renders a recommendation card styled like a Product card.
  * @param {{card: import('../../schemas/chat').ChatRecommendationCard}} props
  */
+const ProviderAndEta = styled.div`
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--text-color);
+  opacity: 0.9;
+  margin-top: auto; /* Pushes to the bottom of the flex container */
+  padding-top: 8px; /* Add some space above */
+`;
+
+const ProviderName = styled.span`
+  font-weight: 600;
+`;
+
+const Eta = styled.span``;
+
 const ChatRecommendationCard = ({ card }) => {
   if (!card) {
     return null;
   }
 
   const { canonicalProductId, preview, reason } = card;
-  const discount = "15% off"; // This is still mock data
+  // const discount = "15% off"; // This is still mock data - REMOVED
 
   return (
     <CardWrapper className="card-wrapper">
@@ -151,7 +167,7 @@ const ChatRecommendationCard = ({ card }) => {
               layout="fill"
               objectFit="cover"
             />
-            {discount && <DiscountTag>{discount}</DiscountTag>}
+            {/* {discount && <DiscountTag>{discount}</DiscountTag>} */}
             <RatingTag>
               <FaStar size={12} /> {preview.rating.toFixed(1)}
             </RatingTag>
@@ -161,7 +177,11 @@ const ChatRecommendationCard = ({ card }) => {
               <ProductName>{preview.title}</ProductName>
               <ProductReason>{reason}</ProductReason>
             </TextContent>
-            <ProductPrice>${preview.minPrice.toFixed(2)}</ProductPrice>
+            <ProviderAndEta>
+              <ProviderName>{preview.bestProvider}</ProviderName>
+              <Eta>~{preview.eta}</Eta>
+            </ProviderAndEta>
+            <ProductPrice>~N{preview.minPrice.toFixed(2)}</ProductPrice>
           </TextContainer>
         </ProductCard>
       </Link>
