@@ -49,7 +49,7 @@ const SidebarToggleButton = styled.button`
 /**
  * The main layout for the chat page, combining the sidebar and chat thread.
  * @param {{
- *   messages: { role: string, stableText: string, liveText: string }[],
+ *   messages: import('../../schemas/chat').ChatMessage[],
  *   recommendationsByMessageId?: Record<string, import('../../schemas/chat').ChatRecommendationCard[]>,
  *   isSidebarOpen: boolean,
  *   setSidebarOpen: (isOpen: boolean) => void
