@@ -57,6 +57,7 @@ export default async function handler(req, res) {
 
     let fullResponseText = '';
     for await (const chunk of result) {
+      console.log('Gemini Stream Chunk:', JSON.stringify(chunk, null, 2));
       const chunkText = chunk.text;
       if (chunkText) {
         fullResponseText += chunkText;
