@@ -10,7 +10,7 @@ const CardScene = styled.div`
   width: 100%;
   height: 100%;
   perspective: 1000px;
-  position: relative; /* New: for positioning the flip icon */
+  position: relative;
 `;
 
 const CardFlipper = styled.div`
@@ -72,7 +72,7 @@ const FlipIconButton = styled.button`
   position: absolute;
   top: 12px;
   right: 12px;
-  z-index: 2; /* Ensure it's above the card content */
+  z-index: 2;
   background: rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 50%;
@@ -86,7 +86,6 @@ const FlipIconButton = styled.button`
   font-size: 1.2rem;
   padding: 0;
   backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
   transition: background-color 0.2s ease;
 
   &:hover {
@@ -98,7 +97,7 @@ const ProductCard = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%; /* Ensure the card fills the wrapper */
+  height: 100%;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   color: var(--text-color);
@@ -121,7 +120,6 @@ const ProductCard = styled.div`
 const ImageContainer = styled.div`
   position: relative;
   width: 100%;
-  /* Use a fixed aspect ratio for the image container */
   aspect-ratio: 16 / 10;
   flex-shrink: 0;
   background-color: var(--secondary-background-color);
@@ -129,11 +127,11 @@ const ImageContainer = styled.div`
 
 const TextContainer = styled.div`
   padding: 12px;
-  flex-grow: 1; /* This is key for filling space */
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* Pushes price to the bottom */
-  gap: 8px; /* Space between text elements */
+  justify-content: space-between;
+  gap: 8px;
 `;
 
 const TextContent = styled.div`
@@ -149,7 +147,7 @@ const ProductName = styled.p`
   color: var(--text-color);
   margin: 0;
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* Clamp to 2 lines */
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -163,7 +161,7 @@ const ProductReason = styled.p`
   opacity: 0.8;
   margin: 0;
   display: -webkit-box;
-  -webkit-line-clamp: 3; /* Clamp to 3 lines */
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -175,7 +173,7 @@ const ProductPrice = styled.p`
   font-size: 1rem;
   margin: 0;
   color: var(--accent-color);
-  align-self: flex-end; /* Align price to the right */
+  align-self: flex-end;
 `;
 
 const OverlayTag = styled.div`
@@ -187,15 +185,7 @@ const OverlayTag = styled.div`
   font-size: 0.7rem;
   font-weight: 600;
   backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-`;
-
-const DiscountTag = styled(OverlayTag)`
-  top: 8px;
-  left: 8px;
-  background-color: var(--accent-color);
-  color: var(--text-on-accent-color);
 `;
 
 const RatingTag = styled(OverlayTag)`
@@ -206,18 +196,14 @@ const RatingTag = styled(OverlayTag)`
   gap: 4px;
 `;
 
-/**
- * Renders a recommendation card styled like a Product card.
- * @param {{card: import('../../schemas/chat').ChatRecommendationCard}} props
- */
 const ProviderAndEta = styled.div`
   display: flex;
   justify-content: space-between;
   font-size: 0.8rem;
   color: var(--text-color);
   opacity: 0.9;
-  margin-top: auto; /* Pushes to the bottom of the flex container */
-  padding-top: 8px; /* Add some space above */
+  margin-top: auto;
+  padding-top: 8px;
 `;
 
 const ProviderName = styled.span`
@@ -233,7 +219,6 @@ const ChatRecommendationCard = ({ card }) => {
   const [hasFetched, setHasFetched] = useState(false);
 
   useEffect(() => {
-    // If we just finished loading comments, flip the card.
     if (!isLoadingComments && hasFetched) {
       setIsFlipped(true);
     }
@@ -245,41 +230,35 @@ const ChatRecommendationCard = ({ card }) => {
 
   const { canonicalProductId, preview, reason } = card;
 
-
   const handleFlip = async (e) => {
     e.stopPropagation();
     e.preventDefault();
 
     if (isFlipped) {
-      // If card is already flipped, just flip it back.
       setIsFlipped(false);
       return;
     }
 
     if (hasFetched) {
-      // If we have already fetched data, just flip.
       setIsFlipped(true);
       return;
     }
 
-    // Fetch comments for the first time
     setIsLoadingComments(true);
-    setHasFetched(true); // Mark that we have attempted a fetch
+    setHasFetched(true);
     const commentsQuery = `*[_type == "review" && product._ref == $productId && approved == true] | order(_createdAt desc) [0...2]`;
     try {
       const fetchedComments = await readClient.fetch(commentsQuery, { productId: canonicalProductId });
       setComments(fetchedComments || []);
     } catch (error) {
       console.error("Failed to fetch comments for card:", error);
-      setComments([]); // Reset on error
+      setComments([]);
     } finally {
       setIsLoadingComments(false);
     }
   };
 
   if (!preview.slug) {
-    // Don't render a card if it can't link anywhere.
-    // This could be replaced with a placeholder or different styling.
     return null;
   }
 
