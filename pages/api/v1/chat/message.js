@@ -2,7 +2,7 @@ import { getAuth } from '@clerk/nextjs/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '../../../../lib/mongodb';
 import { previewClient, urlFor } from '../../../../lib/client'; // Import Sanity client
-const { GoogleGenAI } = require('@google/genai');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 // eslint-disable-next-line no-unused-vars
 const { ChatMessage, ChatRecommendationPayload } = require('../../../../schemas/chat');
@@ -42,7 +42,7 @@ export default async function handler(req, res) {
     res.setHeader('X-Thread-Id', threadId); // Send threadId back as a header
 
     // --- Generate AI Response ---
-    const genAI = new GoogleGenAI(apiKey);
+    const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const instruction = { role: "system", content: "You are a helpful and friendly food discovery assistant. Please respond to the user in a conversational way." };
