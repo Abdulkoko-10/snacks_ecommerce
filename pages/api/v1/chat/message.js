@@ -2,13 +2,13 @@ import { getAuth } from '@clerk/nextjs/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '../../../../lib/mongodb';
 import { readClient, urlFor } from '../../../../lib/client'; // Import Sanity client and urlFor
-import { GoogleGenerativeAI } from '@google/genai';
+import { GoogleGenAI } from '@google/genai';
 
 // eslint-disable-next-line no-unused-vars
 import { ChatMessage, ChatRecommendationPayload, ChatRecommendationCard } from '../../../../schemas/chat';
 
 const dbName = process.env.MONGODB_DB_NAME || 'food-discovery';
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const genAI = new GoogleGenAI(process.env.GEMINI_API_KEY);
 
 // --- Helper function for Intent Detection ---
 async function getIntentAndEntity(userMessage) {
