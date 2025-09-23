@@ -5,13 +5,14 @@ import Image from 'next/image';
 // This is a simplified details page for displaying restaurant info from the API.
 // It does not use the e-commerce context (useStateContext).
 const ProductDetails = ({ product }) => {
+    const [index, setIndex] = useState(0);
+
     // This provides a basic loading state while the data is being fetched.
     if (!product) {
         return <div>Loading...</div>;
     }
 
     const { name, address, rating, photos, user_reviews, website, phone_number } = product;
-    const [index, setIndex] = useState(0);
 
     // Use the first photo as the main image, or a placeholder if no photos exist.
     const mainPhoto = (photos && photos.length > 0) ? photos[index] : "/FoodDiscovery.jpg";
