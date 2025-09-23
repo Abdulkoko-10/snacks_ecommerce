@@ -1,10 +1,8 @@
 import { getAuth } from '@clerk/nextjs/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '../../../../lib/mongodb';
-const { GoogleGenAI } = require('@google/genai');
-
-// eslint-disable-next-line no-unused-vars
-const { ChatMessage, ChatRecommendationPayload } = require('../../../../schemas/chat');
+import { previewClient, urlFor } from '../../../../lib/client';
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const dbName = process.env.MONGODB_DB_NAME || 'food-discovery';
 
@@ -38,33 +36,66 @@ export default async function handler(req, res) {
       threadId = new ObjectId().toString();
     }
 
-    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('X-Thread-Id', threadId); // Send threadId back as a header
+    res.setHeader('X-Thread-Id', threadId);
 
-    // --- Start Streaming AI Response ---
-    const genAI = new GoogleGenAI(apiKey);
-    const model = "gemini-2.0-flash";
+    // --- Generate AI Response ---
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      systemInstruction: "You are a helpful and friendly food discovery assistant. Please respond to the user in a conversational way.",
+    });
 
-    const instruction = { role: "user", parts: [{ text: "You are a helpful and friendly food discovery assistant. Please respond to the user in a conversational way." }] };
     const history = (chatHistory || [])
       .filter(msg => msg.role === 'user' || msg.role === 'assistant')
-      .map(msg => ({ role: msg.role === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] }));
-    history.push({ role: 'user', parts: [{ text: userMessageText }] });
-    const contents = [instruction, ...history];
+      .map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.text }],
+      }));
 
-    const result = await generateWithRetry(genAI, model, contents);
+    const chat = model.startChat({
+      history: history,
+      generationConfig: {
+        maxOutputTokens: 500,
+      },
+    });
 
-    let fullResponseText = '';
-    for await (const chunk of result) {
-      const chunkText = chunk.text;
-      fullResponseText += chunkText;
-      res.write(chunkText);
-    }
+    const result = await chat.sendMessage(userMessageText);
+    const response = result.response;
+    const fullResponseText = response.text();
 
-    res.end();
+    // --- Fetch Product Recommendations from Sanity ---
+    const productsQuery = `*[_type == "product" && defined(slug.current)]{_id, name, image, price, details, slug} | order(_createdAt desc) [0...3]`;
+    const sanityProducts = await previewClient.fetch(productsQuery);
 
-    // --- Perform Database Writes After Streaming ---
+    const recommendations = sanityProducts.map(p => ({
+      canonicalProductId: p._id,
+      preview: {
+        title: p.name,
+        image: p.image ? urlFor(p.image[0]).width(400).url() : '/default-product-image.png',
+        rating: 4.5,
+        minPrice: p.price,
+        bestProvider: "SnacksCo",
+        eta: "15-25 min",
+        originSummary: ["SnacksCo"],
+        slug: p.slug?.current,
+        details: p.details,
+      },
+      reason: "Based on our conversation, you might like this!",
+      meta: {
+        generatedBy: "system-rule",
+        confidence: 0.9,
+      }
+    }));
+
+    // --- Response payload ---
+    const payload = {
+      fullText: fullResponseText,
+      recommendations: recommendations,
+    };
+
+    res.status(200).json(payload);
+
+    // --- Perform Database Writes After Response ---
     const saveToDb = async () => {
       try {
         const client = await clientPromise;
@@ -96,7 +127,7 @@ export default async function handler(req, res) {
         const assistantMessage = {
           id: `asst_msg_${Date.now()}`,
           role: 'assistant',
-          text: fullResponseText, // Save the complete response
+          text: fullResponseText,
           userId,
           threadId,
           createdAt: new Date(),
@@ -113,28 +144,8 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('Error in chat message handler:', error);
-    // If headers are not sent, we can send an error response.
     if (!res.headersSent) {
       res.status(500).json({ error: 'Failed to process chat message.' });
-    }
-  }
-}
-
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-async function generateWithRetry(genAI, model, contents, maxRetries = 3) {
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      const result = await genAI.models.generateContentStream({ model, contents });
-      return result; // Success
-    } catch (error) {
-      if (error.status === 503 && i < maxRetries - 1) {
-        const waitTime = Math.pow(2, i) * 1000; // Exponential backoff: 1s, 2s, 4s
-        console.warn(`Gemini API overloaded. Retrying in ${waitTime / 1000}s... (Attempt ${i + 1}/${maxRetries})`);
-        await delay(waitTime);
-      } else {
-        throw error; // Re-throw if it's not a 503 or if it's the last retry
-      }
     }
   }
 }
