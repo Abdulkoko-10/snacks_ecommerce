@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { readClient } from "../lib/client";
-import { FooterBanner, HeroBanner } from "../components";
+import { FooterBanner, HeroBanner, SearchResultCard, SearchControls } from "../components";
 
 const Home = ({ bannerData }) => {
   const [query, setQuery] = useState('');
@@ -39,19 +39,12 @@ const Home = ({ bannerData }) => {
         <p>Search for restaurants, cafes, and more in your city</p>
       </div>
 
-      <div className="search-container" style={{ textAlign: 'center', margin: '40px' }}>
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="e.g., 'pizza in new york'"
-          style={{ padding: '10px', width: '300px', marginRight: '10px', fontSize: '16px' }}
-          onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-        />
-        <button onClick={handleSearch} disabled={loading} style={{ padding: '10px 20px', fontSize: '16px' }}>
-          {loading ? 'Searching...' : 'Search'}
-        </button>
-      </div>
+      <SearchControls
+        query={query}
+        setQuery={setQuery}
+        handleSearch={handleSearch}
+        loading={loading}
+      />
 
       {error && <p style={{ color: 'red', textAlign: 'center' }}>Error: {error}</p>}
 
@@ -60,11 +53,7 @@ const Home = ({ bannerData }) => {
           <p>No results found.</p>
         )}
         {results.map((restaurant) => (
-          <div key={restaurant.placeId} className="product-card" style={{ border: '1px solid #eee', padding: '16px', borderRadius: '8px' }}>
-            <h3>{restaurant.name}</h3>
-            <p>{restaurant.address}</p>
-            <p>Rating: {restaurant.rating || 'N/A'}</p>
-          </div>
+          <SearchResultCard key={restaurant.placeId} restaurant={restaurant} />
         ))}
       </div>
 
