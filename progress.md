@@ -52,18 +52,18 @@ This document tracks the progress of the Food Discovery Platform revamp. It is d
 
 1.  **Core Implementation:**
     - `[DONE]` Build Chat UI Components (Complete, including layout, styling, and responsiveness)
-    - `[IN PROGRESS]` Implement real-time WebSocket communication
+    - `[TODO]` Implement real-time (WebSocket/streaming) connection
     - `[DONE]` Implement end-to-end chat flow (with mock backend first)
     - `[DONE]` UI Polish: Refined recommendation card design and implemented full-bleed carousel.
-    - `[DONE]` Integrate with Gemini for recommendations.
+    - `[IN PROGRESS]` Integrate with Gemini for recommendations. *(Note: Integrated for text responses. Generating the recommendation list itself is currently a placeholder and not yet driven by Gemini.)*
     - `[IN PROGRESS]` Polish and bugfix chat UI (Markdown rendering, modals, performance).
 2.  **QA & Testing:**
     - `[TODO]` Unit tests for Chat UI components.
     - `[TODO]` E2E tests for the chat flow (from user message to recommendation display).
 3.  **Integration Points Checklist:**
     - `[x]` Does the Gemini API fully integrate here for basic responses?
-    - `[ ]` Is the WebSocket connection stable and performant?
-    - `[ ]` Does the frontend correctly render `ChatRecommendationPayload`?
+    - `[TODO]` Re-implement real-time connection for chat.
+    - `[x]` Does the frontend correctly render `ChatRecommendationPayload`? *(Note: Renders placeholder data from the API correctly.)*
 
 ---
 
@@ -122,5 +122,5 @@ This document tracks the progress of the Food Discovery Platform revamp. It is d
 
 ## Current Focus
 
-- **Feature:** Polish and Finalize Chat Page
-- **Status:** Fixing streaming format, improving modals, and optimizing performance.
+- **Feature:** Implement True Recommendation Logic
+- **Status:** Design and implement the orchestrator logic to generate intelligent recommendations based on user intent, replacing the current placeholder (latest products).

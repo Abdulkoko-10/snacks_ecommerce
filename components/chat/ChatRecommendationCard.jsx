@@ -5,17 +5,22 @@ import Image from 'next/image';
 import { FaStar } from 'react-icons/fa';
 
 const CardWrapper = styled.div`
+  /* This wrapper now takes the full width of the swiper slide */
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
+  /* The classname is added in ChatThread.jsx */
+  &.card-wrapper {
+    /* This empty class is for targeting from parent */
+  }
 `;
 
 const ProductCard = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%;
+  height: 100%; /* Ensure the card fills the wrapper */
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   color: var(--text-color);
@@ -38,6 +43,7 @@ const ProductCard = styled.div`
 const ImageContainer = styled.div`
   position: relative;
   width: 100%;
+  /* Use a fixed aspect ratio for the image container */
   aspect-ratio: 16 / 10;
   flex-shrink: 0;
   background-color: var(--secondary-background-color);
@@ -45,11 +51,11 @@ const ImageContainer = styled.div`
 
 const TextContainer = styled.div`
   padding: 12px;
-  flex-grow: 1;
+  flex-grow: 1; /* This is key for filling space */
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 8px;
+  justify-content: space-between; /* Pushes price to the bottom */
+  gap: 8px; /* Space between text elements */
 `;
 
 const TextContent = styled.div`
@@ -65,7 +71,7 @@ const ProductName = styled.p`
   color: var(--text-color);
   margin: 0;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 2; /* Clamp to 2 lines */
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -79,7 +85,7 @@ const ProductReason = styled.p`
   opacity: 0.8;
   margin: 0;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 3; /* Clamp to 3 lines */
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -91,7 +97,7 @@ const ProductPrice = styled.p`
   font-size: 1rem;
   margin: 0;
   color: var(--accent-color);
-  align-self: flex-end;
+  align-self: flex-end; /* Align price to the right */
 `;
 
 const OverlayTag = styled.div`
@@ -103,7 +109,15 @@ const OverlayTag = styled.div`
   font-size: 0.7rem;
   font-weight: 600;
   backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   border: 1px solid rgba(255, 255, 255, 0.2);
+`;
+
+const DiscountTag = styled(OverlayTag)`
+  top: 8px;
+  left: 8px;
+  background-color: var(--accent-color);
+  color: var(--text-on-accent-color);
 `;
 
 const RatingTag = styled(OverlayTag)`
@@ -114,37 +128,22 @@ const RatingTag = styled(OverlayTag)`
   gap: 4px;
 `;
 
-const ProviderAndEta = styled.div`
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.8rem;
-  color: var(--text-color);
-  opacity: 0.9;
-  margin-top: auto;
-  padding-top: 8px;
-`;
-
-const ProviderName = styled.span`
-  font-weight: 600;
-`;
-
-const Eta = styled.span``;
-
+/**
+ * Renders a recommendation card styled like a Product card.
+ * @param {{card: import('../../schemas/chat').ChatRecommendationCard}} props
+ */
 const ChatRecommendationCard = ({ card }) => {
   if (!card) {
     return null;
   }
 
-  const { preview, reason } = card;
-
-  if (!preview.slug) {
-    return null;
-  }
+  const { canonicalProductId, preview, reason } = card;
+  const discount = "15% off"; // This is still mock data
 
   return (
     <CardWrapper className="card-wrapper">
-      <Link href={`/product/${preview.slug}`} passHref>
-        <ProductCard as="a">
+      <Link href={`/product/${canonicalProductId}`} passHref>
+        <ProductCard as="a"> {/* Use `as="a"` for semantics with Next.js Link */}
           <ImageContainer>
             <Image
               src={preview.image}
@@ -152,6 +151,7 @@ const ChatRecommendationCard = ({ card }) => {
               layout="fill"
               objectFit="cover"
             />
+            {discount && <DiscountTag>{discount}</DiscountTag>}
             <RatingTag>
               <FaStar size={12} /> {preview.rating.toFixed(1)}
             </RatingTag>
@@ -161,11 +161,7 @@ const ChatRecommendationCard = ({ card }) => {
               <ProductName>{preview.title}</ProductName>
               <ProductReason>{reason}</ProductReason>
             </TextContent>
-            <ProviderAndEta>
-              <ProviderName>{preview.bestProvider}</ProviderName>
-              <Eta>~{preview.eta}</Eta>
-            </ProviderAndEta>
-            <ProductPrice>~N{preview.minPrice.toFixed(2)}</ProductPrice>
+            <ProductPrice>${preview.minPrice.toFixed(2)}</ProductPrice>
           </TextContainer>
         </ProductCard>
       </Link>

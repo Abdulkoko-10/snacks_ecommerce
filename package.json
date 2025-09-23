@@ -16,7 +16,7 @@
     "@emotion/react": "^11.11.4",
     "@emotion/server": "^11.11.0",
     "@emotion/styled": "^11.11.5",
-    "@google/generative-ai": "^0.1.1",
+    "@google/genai": "^1.20.0",
     "@mui/material": "^5.15.20",
     "@sanity/client": "^6.0.0",
     "@sanity/image-url": "^1.0.1",

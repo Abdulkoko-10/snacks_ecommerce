@@ -106,27 +106,31 @@ const ChatPage = () => {
       const newThreadId = response.headers.get('X-Thread-Id');
       if (newThreadId && newThreadId !== threadId) {
         setThreadId(newThreadId);
-        // Use replace to avoid polluting browser history for thread ID changes
-        router.replace(`/chat?threadId=${newThreadId}`, undefined, { shallow: true });
+        router.push(`/chat?threadId=${newThreadId}`, undefined, { shallow: true });
       }
 
-      const data = await response.json();
-      const { fullText, recommendations } = data;
-
+      const assistantMessageId = `asst_msg_${Date.now()}`;
       const assistantMessage = {
-        id: `asst_msg_${Date.now()}`,
+        id: assistantMessageId,
         role: 'assistant',
-        text: fullText,
+        text: '',
         createdAt: new Date().toISOString(),
       };
-
       setMessages((prev) => [...prev, assistantMessage]);
 
-      if (recommendations && recommendations.length > 0) {
-        setRecommendationsByMessageId((prev) => ({
-          ...prev,
-          [assistantMessage.id]: recommendations,
-        }));
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let done = false;
+
+      while (!done) {
+        const { value, done: readerDone } = await reader.read();
+        done = readerDone;
+        const chunk = decoder.decode(value, { stream: true });
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === assistantMessageId ? { ...msg, text: msg.text + chunk } : msg
+          )
+        );
       }
 
     } catch (error) {
