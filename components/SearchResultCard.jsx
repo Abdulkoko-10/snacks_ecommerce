@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import Image from 'next/image';
+import Link from 'next/link';
 import { FaStar } from 'react-icons/fa';
 
 // Reusing the same styled components from ChatRecommendationCard for consistency
@@ -91,33 +92,35 @@ const RatingContainer = styled.div`
 `;
 
 const SearchResultCard = ({ restaurant }) => {
-  if (!restaurant) {
+  if (!restaurant || !restaurant.placeId) {
     return null;
   }
 
   return (
-    <ProductCard>
-      <ImageContainer>
-        {/* Using a placeholder image as SerpApi doesn't reliably provide one */}
-        <Image
-          src="/FoodDiscovery.jpg" // Placeholder image from public folder
-          alt={restaurant.name}
-          layout="fill"
-          objectFit="cover"
-        />
-      </ImageContainer>
-      <TextContainer>
-        <TextContent>
-          <RestaurantName>{restaurant.name}</RestaurantName>
-          <RestaurantAddress>{restaurant.address}</RestaurantAddress>
-        </TextContent>
-        {restaurant.rating && (
-          <RatingContainer>
-            <FaStar /> {restaurant.rating.toFixed(1)}
-          </RatingContainer>
-        )}
-      </TextContainer>
-    </ProductCard>
+    <Link href={`/product/${restaurant.placeId}`} passHref>
+      <ProductCard as="a">
+        <ImageContainer>
+          {/* Using a placeholder image as SerpApi doesn't reliably provide one */}
+          <Image
+            src="/FoodDiscovery.jpg" // Placeholder image from public folder
+            alt={restaurant.name}
+            layout="fill"
+            objectFit="cover"
+          />
+        </ImageContainer>
+        <TextContainer>
+          <TextContent>
+            <RestaurantName>{restaurant.name}</RestaurantName>
+            <RestaurantAddress>{restaurant.address}</RestaurantAddress>
+          </TextContent>
+          {restaurant.rating && (
+            <RatingContainer>
+              <FaStar /> {restaurant.rating.toFixed(1)}
+            </RatingContainer>
+          )}
+        </TextContainer>
+      </ProductCard>
+    </Link>
   );
 };
 

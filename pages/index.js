@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { readClient } from "../lib/client";
-import { Product, FooterBanner, HeroBanner, SearchResultCard, SearchControls } from "../components";
+import { Product, FooterBanner, HeroBanner, SearchResultCard, SearchControls, SearchResultsCarousel } from "../components";
 
 const Home = ({ products, bannerData }) => {
   const [query, setQuery] = useState('');
@@ -51,15 +51,13 @@ const Home = ({ products, bannerData }) => {
       {error && <p style={{ color: 'red', textAlign: 'center' }}>Error: {error}</p>}
 
       {searched ? (
-        <div className="products-container">
-          {loading && <p>Loading...</p>}
-          {!loading && results.length === 0 && (
-            <p>No results found.</p>
-          )}
-          {results.map((restaurant) => (
-            <SearchResultCard key={restaurant.placeId} restaurant={restaurant} />
-          ))}
-        </div>
+        loading ? (
+          <div className="products-heading"><p>Loading...</p></div>
+        ) : results.length > 0 ? (
+          <SearchResultsCarousel results={results} />
+        ) : (
+          <div className="products-heading"><p>No results found.</p></div>
+        )
       ) : (
         <>
           <div className="products-heading">
