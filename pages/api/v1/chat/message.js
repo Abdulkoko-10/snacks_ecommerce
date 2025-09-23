@@ -64,20 +64,8 @@ export default async function handler(req, res) {
     const fullResponseText = response.text();
 
     // --- Fetch Product Recommendations from Sanity ---
-    let sanityProducts = [];
-    try {
-      console.log("DIAGNOSTIC: Fetching products from Sanity...");
-      const productsQuery = `*[_type == "product" && defined(slug.current)]{_id, name, image, price, details, slug} | order(_createdAt desc) [0...3]`;
-      sanityProducts = await previewClient.fetch(productsQuery);
-      console.log(`DIAGNOSTIC: Successfully fetched ${sanityProducts.length} products from Sanity.`);
-      if (sanityProducts.length > 0) {
-        console.log("DIAGNOSTIC: Sample product data:", JSON.stringify(sanityProducts[0], null, 2));
-      }
-    } catch (e) {
-      console.error("DIAGNOSTIC: Sanity fetch failed:", e);
-      // Do not throw here, just return an empty recommendations array
-      sanityProducts = [];
-    }
+    const productsQuery = `*[_type == "product" && defined(slug.current)]{_id, name, image, price, details, slug} | order(_createdAt desc) [0...3]`;
+    const sanityProducts = await previewClient.fetch(productsQuery);
 
     const recommendations = sanityProducts.map(p => ({
       canonicalProductId: p._id,
