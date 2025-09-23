@@ -1,0 +1,3 @@
+
+> serpapi-connector@1.0.0 dev
+> npx ts-node src/index.ts

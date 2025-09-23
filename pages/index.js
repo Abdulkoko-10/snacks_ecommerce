@@ -1,22 +1,70 @@
-import React from "react";
+import React, { useState } from 'react';
 import { readClient } from "../lib/client";
+import { FooterBanner, HeroBanner } from "../components";
 
-import { Product, FooterBanner, HeroBanner } from "../components";
+const Home = ({ bannerData }) => {
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [searched, setSearched] = useState(false);
 
-const Home = ({ products, bannerData }) => {
+  const handleSearch = async () => {
+    if (!query) return;
+    setLoading(true);
+    setError(null);
+    setResults([]);
+    setSearched(true);
+
+    try {
+      const response = await fetch(`/api/v1/search?q=${encodeURIComponent(query)}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setResults(data);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
-      {bannerData?.[0] && ( // Conditional rendering for safety
-        <HeroBanner heroBanner={bannerData[0]} />
-      )}
+      {bannerData?.[0] && <HeroBanner heroBanner={bannerData[0]} />}
+
       <div className="products-heading">
-        <h2>Best Selling Products</h2>
-        <p>Samosas of different Tastes</p>
+        <h2>Find Your Next Meal</h2>
+        <p>Search for restaurants, cafes, and more in your city</p>
       </div>
 
+      <div className="search-container" style={{ textAlign: 'center', margin: '40px' }}>
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="e.g., 'pizza in new york'"
+          style={{ padding: '10px', width: '300px', marginRight: '10px', fontSize: '16px' }}
+          onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+        />
+        <button onClick={handleSearch} disabled={loading} style={{ padding: '10px 20px', fontSize: '16px' }}>
+          {loading ? 'Searching...' : 'Search'}
+        </button>
+      </div>
+
+      {error && <p style={{ color: 'red', textAlign: 'center' }}>Error: {error}</p>}
+
       <div className="products-container">
-        {products?.map((product) => (
-          <Product key={product._id} product={product} />
+        {searched && !loading && results.length === 0 && (
+          <p>No results found.</p>
+        )}
+        {results.map((restaurant) => (
+          <div key={restaurant.placeId} className="product-card" style={{ border: '1px solid #eee', padding: '16px', borderRadius: '8px' }}>
+            <h3>{restaurant.name}</h3>
+            <p>{restaurant.address}</p>
+            <p>Rating: {restaurant.rating || 'N/A'}</p>
+          </div>
         ))}
       </div>
 
@@ -24,22 +72,16 @@ const Home = ({ products, bannerData }) => {
     </div>
   );
 };
-// Export a constant named getStaticProps which is an async function
-export const getStaticProps = async () => {
-  // Create a query for the 10 newest products
-  const query = `*[_type == "product"] | order(_createdAt desc) [0...10]`;
-  // Fetch all products using the query
-  const products = await readClient.fetch(query);
 
-  // Create a query for all banners
+export const getStaticProps = async () => {
+  // We keep getStaticProps to fetch banner data at build time.
+  // The products are now fetched client-side.
   const bannerQuery = `*[_type == "banner"]`;
-  // Fetch all banners using the query
   const bannerData = await readClient.fetch(bannerQuery);
 
-  // Return an object containing the products and bannerData as props
   return {
-    props: { products, bannerData },
-    revalidate: 60, // Regenerate the page at most once every 60 seconds
+    props: { bannerData },
+    revalidate: 60,
   };
 };
 
