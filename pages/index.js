@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { readClient } from "../lib/client";
-import { FooterBanner, HeroBanner, SearchResultCard, SearchControls } from "../components";
+import { Product, FooterBanner, HeroBanner, SearchResultCard, SearchControls } from "../components";
 
-const Home = ({ bannerData }) => {
+const Home = ({ products, bannerData }) => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -34,28 +34,43 @@ const Home = ({ bannerData }) => {
     <div>
       {bannerData?.[0] && <HeroBanner heroBanner={bannerData[0]} />}
 
-      <div className="products-heading">
-        <h2>Find Your Next Meal</h2>
-        <p>Search for restaurants, cafes, and more in your city</p>
-      </div>
+      <div className="search-section">
+        <div className="products-heading">
+          <h2>Find Your Next Meal</h2>
+          <p>Search for restaurants, cafes, and more in your city</p>
+        </div>
 
-      <SearchControls
-        query={query}
-        setQuery={setQuery}
-        handleSearch={handleSearch}
-        loading={loading}
-      />
+        <SearchControls
+          query={query}
+          setQuery={setQuery}
+          handleSearch={handleSearch}
+          loading={loading}
+        />
+      </div>
 
       {error && <p style={{ color: 'red', textAlign: 'center' }}>Error: {error}</p>}
 
-      <div className="products-container">
-        {searched && !loading && results.length === 0 && (
-          <p>No results found.</p>
-        )}
-        {results.map((restaurant) => (
-          <SearchResultCard key={restaurant.placeId} restaurant={restaurant} />
-        ))}
-      </div>
+      {searched ? (
+        <div className="products-container">
+          {loading && <p>Loading...</p>}
+          {!loading && results.length === 0 && (
+            <p>No results found.</p>
+          )}
+          {results.map((restaurant) => (
+            <SearchResultCard key={restaurant.placeId} restaurant={restaurant} />
+          ))}
+        </div>
+      ) : (
+        <>
+          <div className="products-heading">
+            <h2>Best Selling Products</h2>
+            <p>Snacks of many variations</p>
+          </div>
+          <div className="products-container">
+            {products?.map((product) => <Product key={product._id} product={product} />)}
+          </div>
+        </>
+      )}
 
       <FooterBanner footerBanner={bannerData && bannerData[0]} />
     </div>
@@ -63,13 +78,15 @@ const Home = ({ bannerData }) => {
 };
 
 export const getStaticProps = async () => {
-  // We keep getStaticProps to fetch banner data at build time.
-  // The products are now fetched client-side.
+  // The original query for products is kept for the initial page load.
+  const productQuery = `*[_type == "product"] | order(_createdAt desc) [0...10]`;
+  const products = await readClient.fetch(productQuery);
+
   const bannerQuery = `*[_type == "banner"]`;
   const bannerData = await readClient.fetch(bannerQuery);
 
   return {
-    props: { bannerData },
+    props: { products, bannerData },
     revalidate: 60,
   };
 };
