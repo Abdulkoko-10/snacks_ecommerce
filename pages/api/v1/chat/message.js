@@ -1,32 +1,10 @@
 import { getAuth } from '@clerk/nextjs/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '../../../../lib/mongodb';
-const { extractSearchIntent, generateRecommendationReasons } = require('../../../../lib/gemini');
-const { searchRestaurants } = require('../../../../lib/serpapi');
-const { geocodeLocation } = require('../../../../lib/location');
+import { previewClient, urlFor } from '../../../../lib/client';
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const dbName = process.env.MONGODB_DB_NAME || 'food-discovery';
-
-// This function generates the simple conversational response.
-async function getConversationalResponse(apiKey, chatHistory, userMessageText) {
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({
-    model: "gemini-2.0-flash",
-    systemInstruction: "You are a helpful and friendly food discovery assistant. Please respond to the user in a conversational way. Keep your responses concise and focused on helping them find food.",
-  });
-
-  const history = (chatHistory || [])
-    .filter(msg => msg.role === 'user' || msg.role === 'assistant')
-    .map(msg => ({
-      role: msg.role === 'user' ? 'user' : 'model',
-      parts: [{ text: msg.text }],
-    }));
-
-  const chat = model.startChat({ history });
-  const result = await chat.sendMessage(userMessageText);
-  return result.response.text();
-}
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -49,62 +27,69 @@ export default async function handler(req, res) {
     const { text: userMessageText, chatHistory, threadId: currentThreadId } = req.body;
 
     if (!userMessageText) {
-      return res.status(400).json({ error: 'Bad Request: "text" is required.' });
+      return res.status(400).json({ error: 'Bad Request: "text" is required in the request body.' });
     }
 
-    let threadId = currentThreadId || new ObjectId().toString();
-    const isNewThread = !currentThreadId;
+    let threadId = currentThreadId;
+    let isNewThread = !threadId;
+    if (isNewThread) {
+      threadId = new ObjectId().toString();
+    }
+
     res.setHeader('X-Thread-Id', threadId);
 
-    // --- Orchestration Logic ---
-    // 1. Generate the conversational part of the response first.
-    const conversationalText = await getConversationalResponse(apiKey, chatHistory, userMessageText);
+    // --- Generate AI Response ---
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      systemInstruction: "You are a helpful and friendly food discovery assistant. Please respond to the user in a conversational way.",
+    });
 
-    // 2. Extract structured intent from the user's message.
-    const intent = await extractSearchIntent(userMessageText);
+    const history = (chatHistory || [])
+      .filter(msg => msg.role === 'user' || msg.role === 'assistant')
+      .map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.text }],
+      }));
 
-    // 3. Geocode the location to get coordinates.
-    let geocode = null;
-    try {
-      geocode = await geocodeLocation(intent.region);
-    } catch (geoError) {
-      console.warn(`Geocoding failed for region "${intent.region}", proceeding without ll parameter.`);
-      // Continue without geocode, SerpApi will use region string
-    }
+    const chat = model.startChat({
+      history: history,
+      generationConfig: {
+        maxOutputTokens: 500,
+      },
+    });
 
-    // 4. Fetch restaurant recommendations based on the intent.
-    // We'll fetch a small number for the chat interface.
-    const potentialRecommendations = await searchRestaurants(intent, 5, 0, geocode);
+    const result = await chat.sendMessage(userMessageText);
+    const response = result.response;
+    const fullResponseText = response.text();
 
-    // 5. Generate personalized reasons for each recommendation.
-    const recommendations = await Promise.all(
-      potentialRecommendations.map(async (p) => {
-        const reason = await generateRecommendationReasons(p, chatHistory);
-        return {
-          canonicalProductId: p.canonicalProductId,
-          preview: {
-            title: p.title,
-            image: p.images && p.images.length > 0 ? p.images[0] : '/FoodDiscovery.jpg',
-            rating: p.rating,
-            minPrice: null, // Not available from this source
-            bestProvider: "Google Maps",
-            eta: "Varies",
-            originSummary: ["Google Maps"],
-            slug: p.placeId, // Using placeId as a slug substitute
-            details: p.address,
-          },
-          reason: reason,
-          meta: {
-            generatedBy: "gemini-orchestrator",
-            confidence: 0.8, // Example confidence
-          }
-        };
-      })
-    );
+    // --- Fetch Product Recommendations from Sanity ---
+    const productsQuery = `*[_type == "product" && defined(slug.current)]{_id, name, image, price, details, slug} | order(_createdAt desc) [0...3]`;
+    const sanityProducts = await previewClient.fetch(productsQuery);
 
-    // 5. Construct the final payload.
+    const recommendations = sanityProducts.map(p => ({
+      canonicalProductId: p._id,
+      preview: {
+        title: p.name,
+        image: p.image ? urlFor(p.image[0]).width(400).url() : '/default-product-image.png',
+        rating: 4.5,
+        minPrice: p.price,
+        bestProvider: "SnacksCo",
+        eta: "15-25 min",
+        originSummary: ["SnacksCo"],
+        slug: p.slug?.current,
+        details: p.details,
+      },
+      reason: "Based on our conversation, you might like this!",
+      meta: {
+        generatedBy: "system-rule",
+        confidence: 0.9,
+      }
+    }));
+
+    // --- Response payload ---
     const payload = {
-      fullText: conversationalText,
+      fullText: fullResponseText,
       recommendations: recommendations,
     };
 
@@ -130,10 +115,26 @@ export default async function handler(req, res) {
           await threadsCollection.updateOne({ _id: new ObjectId(threadId), userId }, { $set: { lastUpdated: new Date() } });
         }
 
-        const userMessage = { role: 'user', text: userMessageText, userId, threadId, createdAt: new Date() };
-        const assistantMessage = { role: 'assistant', text: conversationalText, userId, threadId, createdAt: new Date() };
+        const userMessage = {
+          id: `user_msg_${Date.now()}`,
+          role: 'user',
+          text: userMessageText,
+          userId,
+          threadId,
+          createdAt: new Date(),
+        };
 
-        await messagesCollection.insertMany([userMessage, assistantMessage]);
+        const assistantMessage = {
+          id: `asst_msg_${Date.now()}`,
+          role: 'assistant',
+          text: fullResponseText,
+          userId,
+          threadId,
+          createdAt: new Date(),
+        };
+
+        await messagesCollection.insertOne(userMessage);
+        await messagesCollection.insertOne(assistantMessage);
       } catch (dbError) {
         console.error("Error saving chat conversation to DB:", dbError);
       }

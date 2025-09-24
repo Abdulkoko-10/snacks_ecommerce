@@ -97,8 +97,8 @@ const RatingContainer = styled.div`
   align-self: flex-end;
 `;
 
-const SearchResultCard = ({ product }) => {
-  if (!product) {
+const SearchResultCard = ({ restaurant }) => {
+  if (!restaurant) {
     return null;
   }
 
@@ -106,21 +106,22 @@ const SearchResultCard = ({ product }) => {
     <CardWrapper className="card-wrapper">
       <ProductCard>
         <ImageContainer>
+          {/* Using a placeholder image as SerpApi doesn't reliably provide one */}
         <Image
-          src={product.images && product.images.length > 0 ? product.images[0] : "/FoodDiscovery.jpg"}
-          alt={product.title}
+          src="/FoodDiscovery.jpg" // Placeholder image from public folder
+          alt={restaurant.name}
           layout="fill"
           objectFit="cover"
         />
       </ImageContainer>
       <TextContainer>
         <TextContent>
-          <RestaurantName>{product.title}</RestaurantName>
-          <RestaurantAddress>{product.address}</RestaurantAddress>
+          <RestaurantName>{restaurant.name}</RestaurantName>
+          <RestaurantAddress>{restaurant.address}</RestaurantAddress>
         </TextContent>
-        {product.rating && (
+        {restaurant.rating && (
           <RatingContainer>
-            <FaStar /> {product.rating.toFixed(1)}
+            <FaStar /> {restaurant.rating.toFixed(1)}
           </RatingContainer>
         )}
       </TextContainer>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { readClient } from "../lib/client";
-import { Product, FooterBanner, HeroBanner, SearchResultCard, SearchControls, SearchResultCarousel } from "../components";
+import { Product, FooterBanner, HeroBanner, SearchControls, SearchResultCarousel } from "../components";
 
 const Home = ({ products, bannerData }) => {
   const [query, setQuery] = useState('');
