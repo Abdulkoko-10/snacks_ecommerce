@@ -1,22 +1,65 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+## Getting Started: Food Discovery Platform
 
-First, run the development server:
+This project has been refactored into a multi-service architecture. To run the full platform in a development environment, you will need to run **three** separate services in **three** different terminal windows.
+
+### Prerequisites
+
+1.  **Install Dependencies:** Before running any service, make sure you have installed the necessary dependencies in both the root directory (for the frontend) and in each service's directory.
+    ```bash
+    # Install root dependencies (for Next.js frontend)
+    npm install
+
+    # Install orchestrator dependencies
+    cd orchestrator && npm install && cd ..
+
+    # Install connector dependencies
+    cd connectors/google-places-connector && npm install && cd ../..
+    ```
+2.  **Environment Variables:** Create a `.env.development` file in the root directory. This file is used by the Next.js frontend.
+    ```
+    NEXT_PUBLIC_ORCHESTRATOR_URL=http://localhost:3001/api/v1
+    ```
+
+### Running the Development Environment
+
+Open three separate terminal tabs or windows and run the following commands, one in each terminal.
+
+**Terminal 1: Start the Orchestrator**
+The orchestrator is the central service that manages data flow.
 
 ```bash
+cd orchestrator
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
+*This will start the orchestrator service, typically on port 3001.*
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+**Terminal 2: Start the Frontend**
+This is the Next.js user interface.
+
+```bash
+# Make sure you are in the root directory
+npm run dev
+```
+*This will start the frontend, typically on port 3000.*
+
+---
+
+**Terminal 3: Run the Connector (to provide data)**
+The connector fetches data from providers and sends it to the orchestrator. Since the orchestrator's data store is currently in-memory, you need to run the connector at least once *after* starting the orchestrator to populate it with data.
+
+```bash
+cd connectors/google-places-connector
+npm start
+```
+*This script will run, send its mock data to the orchestrator, and then exit. You should see success messages in both this terminal and the orchestrator's terminal.*
+
+### Viewing the Application
+
+Once all services are running, open [http://localhost:3000](http://localhost:3000) with your browser to see the result. The homepage should now display products fetched from the orchestrator.
 
 [API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
 
