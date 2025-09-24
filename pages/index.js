@@ -1,46 +1,85 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { readClient } from "../lib/client";
 
 import { Product, FooterBanner, HeroBanner } from "../components";
 
-const Home = ({ products, bannerData }) => {
+const ORCHESTRATOR_API_URL = process.env.NEXT_PUBLIC_ORCHESTRATOR_URL || 'http://localhost:3001/api/v1';
+
+const Home = () => {
+  const [products, setProducts] = useState([]);
+  const [bannerData, setBannerData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        // Fetch products from the new orchestrator
+        const productsResponse = await fetch(`${ORCHESTRATOR_API_URL}/products`);
+        if (!productsResponse.ok) {
+          throw new Error(`Failed to fetch products: ${productsResponse.statusText}`);
+        }
+        const productsData = await productsResponse.json();
+        setProducts(productsData);
+
+        // Keep fetching banner data from Sanity for now
+        const bannerQuery = `*[_type == "banner"]`;
+        const bannerData = await readClient.fetch(bannerQuery);
+        setBannerData(bannerData);
+
+      } catch (err) {
+        setError(err.message);
+        console.error("Error fetching data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []); // Empty dependency array means this runs once on mount
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>Error: {error}. Is the orchestrator running?</p>;
+  }
+
   return (
     <div>
-      {bannerData?.[0] && ( // Conditional rendering for safety
+      {bannerData?.[0] && (
         <HeroBanner heroBanner={bannerData[0]} />
       )}
       <div className="products-heading">
-        <h2>Best Selling Products</h2>
-        <p>Samosas of different Tastes</p>
+        <h2>Discover Your Next Meal</h2>
+        <p>Selections from all over the world</p>
       </div>
 
       <div className="products-container">
-        {products?.map((product) => (
-          <Product key={product._id} product={product} />
-        ))}
+        {products?.map((product) => {
+          // Adapt CanonicalProduct to the props expected by the old Product component
+          const adaptedProduct = {
+            _id: product.canonicalProductId,
+            name: product.title,
+            // The old component expects a slug object, we can mock it
+            // In the future, product pages will also be driven by canonicalId
+            slug: { current: product.canonicalProductId },
+            // The old component expects a single price number and a single image object
+            price: product.price.amount,
+            // Pass only the first image, and in the structure the old component expects
+            image: product.images && product.images.length > 0
+              ? [{ _type: 'image', asset: { _ref: product.images[0], url: product.images[0] } }]
+              : [], // Handle cases with no images
+          };
+          return <Product key={adaptedProduct._id} product={adaptedProduct} />;
+        })}
       </div>
 
       <FooterBanner footerBanner={bannerData && bannerData[0]} />
     </div>
   );
-};
-// Export a constant named getStaticProps which is an async function
-export const getStaticProps = async () => {
-  // Create a query for the 10 newest products
-  const query = `*[_type == "product"] | order(_createdAt desc) [0...10]`;
-  // Fetch all products using the query
-  const products = await readClient.fetch(query);
-
-  // Create a query for all banners
-  const bannerQuery = `*[_type == "banner"]`;
-  // Fetch all banners using the query
-  const bannerData = await readClient.fetch(bannerQuery);
-
-  // Return an object containing the products and bannerData as props
-  return {
-    props: { products, bannerData },
-    revalidate: 60, // Regenerate the page at most once every 60 seconds
-  };
 };
 
 export default Home;

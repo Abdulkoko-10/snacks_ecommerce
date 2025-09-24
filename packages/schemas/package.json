@@ -1,0 +1,7 @@
+{
+  "name": "@fd/schemas",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "author": "Jules",
+  "license": "ISC"
+}
