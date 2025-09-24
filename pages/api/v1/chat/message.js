@@ -12,7 +12,7 @@ const dbName = process.env.MONGODB_DB_NAME || 'food-discovery';
 async function getConversationalResponse(apiKey, chatHistory, userMessageText) {
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash",
+    model: "gemini-2.0-flash",
     systemInstruction: "You are a helpful and friendly food discovery assistant. Please respond to the user in a conversational way. Keep your responses concise and focused on helping them find food.",
   });
 
