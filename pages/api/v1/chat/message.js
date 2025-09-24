@@ -71,10 +71,10 @@ export default async function handler(req, res) {
       potentialRecommendations.map(async (p) => {
         const reason = await generateRecommendationReasons(p, chatHistory);
         return {
-          canonicalProductId: p.placeId,
+          canonicalProductId: p.canonicalProductId,
           preview: {
-            title: p.name,
-            image: '/FoodDiscovery.jpg', // Using placeholder as SerpApi doesn't provide images
+            title: p.title,
+            image: p.images && p.images.length > 0 ? p.images[0] : '/FoodDiscovery.jpg',
             rating: p.rating,
             minPrice: null, // Not available from this source
             bestProvider: "Google Maps",

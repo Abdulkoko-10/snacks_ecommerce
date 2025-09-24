@@ -97,7 +97,7 @@ const RatingContainer = styled.div`
   align-self: flex-end;
 `;
 
-const SearchResultCard = ({ restaurant: product }) => { // Rename prop for clarity
+const SearchResultCard = ({ product }) => {
   if (!product) {
     return null;
   }
