@@ -1,83 +1,44 @@
-import { getJson } from "serpapi";
-import dotenv from "dotenv";
-import { CanonicalRestaurant, CanonicalRestaurantSchema } from "@fd/schemas";
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { CanonicalRestaurant } from "@fd/schemas";
+const { extractSearchIntent } = require("../../../lib/gemini");
+const { searchRestaurants } = require("../../../lib/serpapi");
 
-dotenv.config({ path: '.env.local' });
-
-const SERPAPI_API_KEY = process.env.SERPAPI_API_KEY;
-
-// The searchRestaurants function is copied from the original connector,
-// with minor adjustments for logging in a serverless environment.
-async function searchRestaurants(query: string): Promise<CanonicalRestaurant[]> {
-  if (!SERPAPI_API_KEY) {
-    console.warn("SERPAPI_API_KEY is not defined. Returning mock data.");
-    return [
-      {
-        placeId: "mock-place-id-from-next-api",
-        name: "The Mock Pizzeria (Next.js API)",
-        address: "123 Fake St, Nextville",
-        rating: 4.8,
-      }
-    ];
-  }
-
-  try {
-    const response = await getJson({
-      engine: "google_maps",
-      q: query,
-      api_key: SERPAPI_API_KEY,
-    });
-
-    const localResults = response.local_results || [];
-
-    // Using .flatMap to handle potential parsing errors gracefully
-    const transformedResults: CanonicalRestaurant[] = localResults.flatMap((result: any) => {
-      try {
-        const restaurant: Partial<CanonicalRestaurant> = {
-          placeId: result.place_id,
-          name: result.title,
-          address: result.address,
-          rating: result.rating,
-          website: result.website,
-          phone_number: result.phone,
-        };
-        // Return an array with the parsed result
-        return [CanonicalRestaurantSchema.parse(restaurant)];
-      } catch (error) {
-        console.warn(`Skipping a result due to validation error:`, error);
-        // Return an empty array for this item if parsing fails
-        return [];
-      }
-    });
-
-    return transformedResults;
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error("Error fetching data from SerpApi:", error.message);
-    } else {
-      console.error("An unknown error occurred while fetching from SerpApi.");
-    }
-    // In case of a major error with the API call itself, return an empty array
-    return [];
-  }
+interface SearchIntent {
+  query: string;
+  region: string;
+  filters: Record<string, string>;
 }
 
+// The handler is now the "orchestrator"
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<CanonicalRestaurant[] | { error: string }>
 ) {
-  const query = req.query.q as string;
+  const { q, region, limit = '20', offset = '0' } = req.query;
 
-  if (!query) {
-    return res.status(400).json({ error: 'Query parameter "q" is required.' });
+  if (!q || typeof q !== 'string') {
+    return res.status(400).json({ error: 'Query parameter "q" is required and must be a string.' });
   }
 
+  const parsedLimit = parseInt(limit as string, 10);
+  const parsedOffset = parseInt(offset as string, 10);
+
   try {
-    const results = await searchRestaurants(query);
+    // 1. Get structured intent from the user's query
+    const intent: SearchIntent = await extractSearchIntent(q);
+
+    // If a region is specified in the query params, it overrides the one from intent extraction.
+    if (region && typeof region === 'string') {
+      intent.region = region;
+    }
+
+    // 2. Call the connector with the structured intent
+    const results = await searchRestaurants(intent, parsedLimit, parsedOffset);
+
+    // 3. Respond with the results
     res.status(200).json(results);
   } catch (error) {
-    console.error("Error in /api/v1/search handler:", error);
+    console.error("Error in /api/v1/search orchestrator:", error);
     res.status(500).json({ error: 'An internal server error occurred.' });
   }
 }
