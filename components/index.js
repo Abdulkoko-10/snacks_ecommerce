@@ -5,6 +5,5 @@ export { default as Product} from './Product';
 export { default as HeroBanner} from './HeroBanner'; 
 export { default as FooterBanner} from './FooterBanner'; 
 export { default as Cart} from './Cart';
-export { default as SearchResultCard } from './SearchResultCard';
 export { default as SearchControls } from './SearchControls';
 export { default as RecommendationCarousel } from './RecommendationCarousel';

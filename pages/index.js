@@ -27,7 +27,7 @@ const Home = ({ products, bannerData }) => {
         reason: `A great choice for a meal.`, // Placeholder reason
         preview: {
           slug: result.placeId,
-          title: result.displayName,
+          title: result.name,
           image: result.primaryPhoto?.photoUri || '/FoodDiscovery.jpg',
           rating: result.rating || 0,
           bestProvider: 'Google',

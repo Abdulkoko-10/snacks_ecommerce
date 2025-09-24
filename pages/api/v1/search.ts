@@ -15,7 +15,7 @@ async function searchRestaurants(query: string): Promise<CanonicalRestaurant[]> 
     return [
       {
         placeId: "mock-place-id-from-next-api",
-        displayName: "The Mock Pizzeria (Next.js API)",
+        name: "The Mock Pizzeria (Next.js API)",
         address: "123 Fake St, Nextville",
         rating: 4.8,
       }
