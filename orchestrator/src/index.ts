@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import { CanonicalProduct } from '@fd/schemas';
 
 const app = express();
@@ -7,6 +8,13 @@ const port = 3001;
 // NOTE: This is a temporary in-memory store for proof-of-concept purposes.
 // In a real application, this would be replaced with a persistent database like MongoDB or Firestore.
 let productStore: CanonicalProduct[] = [];
+
+// Setup CORS to allow the frontend to make requests
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
 
 app.use(express.json());
 
