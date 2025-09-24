@@ -3,8 +3,6 @@ import { readClient } from "../lib/client";
 
 import { Product, FooterBanner, HeroBanner } from "../components";
 
-const ORCHESTRATOR_API_URL = process.env.NEXT_PUBLIC_ORCHESTRATOR_URL || 'http://localhost:3001/api/v1';
-
 const Home = () => {
   const [products, setProducts] = useState([]);
   const [bannerData, setBannerData] = useState(null);
@@ -15,10 +13,12 @@ const Home = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // Fetch products from the new orchestrator
-        const productsResponse = await fetch(`${ORCHESTRATOR_API_URL}/products`);
+        // Fetch products from our own API proxy
+        const productsResponse = await fetch(`/api/products`);
         if (!productsResponse.ok) {
-          throw new Error(`Failed to fetch products: ${productsResponse.statusText}`);
+          // The proxy will return a detailed error, so we can display it.
+          const errorData = await productsResponse.json();
+          throw new Error(errorData.error || `Failed to fetch products: ${productsResponse.statusText}`);
         }
         const productsData = await productsResponse.json();
         setProducts(productsData);
