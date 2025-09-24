@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb';
 import clientPromise from '../../../../lib/mongodb';
 const { extractSearchIntent, generateRecommendationReasons } = require('../../../../lib/gemini');
 const { searchRestaurants } = require('../../../../lib/serpapi');
+const { geocodeLocation } = require('../../../../lib/location');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const dbName = process.env.MONGODB_DB_NAME || 'food-discovery';
@@ -62,11 +63,20 @@ export default async function handler(req, res) {
     // 2. Extract structured intent from the user's message.
     const intent = await extractSearchIntent(userMessageText);
 
-    // 3. Fetch restaurant recommendations based on the intent.
-    // We'll fetch a small number for the chat interface.
-    const potentialRecommendations = await searchRestaurants(intent, 5, 0);
+    // 3. Geocode the location to get coordinates.
+    let geocode = null;
+    try {
+      geocode = await geocodeLocation(intent.region);
+    } catch (geoError) {
+      console.warn(`Geocoding failed for region "${intent.region}", proceeding without ll parameter.`);
+      // Continue without geocode, SerpApi will use region string
+    }
 
-    // 4. Generate personalized reasons for each recommendation.
+    // 4. Fetch restaurant recommendations based on the intent.
+    // We'll fetch a small number for the chat interface.
+    const potentialRecommendations = await searchRestaurants(intent, 5, 0, geocode);
+
+    // 5. Generate personalized reasons for each recommendation.
     const recommendations = await Promise.all(
       potentialRecommendations.map(async (p) => {
         const reason = await generateRecommendationReasons(p, chatHistory);

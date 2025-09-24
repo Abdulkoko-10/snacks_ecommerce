@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { CanonicalRestaurant } from "@fd/schemas";
 const { extractSearchIntent } = require("../../../lib/gemini");
 const { searchRestaurants } = require("../../../lib/serpapi");
+const { geocodeLocation } = require("../../../lib/location");
 
 interface SearchIntent {
   query: string;
@@ -32,10 +33,19 @@ export default async function handler(
       intent.region = region;
     }
 
-    // 2. Call the connector with the structured intent
-    const results = await searchRestaurants(intent, parsedLimit, parsedOffset);
+    // 2. Geocode the location to get coordinates
+    let geocode = null;
+    try {
+      geocode = await geocodeLocation(intent.region);
+    } catch (geoError) {
+      console.warn(`Geocoding failed for region "${intent.region}", proceeding without ll parameter.`);
+      // Continue without geocode, SerpApi will use region string
+    }
 
-    // 3. Respond with the results
+    // 3. Call the connector with the structured intent and geocode
+    const results = await searchRestaurants(intent, parsedLimit, parsedOffset, geocode);
+
+    // 4. Respond with the results
     res.status(200).json(results);
   } catch (error) {
     console.error("Error in /api/v1/search orchestrator:", error);
