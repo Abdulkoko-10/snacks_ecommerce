@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { readClient } from "../lib/client";
-import { Product, FooterBanner, HeroBanner, SearchResultCard, SearchControls } from "../components";
+import { Product, FooterBanner, HeroBanner, SearchControls, RecommendationCarousel } from "../components";
 
 const Home = ({ products, bannerData }) => {
   const [query, setQuery] = useState('');
@@ -22,7 +22,20 @@ const Home = ({ products, bannerData }) => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      setResults(data);
+      const adaptedResults = data.map(result => ({
+        placeId: result.placeId,
+        reason: `A great choice for a meal.`, // Placeholder reason
+        preview: {
+          slug: result.placeId,
+          title: result.displayName,
+          image: result.primaryPhoto?.photoUri || '/FoodDiscovery.jpg',
+          rating: result.rating || 0,
+          bestProvider: 'Google',
+          eta: '10-20 min',
+          minPrice: 1000,
+        }
+      }));
+      setResults(adaptedResults);
     } catch (e) {
       setError(e.message);
     } finally {
@@ -51,14 +64,12 @@ const Home = ({ products, bannerData }) => {
       {error && <p style={{ color: 'red', textAlign: 'center' }}>Error: {error}</p>}
 
       {searched ? (
-        <div className="products-container">
+        <div>
           {loading && <p>Loading...</p>}
           {!loading && results.length === 0 && (
             <p>No results found.</p>
           )}
-          {results.map((restaurant) => (
-            <SearchResultCard key={restaurant.placeId} restaurant={restaurant} />
-          ))}
+          <RecommendationCarousel recommendations={results} />
         </div>
       ) : (
         <>
