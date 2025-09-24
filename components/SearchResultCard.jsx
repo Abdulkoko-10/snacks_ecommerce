@@ -3,6 +3,13 @@ import styled from '@emotion/styled';
 import Image from 'next/image';
 import { FaStar } from 'react-icons/fa';
 
+const CardWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+`;
+
 // Reusing the same styled components from ChatRecommendationCard for consistency
 const ProductCard = styled.div`
   display: flex;
@@ -96,9 +103,10 @@ const SearchResultCard = ({ restaurant }) => {
   }
 
   return (
-    <ProductCard>
-      <ImageContainer>
-        {/* Using a placeholder image as SerpApi doesn't reliably provide one */}
+    <CardWrapper className="card-wrapper">
+      <ProductCard>
+        <ImageContainer>
+          {/* Using a placeholder image as SerpApi doesn't reliably provide one */}
         <Image
           src="/FoodDiscovery.jpg" // Placeholder image from public folder
           alt={restaurant.name}
@@ -118,6 +126,7 @@ const SearchResultCard = ({ restaurant }) => {
         )}
       </TextContainer>
     </ProductCard>
+    </CardWrapper>
   );
 };
 
