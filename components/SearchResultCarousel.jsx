@@ -53,9 +53,9 @@ const SearchResultCarousel = ({ results }) => {
         navigation={true}
         className="search-swiper"
       >
-        {results.map((product) => (
-          <SwiperSlide key={product.placeId}>
-            <SearchResultCard restaurant={product} />
+        {results.map((restaurant) => (
+          <SwiperSlide key={restaurant.placeId}>
+            <SearchResultCard restaurant={restaurant} />
           </SwiperSlide>
         ))}
       </Swiper>
