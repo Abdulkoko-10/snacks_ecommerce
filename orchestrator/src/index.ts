@@ -10,8 +10,18 @@ const port = 3001;
 let productStore: CanonicalProduct[] = [];
 
 // Setup CORS to allow the frontend to make requests
-const corsOptions = {
-  origin: 'http://localhost:3000',
+const allowedOrigins = ['http://localhost:3000', 'http://127.0.0.1:3000'];
+
+const corsOptions: cors.CorsOptions = {
+  origin: (origin, callback) => {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
   optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
