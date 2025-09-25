@@ -9,11 +9,13 @@
     "dev": "ts-node-dev src/index.ts"
   },
   "dependencies": {
-    "@fd/geoapify-connector": "file:../connectors/geoapify-connector",
-    "@fd/schemas": "file:../packages/schemas",
-    "@google/generative-ai": "^0.24.1",
     "express": "^4.17.1",
-    "uuid": "^9.0.1"
+    "mongodb": "^6.20.0",
+    "uuid": "^9.0.1",
+    "@google/generative-ai": "^0.24.1",
+    "@fd/schemas": "file:../packages/schemas",
+    "@fd/geoapify-connector": "file:../connectors/geoapify-connector",
+    "@fd/google-places-connector": "file:../connectors/google-places-connector"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",

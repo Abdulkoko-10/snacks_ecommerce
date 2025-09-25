@@ -1,5 +1,11 @@
 import { z } from 'zod';
 
+// Schema for a GeoJSON Point for location data
+export const PointSchema = z.object({
+  type: z.literal('Point'),
+  coordinates: z.tuple([z.number(), z.number()]), // [longitude, latitude]
+});
+
 // Schema for a comment, which can be nested within a product
 export const CommentSchema = z.object({
   id: z.string(),
@@ -25,6 +31,7 @@ export const CanonicalProductSchema = z.object({
   title: z.string(),
   images: z.array(z.string().url()),
   description: z.string(),
+  location: PointSchema,
   price: z.object({
     amount: z.number(),
     currency: z.string(),
@@ -39,6 +46,7 @@ export const CanonicalProductSchema = z.object({
 });
 
 // TypeScript types inferred from the Zod schemas
+export type Point = z.infer<typeof PointSchema>;
 export type CanonicalProduct = z.infer<typeof CanonicalProductSchema>;
 export type Comment = z.infer<typeof CommentSchema>;
 export type Source = z.infer<typeof SourceSchema>;

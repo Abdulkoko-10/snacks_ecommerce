@@ -1,6 +1,6 @@
 import express from 'express';
-import chatRouter from './routes/chat';
 import searchRouter from './routes/search';
+import chatRouter from './routes/chat';
 
 const app = express();
 
@@ -11,8 +11,8 @@ app.use(express.json());
 const apiRouter = express.Router();
 
 // Register the specific routers for different functionalities
-apiRouter.use('/chat', chatRouter);
 apiRouter.use('/search', searchRouter);
+apiRouter.use('/chat', chatRouter);
 
 // All API v1 routes will be handled by this router
 app.use('/api/v1', apiRouter);
