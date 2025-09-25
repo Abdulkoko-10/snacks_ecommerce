@@ -1,7 +1,7 @@
 import { getAuth } from '@clerk/nextjs/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '../../../../lib/mongodb';
-import { previewClient, urlFor } from '../../../../lib/client';
+import { getAiRecommendations } from '../../../../lib/ai/recommendations';
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const dbName = process.env.MONGODB_DB_NAME || 'food-discovery';
@@ -38,58 +38,15 @@ export default async function handler(req, res) {
 
     res.setHeader('X-Thread-Id', threadId);
 
-    // --- Generate AI Response ---
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
-      systemInstruction: "You are a helpful and friendly food discovery assistant. Please respond to the user in a conversational way.",
-    });
-
-    const history = (chatHistory || [])
-      .filter(msg => msg.role === 'user' || msg.role === 'assistant')
-      .map(msg => ({
-        role: msg.role === 'user' ? 'user' : 'model',
-        parts: [{ text: msg.text }],
-      }));
-
-    const chat = model.startChat({
-      history: history,
-      generationConfig: {
-        maxOutputTokens: 500,
-      },
-    });
-
-    const result = await chat.sendMessage(userMessageText);
-    const response = result.response;
-    const fullResponseText = response.text();
-
-    // --- Fetch Product Recommendations from Sanity ---
-    const productsQuery = `*[_type == "product" && defined(slug.current)]{_id, name, image, price, details, slug} | order(_createdAt desc) [0...3]`;
-    const sanityProducts = await previewClient.fetch(productsQuery);
-
-    const recommendations = sanityProducts.map(p => ({
-      canonicalProductId: p._id,
-      preview: {
-        title: p.name,
-        image: p.image ? urlFor(p.image[0]).width(400).url() : '/default-product-image.png',
-        rating: 4.5,
-        minPrice: p.price,
-        bestProvider: "SnacksCo",
-        eta: "15-25 min",
-        originSummary: ["SnacksCo"],
-        slug: p.slug?.current,
-        details: p.details,
-      },
-      reason: "Based on our conversation, you might like this!",
-      meta: {
-        generatedBy: "system-rule",
-        confidence: 0.9,
-      }
-    }));
+    // --- Generate AI-powered recommendations and conversational response ---
+    const [recommendations, conversationalResponse] = await Promise.all([
+      getAiRecommendations(userMessageText),
+      generateConversationalResponse(apiKey, chatHistory, userMessageText),
+    ]);
 
     // --- Response payload ---
     const payload = {
-      fullText: fullResponseText,
+      fullText: conversationalResponse,
       recommendations: recommendations,
     };
 
@@ -127,7 +84,7 @@ export default async function handler(req, res) {
         const assistantMessage = {
           id: `asst_msg_${Date.now()}`,
           role: 'assistant',
-          text: fullResponseText,
+          text: conversationalResponse,
           userId,
           threadId,
           createdAt: new Date(),
@@ -148,4 +105,36 @@ export default async function handler(req, res) {
       res.status(500).json({ error: 'Failed to process chat message.' });
     }
   }
+}
+
+/**
+ * Generates a conversational response from the AI.
+ * @param {string} apiKey The Gemini API key.
+ * @param {Array} chatHistory The history of the conversation.
+ * @param {string} userMessageText The latest message from the user.
+ * @returns {Promise<string>} The AI's text response.
+ */
+async function generateConversationalResponse(apiKey, chatHistory, userMessageText) {
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({
+    model: "gemini-2.0-flash",
+    systemInstruction: "You are a helpful and friendly food discovery assistant. Please respond to the user in a conversational way. Keep your responses concise and focused on the food recommendations being provided.",
+  });
+
+  const history = (chatHistory || [])
+    .filter(msg => msg.role === 'user' || msg.role === 'assistant')
+    .map(msg => ({
+      role: msg.role === 'user' ? 'user' : 'model',
+      parts: [{ text: msg.text }],
+    }));
+
+  const chat = model.startChat({
+    history: history,
+    generationConfig: {
+      maxOutputTokens: 150,
+    },
+  });
+
+  const result = await chat.sendMessage(userMessageText);
+  return result.response.text();
 }
