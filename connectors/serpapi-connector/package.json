@@ -1,5 +1,5 @@
 {
-  "name": "@fd/google-places-connector",
+  "name": "@fd/serpapi-connector",
   "version": "1.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -7,7 +7,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "axios": "^1.6.8"
+    "serpapi": "^2.1.0"
   },
   "devDependencies": {
     "@types/node": "^16.11.7",

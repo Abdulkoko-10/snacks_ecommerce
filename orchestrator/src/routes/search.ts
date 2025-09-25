@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { search as searchWithGeoapify } from '@fd/geoapify-connector';
-import { getEnrichmentData } from '@fd/google-places-connector';
+import { getEnrichmentData } from '@fd/serpapi-connector';
 import { connectToDatabase } from '../lib/mongodb';
 import { CanonicalProduct, CanonicalProductSchema } from '@fd/schemas';
 
@@ -16,20 +16,20 @@ async function enrichProduct(product: CanonicalProduct) {
 
       const updateData: Partial<CanonicalProduct> = {
         images: [...(product.images || []), ...(enrichmentData.photos || [])],
-        comments: [...(product.comments || []), ...(enrichmentData.reviews?.map(r => ({...r, id: new Date().toISOString(), origin: 'google'})) || [])],
+        comments: [...(product.comments || []), ...(enrichmentData.reviews?.map(r => ({...r, id: new Date().toISOString(), origin: 'serpapi'})) || [])],
         rating: enrichmentData.rating || product.rating,
         numRatings: enrichmentData.user_ratings_total || product.numRatings,
       };
 
-      if(enrichmentData.googlePlaceId) {
-        updateData.sources = [...(product.sources || []), { provider: 'Google', providerProductId: enrichmentData.googlePlaceId, price: 0, lastFetchedAt: new Date().toISOString() }];
+      if(enrichmentData.serpapiPlaceId) {
+        updateData.sources = [...(product.sources || []), { provider: 'SerpApi', providerProductId: enrichmentData.serpapiPlaceId, price: 0, lastFetchedAt: new Date().toISOString() }];
       }
 
       await productsCollection.updateOne(
         { canonicalProductId: product.canonicalProductId },
         { $set: updateData }
       );
-      console.log(`Enriched product: ${product.canonicalProductId}`);
+      console.log(`Enriched product: ${product.canonicalProductId} with SerpApi`);
     }
   } catch (error) {
     console.error(`Failed to enrich product ${product.canonicalProductId}:`, error);
@@ -55,7 +55,6 @@ router.get('/', async (req, res) => {
     const { db } = await connectToDatabase();
     const productsCollection = db.collection<CanonicalProduct>('products');
 
-    // Ensure geospatial and text indexes exist
     await productsCollection.createIndex({ location: "2dsphere" });
     await productsCollection.createIndex({ title: "text", description: "text" });
 
