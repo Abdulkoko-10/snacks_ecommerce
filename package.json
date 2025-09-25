@@ -10,9 +10,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "npm run build:packages && npm run build:connectors && npm run build:orchestrator && next build",
-    "build:packages": "npm run build --workspace=@fd/schemas",
-    "build:connectors": "npm run build --workspace=@fd/geoapify-connector && npm run build --workspace=@fd/serpapi-connector",
-    "build:orchestrator": "npm run build --workspace=orchestrator",
+    "build:packages": "npm run build --workspace=@fd/schemas --if-present",
+    "build:connectors": "npm run build --workspace=@fd/geoapify-connector --if-present && npm run build --workspace=@fd/serpapi-connector --if-present",
+    "build:orchestrator": "npm run build --workspace=orchestrator --if-present",
     "start": "next start",
     "lint": "next lint",
     "test": "jest --watch",

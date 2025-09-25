@@ -26,18 +26,28 @@ export async function getEnrichmentData(product: Partial<CanonicalProduct>): Pro
 
   try {
     const response = await getJson(params);
-    const placeInfo = response.knowledge_graph;
 
-    if (!placeInfo) return null;
+    // Safely access the knowledge graph and its properties
+    const placeInfo = response?.knowledge_graph;
+    const reviews = response?.reviews;
+    const photos = response?.photos_results;
+
+    if (!placeInfo) {
+      console.warn(`No knowledge graph found for "${product.title}" in SerpApi response.`);
+      return null;
+    }
 
     const enrichmentData: EnrichmentData = {
       website: placeInfo.website,
       rating: placeInfo.rating,
-      user_ratings_total: placeInfo.reviews,
-      photos: placeInfo.photos_results?.map((p: any) => p.image),
-      reviews: response.reviews, // Top-level reviews if available
+      user_ratings_total: placeInfo.reviews, // This is often a count
+      photos: photos?.map((p: any) => p.image_url || p.image).filter(Boolean),
+      reviews: reviews,
       serpapiPlaceId: placeInfo.place_id
     };
+
+    // Clean up any keys that have undefined values
+    Object.keys(enrichmentData).forEach(key => (enrichmentData as any)[key] === undefined && delete (enrichmentData as any)[key]);
 
     return enrichmentData;
   } catch (error) {

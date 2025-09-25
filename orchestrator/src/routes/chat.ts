@@ -2,12 +2,13 @@ import { Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { search as searchWithGeoapify } from '@fd/geoapify-connector';
+import { CanonicalProduct } from '@fd/schemas';
 
 const router = Router();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 const model = genAI.getGenerativeModel({
-  model: "gemini-2.0-flash",
+  model: "gemini-1.5-flash-latest",
   systemInstruction: `You are a helpful and friendly food discovery assistant.
 Your goal is to understand the user's request for food and respond in a conversational way.
 Based on the user's message, you must determine two things:
@@ -41,9 +42,10 @@ router.post('/message', async (req, res) => {
       intentData = JSON.parse(aiResponseText);
     } catch (e) {
       console.error("Failed to parse AI response JSON:", aiResponseText);
-      // Fallback to a simple chat response if JSON parsing fails
+      const chatModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+      const chatResponse = await chatModel.generateContent(`Continue the conversation. The user said: "${text}"`);
       return res.status(200).json({
-        fullText: "I'm sorry, I had a little trouble understanding that. Could you try rephrasing?",
+        fullText: chatResponse.response.text(),
         recommendations: [],
       });
     }
@@ -62,12 +64,11 @@ router.post('/message', async (req, res) => {
 
       return res.status(200).json({
         fullText: recommendationText,
-        recommendations: searchResults, // In a real app, you'd format this into a preview
+        recommendations: searchResults,
       });
 
     } else {
-      // For 'CHAT' intent or if query is null
-      const chatModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+      const chatModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
       const chatResponse = await chatModel.generateContent(`Continue the conversation. The user said: "${text}"`);
       return res.status(200).json({
         fullText: chatResponse.response.text(),
@@ -76,7 +77,7 @@ router.post('/message', async (req, res) => {
     }
 
   } catch (error) {
-    console.error("Error communicating with Generative AI or Geoapify:", error);
+    console.error("Error in chat message handler:", error);
     res.status(500).json({ error: 'An internal server error occurred.' });
   }
 });

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { CanonicalProduct, CanonicalProductSchema, Point } from '@fd/schemas';
+import { CanonicalProduct, CanonicalProductSchema } from '@fd/schemas';
 
 const GEOAPIFY_API_KEY = process.env.GEOAPIFY_API_KEY;
 
@@ -27,15 +27,17 @@ export async function search(query: string, lat: number, lon: number): Promise<P
         canonicalProductId: `geoapify::${props.place_id}`,
         title: props.name || 'N/A',
         description: props.address_line2 || 'No description available.',
-        location: geometry, // Populating the GeoJSON location object
+        location: geometry,
         tags: props.categories,
         lastFetchedAt: new Date().toISOString(),
         sources: [{
           provider: 'Geoapify',
           providerProductId: props.place_id,
-          price: 0,
+          price: { amount: 0, currency: 'USD' }, // Default price
           lastFetchedAt: new Date().toISOString(),
-        }]
+        }],
+        images: [],
+        comments: []
       };
       return product;
     });
