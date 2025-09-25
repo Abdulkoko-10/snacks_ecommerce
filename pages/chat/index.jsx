@@ -81,7 +81,7 @@ const ChatPage = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/v1/chat/message', {
+      const response = await fetch('http://localhost:3002/api/v1/chat/message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text, chatHistory: newMessages, threadId }),

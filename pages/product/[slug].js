@@ -11,11 +11,8 @@ import {
 } from "react-icons/ai";
 
 import { readClient, urlFor, previewClient } from "../../lib/client";
-import Product from "../../components/Product";
+import { Product, StarRating } from "../../components";
 import { useStateContext } from "../../context/StateContext";
-import StarRating from '../../components/StarRating'; // Import StarRating
-// import ReviewList from '../../components/ReviewList';   // Static import removed
-// import ReviewForm from '../../components/ReviewForm';   // Static import removed
 import dynamic from 'next/dynamic';
 
 const DynamicReviewList = dynamic(() => import('../../components/ReviewList'), {

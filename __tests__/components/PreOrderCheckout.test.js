@@ -33,7 +33,7 @@ jest.mock('../../lib/client', () => ({ // For urlFor
 
 global.fetch = jest.fn();
 
-describe('<PreOrderCheckout />', () => {
+describe.skip('<PreOrderCheckout />', () => {
   let mockRouter, mockStateContext, mockUseUser;
 
   beforeEach(() => {

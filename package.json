@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:all": "concurrently \"npm:dev\" \"node orchestrator/index.js\" \"node connectors/serpapi-connector/index.js\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -34,12 +35,14 @@
     "remark-gfm": "^4.0.1",
     "stripe": "^8.209.0",
     "swiper": "^11.2.8",
-    "swr": "^2.2.5"
+    "swr": "^2.2.5",
+    "zod": "^4.1.11"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^14.1.4",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^14.0.0",
+    "concurrently": "^9.2.1",
     "eslint": "^8",
     "eslint-config-next": "14.1.4",
     "identity-obj-proxy": "^3.0.0",

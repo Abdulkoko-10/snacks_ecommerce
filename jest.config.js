@@ -24,6 +24,10 @@ const customJestConfig = {
     
     // Handle module aliases (if you have them in your jsconfig.json or tsconfig.json)
     // Example: '^@/components/(.*)$': '<rootDir>/components/$1',
+
+    // Mock Clerk for server-side and client-side testing
+    '^@clerk/nextjs/server$': '<rootDir>/__mocks__/@clerk/nextjs/server.js',
+    '^@clerk/nextjs$': '<rootDir>/__mocks__/@clerk/nextjs/client.js',
   },
   // Add more setup options before each test is run
   // setupFilesAfterEnv: ['<rootDir>/jest.setup.js'], // Already included above

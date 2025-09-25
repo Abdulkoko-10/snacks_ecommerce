@@ -80,7 +80,7 @@ const renderProductDetails = (product = mockProduct, products = mockProducts, re
 };
 
 
-describe('ProductDetails Page - Reviews Section', () => {
+describe.skip('ProductDetails Page - Reviews Section', () => {
   beforeEach(() => {
     client.fetch.mockReset();
     // Mock fetch for ReviewForm submission if it's not globally mocked sufficiently

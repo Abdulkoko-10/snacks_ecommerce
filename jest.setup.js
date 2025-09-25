@@ -47,3 +47,41 @@ global.fetch = jest.fn(() =>
 // Mock CSS imports for libraries like Swiper
 jest.mock('swiper/css', () => ({}));
 jest.mock('swiper/css/navigation', () => ({}));
+
+// --- Jules's Additions for Fixing Tests ---
+
+// Mock the Sanity client used for data fetching
+jest.mock('./lib/client', () => ({
+  readClient: {
+    fetch: jest.fn().mockResolvedValue([]),
+  },
+  previewClient: {
+    fetch: jest.fn().mockResolvedValue([]),
+  },
+  urlFor: jest.fn((source) => ({
+    width: () => ({
+      url: () => `http://mock-sanity-image.url/${source?.asset?._ref || 'test'}`,
+    }),
+    url: () => `http://mock-sanity-image.url/${source?.asset?._ref || 'test'}`,
+  })),
+}));
+
+// Mock next/router
+jest.mock('next/router', () => ({
+  useRouter() {
+    return {
+      route: '/',
+      pathname: '',
+      query: '',
+      asPath: '',
+      push: jest.fn(),
+      events: {
+        on: jest.fn(),
+        off: jest.fn(),
+      },
+      beforePopState: jest.fn(() => null),
+      prefetch: jest.fn(() => null),
+      replace: jest.fn(),
+    };
+  },
+}));

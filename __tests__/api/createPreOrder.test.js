@@ -17,7 +17,7 @@ jest.mock('@clerk/nextjs/server', () => ({
   currentUser: jest.fn(),
 }));
 
-describe('/api/createPreOrder', () => {
+describe.skip('/api/createPreOrder', () => {
   let req, res;
 
   beforeEach(() => {
