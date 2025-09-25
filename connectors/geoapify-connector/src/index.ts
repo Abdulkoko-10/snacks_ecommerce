@@ -28,12 +28,13 @@ export async function search(query: string, lat: number, lon: number): Promise<P
         title: props.name || 'N/A',
         description: props.address_line2 || 'No description available.',
         location: geometry,
+        price: { amount: 0, currency: 'USD' }, // Top-level price is an object
         tags: props.categories,
         lastFetchedAt: new Date().toISOString(),
         sources: [{
           provider: 'Geoapify',
           providerProductId: props.place_id,
-          price: { amount: 0, currency: 'USD' }, // Default price
+          price: 0, // CORRECTED: Source price is a number
           lastFetchedAt: new Date().toISOString(),
         }],
         images: [],
