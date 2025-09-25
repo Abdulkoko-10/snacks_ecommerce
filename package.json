@@ -9,7 +9,10 @@
   ],
   "scripts": {
     "dev": "next dev",
-    "build": "npm run build -ws --if-present && next build",
+    "build": "npm run build:packages && npm run build:connectors && npm run build:orchestrator && next build",
+    "build:packages": "npm run build --workspace=@fd/schemas",
+    "build:connectors": "npm run build --workspace=@fd/geoapify-connector && npm run build --workspace=@fd/google-places-connector",
+    "build:orchestrator": "npm run build --workspace=orchestrator",
     "start": "next start",
     "lint": "next lint",
     "test": "jest --watch",
