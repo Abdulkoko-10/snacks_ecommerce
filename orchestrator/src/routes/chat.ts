@@ -1,17 +1,9 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 
-// This is a mock implementation of the chat backend to unblock the frontend.
-// The real logic will be implemented in the orchestrator service.
+const router = Router();
 
-export default function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method Not Allowed' });
-  }
-
+router.post('/message', (req, res) => {
   const { text, chatHistory, threadId } = req.body;
 
   // Generate a new thread ID if one isn't provided
@@ -20,7 +12,7 @@ export default function handler(
 
   // Simple mock response logic
   const mockResponse = {
-    fullText: `This is a mock response to your message: "${text}". The real AI-powered chat is not yet connected.`,
+    fullText: `This is a mock response from the orchestrator to your message: "${text}". The real AI-powered chat is not yet connected.`,
     recommendations: [],
   };
 
@@ -29,7 +21,7 @@ export default function handler(
     mockResponse.recommendations.push({
       canonicalProductId: "mock-product-id-1",
       preview: {
-        title: "Mock Pizza",
+        title: "Orchestrator Mock Pizza",
         image: "https://via.placeholder.com/150",
         rating: 4.5,
         minPrice: 12.99,
@@ -37,13 +29,15 @@ export default function handler(
         eta: "15-25 min",
         originSummary: ["MockProvider"],
       },
-      reason: "Because you mentioned pizza, here is a mock pizza suggestion!",
+      reason: "Because you mentioned pizza, here is a mock pizza suggestion from the orchestrator!",
       meta: {
-        generatedBy: "mock-backend",
+        generatedBy: "orchestrator-mock",
         confidence: 0.99,
       }
     });
   }
 
   res.status(200).json(mockResponse);
-}
+});
+
+export default router;
