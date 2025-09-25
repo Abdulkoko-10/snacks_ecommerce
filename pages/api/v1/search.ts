@@ -1,23 +1,37 @@
 import { getJson } from "serpapi";
 import dotenv from "dotenv";
-import { CanonicalRestaurant, CanonicalRestaurantSchema } from "@fd/schemas";
+// Import the new schema and type
+import { CanonicalProduct, CanonicalProductSchema } from "@fd/schemas";
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 dotenv.config({ path: '.env.local' });
 
 const SERPAPI_API_KEY = process.env.SERPAPI_API_KEY;
 
-// The searchRestaurants function is copied from the original connector,
-// with minor adjustments for logging in a serverless environment.
-async function searchRestaurants(query: string): Promise<CanonicalRestaurant[]> {
+// The function will now search for products and return CanonicalProduct array
+async function searchProducts(query: string): Promise<CanonicalProduct[]> {
   if (!SERPAPI_API_KEY) {
     console.warn("SERPAPI_API_KEY is not defined. Returning mock data.");
+    // Return mock data that conforms to CanonicalProductSchema
     return [
       {
-        placeId: "mock-place-id-from-next-api",
-        name: "The Mock Pizzeria (Next.js API)",
-        address: "123 Fake St, Nextville",
-        rating: 4.8,
+        canonicalProductId: "mock-product-id-1",
+        title: "Mock Pizza",
+        images: ["https://via.placeholder.com/150"],
+        description: "A delicious mock pizza from a mock restaurant.",
+        price: { amount: 12.99, currency: "USD" },
+        rating: 4.5,
+        numRatings: 100,
+        tags: ["pizza", "mock"],
+        sources: [{
+          provider: "MockProvider",
+          providerProductId: "mock-provider-id-1",
+          price: 12.99,
+          lastFetchedAt: new Date().toISOString(),
+        }],
+        comments: [],
+        popularityScore: 0.8,
+        lastFetchedAt: new Date().toISOString(),
       }
     ];
   }
@@ -31,22 +45,39 @@ async function searchRestaurants(query: string): Promise<CanonicalRestaurant[]> 
 
     const localResults = response.local_results || [];
 
-    // Using .flatMap to handle potential parsing errors gracefully
-    const transformedResults: CanonicalRestaurant[] = localResults.flatMap((result: any) => {
+    // Transform the results into CanonicalProduct
+    const transformedResults: CanonicalProduct[] = localResults.flatMap((result: any) => {
       try {
-        const restaurant: Partial<CanonicalRestaurant> = {
-          placeId: result.place_id,
-          name: result.title,
-          address: result.address,
+        // Create a product object with mock data for missing fields
+        // Note: this is a temporary adaptation. The real orchestrator will handle this.
+        const product: CanonicalProduct = {
+          canonicalProductId: `serpapi::${result.place_id}`,
+          title: result.title,
+          images: result.thumbnail ? [result.thumbnail] : [],
+          description: result.address || "No description available.",
+          price: {
+            amount: result.price ? parseFloat(result.price.replace(/[^0-9.-]+/g,"")) : 0,
+            currency: "USD" // Assuming USD, as it's often not provided
+          },
           rating: result.rating,
-          website: result.website,
-          phone_number: result.phone,
+          numRatings: result.reviews,
+          tags: result.type ? [result.type] : [],
+          sources: [{
+            provider: "serpapi_google_maps",
+            providerProductId: result.place_id,
+            price: result.price ? parseFloat(result.price.replace(/[^0-9.-]+/g,"")) : 0,
+            deliveryEtaMin: undefined, // Not available in this API
+            lastFetchedAt: new Date().toISOString(),
+          }],
+          comments: [],
+          popularityScore: result.rating ? result.rating / 5 : 0,
+          lastFetchedAt: new Date().toISOString(),
         };
-        // Return an array with the parsed result
-        return [CanonicalRestaurantSchema.parse(restaurant)];
+
+        // Validate the created product object
+        return [CanonicalProductSchema.parse(product)];
       } catch (error) {
         console.warn(`Skipping a result due to validation error:`, error);
-        // Return an empty array for this item if parsing fails
         return [];
       }
     });
@@ -58,14 +89,13 @@ async function searchRestaurants(query: string): Promise<CanonicalRestaurant[]> 
     } else {
       console.error("An unknown error occurred while fetching from SerpApi.");
     }
-    // In case of a major error with the API call itself, return an empty array
     return [];
   }
 }
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<CanonicalRestaurant[] | { error: string }>
+  res: NextApiResponse<CanonicalProduct[] | { error: string }>
 ) {
   const query = req.query.q as string;
 
@@ -74,7 +104,8 @@ export default async function handler(
   }
 
   try {
-    const results = await searchRestaurants(query);
+    // Call the updated function
+    const results = await searchProducts(query);
     res.status(200).json(results);
   } catch (error) {
     console.error("Error in /api/v1/search handler:", error);

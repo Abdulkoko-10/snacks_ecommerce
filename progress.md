@@ -4,6 +4,20 @@ This document tracks the progress of the Food Discovery Platform revamp. It is d
 
 ---
 
+## **Current Focus: Foundational Correction**
+
+**Status:** `[IN PROGRESS]`
+
+- **Goal:** Realign the codebase with the target microservices architecture and correct foundational data models before resuming feature development.
+- `[DONE]` **Analysis:** A full analysis revealed significant architectural deviations and a data model mismatch.
+- `[IN PROGRESS]` **Corrective Actions:**
+    - `[DONE]` Corrected the shared schema from `CanonicalRestaurant` to `CanonicalProduct`.
+    - `[DONE]` Scaffolded the `orchestrator` and `connectors` service directories.
+    - `[DONE]` Implemented a mock chat backend (`/api/v1/chat/message`) to unblock the frontend.
+    - `[TODO]` Begin migrating search and chat logic from the Next.js monolith to the new orchestrator service.
+
+---
+
 ## Phase -1: Documentation & Planning
 
 **Status:** `[DONE]`
@@ -17,8 +31,8 @@ This document tracks the progress of the Food Discovery Platform revamp. It is d
 
 **Status:** `[IN PROGRESS]`
 
-- `[TODO]` Scaffold new service directories (`orchestrator`, `connectors`)
-- `[DONE]` Set up shared schemas package (`@fd/schemas`)
+- `[DONE]` Scaffold new service directories (`orchestrator`, `connectors`)
+- `[DONE]` Set up shared schemas package (`@fd/schemas`). *(Note: Corrected from `CanonicalRestaurant` to the official `CanonicalProduct` schema).*
 - `[TODO]` Set up secrets management
 - `[TODO]` Configure CI/CD for new services
 
@@ -32,7 +46,7 @@ This document tracks the progress of the Food Discovery Platform revamp. It is d
 1.  **Core Implementation:**
     - `[TODO]` Build Canonicalizer Service & Persistent DB
     - `[TODO]` Build first provider connector
-    - `[TODO]` Implement core orchestrator endpoints (`/search`, `/product/:id`)
+    - `[TODO]` Implement core orchestrator endpoints (`/search`, `/product/:id`). *(Note: A temporary `/search` endpoint exists in the monolith and will be migrated).*
     - `[TODO]` Migrate existing Sanity data
     - `[TODO]` Adapt frontend to use new API
 2.  **QA & Testing:**
@@ -53,17 +67,17 @@ This document tracks the progress of the Food Discovery Platform revamp. It is d
 1.  **Core Implementation:**
     - `[DONE]` Build Chat UI Components (Complete, including layout, styling, and responsiveness)
     - `[TODO]` Implement real-time (WebSocket/streaming) connection
-    - `[DONE]` Implement end-to-end chat flow (with mock backend first)
+    - `[DONE]` Implement end-to-end chat flow. *(Note: A mock backend has been created at `/api/v1/chat/message` to unblock the UI. This needs to be replaced by the real orchestrator logic).*
     - `[DONE]` UI Polish: Refined recommendation card design and implemented full-bleed carousel.
-    - `[IN PROGRESS]` Integrate with Gemini for recommendations. *(Note: Integrated for text responses. Generating the recommendation list itself is currently a placeholder and not yet driven by Gemini.)*
-    - `[IN PROGRESS]` Polish and bugfix chat UI (Markdown rendering, modals, performance).
+    - `[TODO]` Integrate with Gemini for recommendations.
+    - `[TODO]` Polish and bugfix chat UI (Markdown rendering, modals, performance).
 2.  **QA & Testing:**
     - `[TODO]` Unit tests for Chat UI components.
     - `[TODO]` E2E tests for the chat flow (from user message to recommendation display).
 3.  **Integration Points Checklist:**
-    - `[x]` Does the Gemini API fully integrate here for basic responses?
-    - `[TODO]` Re-implement real-time connection for chat.
-    - `[x]` Does the frontend correctly render `ChatRecommendationPayload`? *(Note: Renders placeholder data from the API correctly.)*
+    - `[ ]` Does the Gemini API fully integrate here for basic responses?
+    - `[ ]` Re-implement real-time connection for chat.
+    - `[x]` Does the frontend correctly render `ChatRecommendationPayload`? *(Note: Renders mock data from the new mock API correctly.)*
 
 ---
 
@@ -117,10 +131,3 @@ This document tracks the progress of the Food Discovery Platform revamp. It is d
 2.  **QA & Testing:**
     - `[TODO]` Implement comprehensive testing (unit, integration, contract, E2E) across all services.
     - `[TODO]` Set up synthetic monitoring for critical user flows.
-
----
-
-## Current Focus
-
-- **Feature:** Implement True Recommendation Logic
-- **Status:** Design and implement the orchestrator logic to generate intelligent recommendations based on user intent, replacing the current placeholder (latest products).
