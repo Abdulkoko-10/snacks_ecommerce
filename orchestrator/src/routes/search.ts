@@ -16,7 +16,14 @@ async function enrichProduct(product: CanonicalProduct) {
 
       const updateData: Partial<CanonicalProduct> = {
         images: [...(product.images || []), ...(enrichmentData.photos || [])],
-        comments: [...(product.comments || []), ...(enrichmentData.reviews?.map(r => ({...r, id: new Date().toISOString(), origin: 'serpapi'})) || [])],
+        comments: [...(product.comments || []), ...(enrichmentData.reviews?.map(r => ({
+          id: new Date().toISOString(),
+          text: r.text,
+          author: r.author_name,
+          origin: 'serpapi',
+          rating: r.rating,
+          createdAt: new Date().toISOString(),
+        })) || [])],
         rating: enrichmentData.rating || product.rating,
         numRatings: enrichmentData.user_ratings_total || product.numRatings,
       };
@@ -90,8 +97,10 @@ router.get('/', async (req, res) => {
       console.log(`Persisted ${validProducts.length} products.`);
     }
 
+    const productIds = validProducts.map(p => p.canonicalProductId).filter((id): id is string => !!id);
+
     const newProducts = await productsCollection.find({
-      canonicalProductId: { $in: validProducts.map(p => p.canonicalProductId) }
+      canonicalProductId: { $in: productIds }
     }).toArray();
 
     res.status(200).json(newProducts);
