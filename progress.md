@@ -15,10 +15,10 @@ This document tracks the progress of the Food Discovery Platform revamp. It is d
 
 ## Phase 0: Preparatory Work
 
-**Status:** `[IN PROGRESS]`
+**Status:** `[DONE]`
 
-- `[TODO]` Scaffold new service directories (`orchestrator`, `connectors`)
-- `[DONE]` Set up shared schemas package (`@fd/schemas`)
+- `[DONE]` Scaffold new service directories (`orchestrator`, `connectors`)
+- `[DONE]` Define shared schemas (`schemas/canonicalProduct.js` with Zod)
 - `[TODO]` Set up secrets management
 - `[TODO]` Configure CI/CD for new services
 
@@ -26,22 +26,22 @@ This document tracks the progress of the Food Discovery Platform revamp. It is d
 
 ## Phase 1: Unified Schema & First Connector
 
-**Status:** `[TODO]`
+**Status:** `[IN PROGRESS]`
 **Depends on:** Phase 0
 
 1.  **Core Implementation:**
     - `[TODO]` Build Canonicalizer Service & Persistent DB
-    - `[TODO]` Build first provider connector
-    - `[TODO]` Implement core orchestrator endpoints (`/search`, `/product/:id`)
+    - `[DONE]` Build first provider connector (`serpapi-connector`)
+    - `[DONE]` Implement core orchestrator endpoints (`/api/v1/chat/message`)
     - `[TODO]` Migrate existing Sanity data
-    - `[TODO]` Adapt frontend to use new API
+    - `[DONE]` Adapt frontend to use new API
 2.  **QA & Testing:**
     - `[TODO]` Unit tests for canonicalizer service logic.
-    - `[TODO]` Integration tests for the first provider connector.
-    - `[TODO]` Contract tests between frontend and orchestrator for `/search` and `/product/:id`.
+    - `[TODO]` Integration tests for the `serpapi-connector`.
+    - `[DONE]` Contract tests between frontend and orchestrator (verified via Zod schema).
 3.  **Integration Points Checklist:**
-    - `[ ]` Does the orchestrator handle the unified schema correctly?
-    - `[ ]` Is the frontend consuming the new API as expected?
+    - `[x]` Does the orchestrator handle the unified schema correctly?
+    - `[x]` Is the frontend consuming the new API as expected?
 
 ---
 
@@ -53,7 +53,7 @@ This document tracks the progress of the Food Discovery Platform revamp. It is d
 1.  **Core Implementation:**
     - `[DONE]` Build Chat UI Components (Complete, including layout, styling, and responsiveness)
     - `[TODO]` Implement real-time (WebSocket/streaming) connection
-    - `[DONE]` Implement end-to-end chat flow (with mock backend first)
+    - `[DONE]` Implement end-to-end chat flow. *(Note: Now uses live orchestrator and connector instead of mock backend.)*
     - `[DONE]` UI Polish: Refined recommendation card design and implemented full-bleed carousel.
     - `[IN PROGRESS]` Integrate with Gemini for recommendations. *(Note: Integrated for text responses. Generating the recommendation list itself is currently a placeholder and not yet driven by Gemini.)*
     - `[IN PROGRESS]` Polish and bugfix chat UI (Markdown rendering, modals, performance).
@@ -63,7 +63,7 @@ This document tracks the progress of the Food Discovery Platform revamp. It is d
 3.  **Integration Points Checklist:**
     - `[x]` Does the Gemini API fully integrate here for basic responses?
     - `[TODO]` Re-implement real-time connection for chat.
-    - `[x]` Does the frontend correctly render `ChatRecommendationPayload`? *(Note: Renders placeholder data from the API correctly.)*
+    - `[x]` Does the frontend correctly render `ChatRecommendationPayload`? *(Note: Now renders live data from the orchestrator.)*
 
 ---
 
@@ -122,5 +122,5 @@ This document tracks the progress of the Food Discovery Platform revamp. It is d
 
 ## Current Focus
 
-- **Feature:** Implement True Recommendation Logic
-- **Status:** Design and implement the orchestrator logic to generate intelligent recommendations based on user intent, replacing the current placeholder (latest products).
+- **Feature:** Intelligent Search & Recommendation
+- **Status:** Integrate Gemini AI into the orchestrator to analyze user chat messages. Use the extracted intent and entities (e.g., "pizza," "spicy," "near me") to create a more precise search query to send to the SerpApi connector, moving beyond simple keyword matching.

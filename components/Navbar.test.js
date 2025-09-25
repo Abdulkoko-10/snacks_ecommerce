@@ -98,7 +98,7 @@ Object.defineProperty(document, 'documentElement', {
   value: { classList: mockClassList, style: mockStyle },
 });
 
-describe.skip('Navbar Component - Theme Management', () => {
+describe('Navbar Component - Theme Management', () => {
   let addEventListenerSpy;
   let removeEventListenerSpy;
 

@@ -16,6 +16,32 @@ app.get('/health', (req, res) => {
 
 const SERPAPI_CONNECTOR_URL = 'http://localhost:3001';
 
+const { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } = require('@google/generative-ai');
+
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+
+const model = genAI.getGenerativeModel({
+  model: "gemini-1.5-flash",
+  systemInstruction: `You are a query understanding system for a food discovery app.
+Your task is to analyze the user's message and extract key entities to form a search query.
+You must return a single, valid JSON object with the following structure and nothing else:
+{
+  "search_query": "A concise, effective search query for a local search engine (e.g., 'best spicy pizza', 'cheap tacos', 'ramen'). This should be a string.",
+  "location": "The city or neighborhood the user mentioned. If not specified, default to 'Austin, TX'. This should be a string.",
+  "conversational_response": "A friendly, conversational response confirming what you are searching for. This should be a string."
+}
+Do not include any other text, explanations, or markdown formatting like \`\`\`json. Just the raw JSON object.`,
+});
+
+const generationConfig = {
+  temperature: 0.2,
+  topP: 1,
+  topK: 32,
+  maxOutputTokens: 4096,
+  responseMimeType: "application/json",
+};
+
 app.post('/api/v1/chat/message', async (req, res) => {
   const { text: userMessageText } = req.body;
 
@@ -24,9 +50,16 @@ app.post('/api/v1/chat/message', async (req, res) => {
   }
 
   try {
-    // --- 1. Call the Connector ---
+    // --- 1. Understand User Intent with Gemini ---
+    const chat = model.startChat({ generationConfig });
+    const result = await chat.sendMessage(userMessageText);
+    const responseJson = result.response.text();
+    const intent = JSON.parse(responseJson);
+
+    // --- 2. Call the Connector with the structured query ---
     const connectorResponse = await axios.post(`${SERPAPI_CONNECTOR_URL}/search`, {
-      query: userMessageText,
+      query: intent.search_query,
+      location: intent.location,
     });
 
     const canonicalProducts = connectorResponse.data;
@@ -52,16 +85,16 @@ app.post('/api/v1/chat/message', async (req, res) => {
         originSummary: [p.provider],
         details: p.address, // Using address as details for now
       },
-      reason: `Found this result for "${userMessageText}" via ${p.provider}.`,
+      reason: `I found this based on your request for "${intent.search_query}".`,
       meta: {
-        generatedBy: "orchestrator-rule",
+        generatedBy: "gemini-instruct",
         confidence: 0.95,
       }
     }));
 
     // --- 3. Create the Final Payload ---
     const payload = {
-      fullText: `I found ${recommendations.length} results for your search for "${userMessageText}". Here are the top ones:`,
+      fullText: intent.conversational_response,
       recommendations: recommendations,
     };
 
@@ -80,6 +113,10 @@ app.post('/api/v1/chat/message', async (req, res) => {
 });
 
 
-app.listen(PORT, () => {
-  console.log(`Orchestrator service is running on http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`Orchestrator service is running on http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app; // Export for testing
