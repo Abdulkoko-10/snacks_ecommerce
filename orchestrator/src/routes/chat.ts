@@ -1,43 +1,84 @@
 import { Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import { search as searchWithGeoapify } from '@fd/geoapify-connector';
 
 const router = Router();
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
-router.post('/message', (req, res) => {
-  const { text, chatHistory, threadId } = req.body;
+const model = genAI.getGenerativeModel({
+  model: "gemini-1.5-flash",
+  systemInstruction: `You are a helpful and friendly food discovery assistant.
+Your goal is to understand the user's request for food and respond in a conversational way.
+Based on the user's message, you must determine two things:
+1.  **intent**: Is the user asking to search for food? This could be direct ('find me pizza') or indirect ('I'm hungry for something spicy'). If they are, the intent is 'SEARCH'. If they are just chatting, the intent is 'CHAT'.
+2.  **query**: If the intent is 'SEARCH', what is the most likely search query for a food discovery API? For example, if the user says 'I want to find a great place for ramen near me', the query should be 'ramen'. If they say 'I'm craving some spicy curry', the query could be 'spicy curry'.
 
-  // Generate a new thread ID if one isn't provided
+You must respond with a JSON object containing the 'intent' and the 'query'. Do not add any other text or formatting.
+Example 1: User says 'find me the best tacos in San Francisco'. You respond with: {"intent": "SEARCH", "query": "tacos"}
+Example 2: User says 'hi how are you'. You respond with: {"intent": "CHAT", "query": null}
+Example 3: User says 'I could really go for some pho right now'. You respond with: {"intent": "SEARCH", "query": "pho"}`
+});
+
+router.post('/message', async (req, res) => {
+  const { text, chatHistory, threadId, lat, lon } = req.body;
+
+  if (!text) {
+    return res.status(400).json({ error: 'Message text is required.' });
+  }
+
   const newThreadId = threadId || uuidv4();
   res.setHeader('X-Thread-Id', newThreadId);
 
-  // Simple mock response logic
-  const mockResponse = {
-    fullText: `This is a mock response from the orchestrator to your message: "${text}". The real AI-powered chat is not yet connected.`,
-    recommendations: [],
-  };
+  try {
+    const chat = model.startChat();
+    const result = await chat.sendMessage(text);
+    const response = await result.response;
+    const aiResponseText = response.text();
 
-  // You can add mock recommendations based on keywords if needed for UI testing
-  if (text && text.toLowerCase().includes('pizza')) {
-    mockResponse.recommendations.push({
-      canonicalProductId: "mock-product-id-1",
-      preview: {
-        title: "Orchestrator Mock Pizza",
-        image: "https://via.placeholder.com/150",
-        rating: 4.5,
-        minPrice: 12.99,
-        bestProvider: "MockProvider",
-        eta: "15-25 min",
-        originSummary: ["MockProvider"],
-      },
-      reason: "Because you mentioned pizza, here is a mock pizza suggestion from the orchestrator!",
-      meta: {
-        generatedBy: "orchestrator-mock",
-        confidence: 0.99,
+    let intentData;
+    try {
+      intentData = JSON.parse(aiResponseText);
+    } catch (e) {
+      console.error("Failed to parse AI response JSON:", aiResponseText);
+      // Fallback to a simple chat response if JSON parsing fails
+      return res.status(200).json({
+        fullText: "I'm sorry, I had a little trouble understanding that. Could you try rephrasing?",
+        recommendations: [],
+      });
+    }
+
+    if (intentData.intent === 'SEARCH' && intentData.query) {
+      if (!lat || !lon) {
+        return res.status(200).json({
+          fullText: "It sounds like you're looking for food! To help me find the best options, could you please share your location?",
+          recommendations: [],
+        });
       }
-    });
-  }
+      const searchResults = await searchWithGeoapify(intentData.query, lat, lon);
+      const recommendationText = searchResults.length > 0
+        ? `I found a few options for "${intentData.query}" near you!`
+        : `I couldn't find any results for "${intentData.query}" near you, but you might like these other options.`;
 
-  res.status(200).json(mockResponse);
+      return res.status(200).json({
+        fullText: recommendationText,
+        recommendations: searchResults, // In a real app, you'd format this into a preview
+      });
+
+    } else {
+      // For 'CHAT' intent or if query is null
+      const chatModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const chatResponse = await chatModel.generateContent(`Continue the conversation. The user said: "${text}"`);
+      return res.status(200).json({
+        fullText: chatResponse.response.text(),
+        recommendations: [],
+      });
+    }
+
+  } catch (error) {
+    console.error("Error communicating with Generative AI or Geoapify:", error);
+    res.status(500).json({ error: 'An internal server error occurred.' });
+  }
 });
 
 export default router;

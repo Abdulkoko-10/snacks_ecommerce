@@ -9,9 +9,10 @@
     "dev": "ts-node-dev src/index.ts"
   },
   "dependencies": {
-    "express": "^4.17.1",
+    "@fd/geoapify-connector": "file:../connectors/geoapify-connector",
     "@fd/schemas": "file:../packages/schemas",
-    "serpapi": "^2.1.0",
+    "@google/generative-ai": "^0.24.1",
+    "express": "^4.17.1",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
