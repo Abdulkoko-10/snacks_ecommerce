@@ -30,14 +30,14 @@ This document tracks the progress of the Food Discovery Platform revamp. It is d
 **Depends on:** Phase 0
 
 1.  **Core Implementation:**
-    - `[TODO]` Build Canonicalizer Service & Persistent DB
-    - `[DONE]` Build first provider connector (Sanity)
-    - `[IN PROGRESS]` Implement core orchestrator endpoints (`/search` complete, `/product/:id` stubbed)
+    - `[DONE]` Build Canonicalizer Service & Persistent DB (MongoDB integrated, initial upsert logic in place)
+    - `[DONE]` Build first provider connector (Sanity, now push-based)
+    - `[DONE]` Implement core orchestrator endpoints (`/search` from DB, `/ingest` for connectors)
     - `[TODO]` Migrate existing Sanity data
     - `[IN PROGRESS]` Adapt frontend to use new API (Homepage adapted with feature flag)
 2.  **QA & Testing:**
-    - `[TODO]` Unit tests for canonicalizer service logic.
-    - `[DONE]` Integration tests for the first provider connector.
+    - `[IN PROGRESS]` Unit tests for canonicalizer service logic (initial tests passing).
+    - `[DONE]` Integration tests for the first provider connector (now tests the push mechanism).
     - `[TODO]` Contract tests between frontend and orchestrator for `/search` and `/product/:id`.
 3.  **Integration Points Checklist:**
     - `[x]` Does the orchestrator handle the unified schema correctly?
