@@ -7,6 +7,7 @@ const mockDb = {
   limit: jest.fn().mockReturnThis(),
   toArray: jest.fn(),
   bulkWrite: jest.fn(),
+  findOne: jest.fn(),
 };
 const mockClientPromise = Promise.resolve({ db: () => mockDb });
 jest.mock('./lib/mongodb', () => mockClientPromise);
@@ -53,6 +54,29 @@ describe('Orchestrator Service', () => {
 
         expect(res.statusCode).toEqual(500);
         expect(res.body).toEqual({ error: 'Failed to fetch data from database.' });
+    });
+  });
+
+  describe('GET /api/v1/product/:slug', () => {
+    it('should return a single product when found by slug', async () => {
+      const mockProduct = { preview: { slug: 'found-product' }, name: 'Found Product' };
+      mockDb.collection().findOne.mockResolvedValue(mockProduct);
+
+      const res = await request(app).get('/api/v1/product/found-product');
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body).toEqual(mockProduct);
+      expect(mockDb.collection).toHaveBeenCalledWith('canonical_products');
+      expect(mockDb.collection().findOne).toHaveBeenCalledWith({ 'preview.slug': 'found-product' });
+    });
+
+    it('should return a 404 error when a product is not found by slug', async () => {
+      mockDb.collection().findOne.mockResolvedValue(null);
+
+      const res = await request(app).get('/api/v1/product/not-found-slug');
+
+      expect(res.statusCode).toEqual(404);
+      expect(res.body).toEqual({ error: 'Product not found.' });
     });
   });
 

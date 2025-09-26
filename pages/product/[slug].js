@@ -10,6 +10,7 @@ import {
   AiOutlineStar,
 } from "react-icons/ai";
 
+import { isOrchestratorEnabled } from "../../lib/flags";
 import { readClient, urlFor, previewClient } from "../../lib/client";
 import Product from "../../components/Product";
 import { useStateContext } from "../../context/StateContext";
@@ -62,7 +63,7 @@ const fetchReviews = async (keyWithProductId) => {
   }
 };
 
-const ProductDetails = ({ product, products }) => {
+const ProductDetails = ({ product, products, source }) => {
   // 1. Call ALL hooks unconditionally at the top
   const [index, setIndex] = useState(0);
   const { decQty, incQty, qty, onAdd, setShowCart } = useStateContext();
@@ -113,17 +114,27 @@ const ProductDetails = ({ product, products }) => {
 
   // 2. Handle loading/not found state for the product *after* all hooks
   if (!product) {
-    // Customize this loading/not found state as needed
-    // router.isFallback can be checked here if using ISR with fallback: true
     return <div>Loading product details or product not found...</div>;
   }
 
+  // --- Data Normalization ---
+  // Create a normalized product object to handle both data sources seamlessly.
+  const isOrchestratorSource = source === 'orchestrator';
+  const normalizedProduct = {
+    _id: isOrchestratorSource ? product.canonicalProductId : product._id,
+    name: isOrchestratorSource ? product.preview.title : product.name,
+    details: isOrchestratorSource ? product.preview.details : product.details,
+    price: isOrchestratorSource ? product.preview.minPrice : product.price,
+    image: isOrchestratorSource ? [product.preview.image] : product.image, // Creates an array with a single URL string if from orchestrator
+    slug: isOrchestratorSource ? { current: product.preview.slug } : product.slug,
+  };
+
   // 3. Safe destructuring now that product is confirmed to exist
-  const { _id, image, name, details, price, slug } = product;
+  const { _id, image, name, details, price, slug } = normalizedProduct;
 
   // Event handlers and other logic that depend on product properties
   const handleAddToCartWithFeedback = () => {
-    onAdd(product, qty);
+    onAdd(normalizedProduct, qty);
     setIsAddedFeedback(true);
     setTimeout(() => {
       setIsAddedFeedback(false);
@@ -131,7 +142,7 @@ const ProductDetails = ({ product, products }) => {
   };
 
   const handleBuyNow = () => {
-    onAdd(product, qty);
+    onAdd(normalizedProduct, qty);
     setIsBuyNowFeedback(true);
     setTimeout(() => {
       setIsBuyNowFeedback(false);
@@ -229,26 +240,27 @@ const ProductDetails = ({ product, products }) => {
       <div className="product-detail-container">
         <div>
           <div className="image-container">
-            {image && image[index] && ( // Check if image and image[index] exist
+            {image && image[index] && (
               <Image
-                src={urlFor(image[index]).url()}
+                // If the image item is a string, use it directly. Otherwise, use urlFor.
+                src={typeof image[index] === 'string' ? image[index] : urlFor(image[index]).url()}
                 alt={name}
-                width={400} // From CSS .product-detail-image
-                height={400} // From CSS .product-detail-image
+                width={400}
+                height={400}
                 className="product-detail-image"
-                priority // Main product image, likely LCP
+                priority
               />
             )}
           </div>
           <div className="small-images-container">
             {image?.map((item, i) => (
-              item && ( // Ensure item exists before rendering Image
+              item && (
                 <Image
                   key={i}
-                  src={urlFor(item).url()}
+                  src={typeof item === 'string' ? item : urlFor(item).url()}
                   alt={`${name} - view ${i + 1}`}
-                  width={70} // From CSS .small-image
-                  height={70} // From CSS .small-image
+                  width={70}
+                  height={70}
                   className={
                     i === index ? "small-image selected-image" : "small-image"
                   }
@@ -358,32 +370,49 @@ export const getStaticPaths = async () => {
 // Export a constant named getStaticProps that is an async function
 // which takes in an object containing a property of 'params' with a property of 'slug'
 export const getStaticProps = async ({ params: { slug } }) => {
-  // Create a query for the product with the given slug
-  const query = `*[_type == "product" && slug.current == '${slug}'][0]`;
-  // Fetch the product with the given slug
-  const product = await previewClient.fetch(query);
+  const useOrchestrator = isOrchestratorEnabled();
+  let product;
+  let source;
 
-  // Reviews are no longer fetched here; they will be fetched client-side with SWR.
-  let products = []; // For "You may also like"
+  if (useOrchestrator) {
+    console.log(`Using Orchestrator to fetch product: ${slug}`);
+    source = 'orchestrator';
+    try {
+      const orchestratorUrl = process.env.ORCHESTRATOR_URL || 'http://localhost:3001';
+      const response = await fetch(`${orchestratorUrl}/api/v1/product/${slug}`);
+      if (response.ok) {
+        product = await response.json();
+      } else {
+        product = null;
+      }
+    } catch (e) {
+      console.error(`Could not fetch from orchestrator for slug ${slug}, falling back to Sanity.`, e);
+      product = null;
+    }
+  }
 
-  if (product && product._id) {
-    // Fetch "You may also like" products (4 other products, excluding the current one)
-    const currentProductId = product._id;
+  // Fallback to Sanity if orchestrator is disabled or fails
+  if (!product) {
+    console.log(`Using Sanity to fetch product: ${slug}`);
+    source = 'sanity';
+    const query = `*[_type == "product" && slug.current == '${slug}'][0]`;
+    product = await previewClient.fetch(query);
+  }
+
+  // Fetch "You may also like" products
+  let products = [];
+  if (product) {
+    const currentProductId = isOrchestratorEnabled() ? (product.canonicalProductId || product._id) : product._id;
     const productsQuery = `*[_type == "product" && _id != $currentProductId] | order(_createdAt desc) [0...4]`;
     products = await previewClient.fetch(productsQuery, { currentProductId });
   } else {
-    // Fallback: If product is not found, fetch any 4 products for "You may also like"
     const productsQuery = `*[_type == "product"] | order(_createdAt desc) [0...4]`;
     products = await previewClient.fetch(productsQuery);
-    // 'product' will be null or undefined.
-    // The page component should handle the case where 'product' is not available.
   }
 
   return {
-    // Pass product and products (for "You may also like") as props
-    // Reviews will be fetched client-side by the component using SWR
-    props: { product, products },
-    revalidate: 60, // Optionally, add revalidation if using ISR
+    props: { product, products, source },
+    revalidate: 60,
   };
 };
 
