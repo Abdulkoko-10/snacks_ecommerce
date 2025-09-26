@@ -174,6 +174,39 @@ chatRouter.put('/threads/:id', async (req, res) => {
     }
 });
 
+chatRouter.get('/history', async (req, res) => {
+    try {
+        const { threadId } = req.query;
+        if (!threadId) {
+            return res.status(400).json({ error: 'threadId query parameter is required.' });
+        }
+
+        const client = await clientPromise;
+        const db = client.db(DB_NAME);
+
+        // In a real app, we would also filter by the authenticated userId
+        // const { userId } = req.auth;
+        // const query = { threadId, userId };
+        const query = { threadId };
+
+        const messages = await db.collection('chat_messages').find(query).sort({ createdAt: 1 }).toArray();
+
+        // The original API returns a more complex object. We will replicate that here for compatibility.
+        const recommendationsByMessageId = {};
+        messages.forEach(message => {
+            if (message.role === 'assistant' && message.recommendationPayload) {
+                recommendationsByMessageId[message.id] = message.recommendationPayload.recommendations;
+                delete message.recommendationPayload; // Clean up payload
+            }
+        });
+
+        res.status(200).json({ messages, recommendationsByMessageId });
+    } catch (error) {
+        console.error(`Error fetching history for thread ${req.query.threadId}:`, error);
+        res.status(500).json({ error: 'Failed to fetch chat history.' });
+    }
+});
+
 app.use('/api/v1/chat', chatRouter);
 
 module.exports = app;

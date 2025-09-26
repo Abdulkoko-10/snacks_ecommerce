@@ -137,6 +137,36 @@ describe('Orchestrator Service', () => {
     });
   });
 
+  describe('GET /api/v1/chat/history', () => {
+    it('should return chat history for a given threadId', async () => {
+      const mockMessages = [
+        { id: 'msg1', role: 'user', text: 'Hello' },
+        { id: 'msg2', role: 'assistant', text: 'Hi there!', recommendationPayload: { recommendations: [{ id: 'rec1' }] } },
+      ];
+      mockDb.collection().find().sort().toArray.mockResolvedValue(mockMessages);
+
+      const res = await request(app).get('/api/v1/chat/history?threadId=thread_123');
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.messages).toHaveLength(2);
+      expect(res.body.recommendationsByMessageId['msg2']).toBeDefined();
+      expect(res.body.messages[1].recommendationPayload).toBeUndefined(); // Ensure payload is stripped
+    });
+
+    it('should return a 400 error if threadId is missing', async () => {
+      const res = await request(app).get('/api/v1/chat/history');
+      expect(res.statusCode).toEqual(400);
+      expect(res.body.error).toBe('threadId query parameter is required.');
+    });
+
+    it('should return a 500 error if the database fails', async () => {
+        mockDb.collection().find().sort().toArray.mockRejectedValue(new Error('DB Error'));
+        const res = await request(app).get('/api/v1/chat/history?threadId=thread_123');
+        expect(res.statusCode).toEqual(500);
+        expect(res.body.error).toBe('Failed to fetch chat history.');
+    });
+  });
+
   describe('PUT /api/v1/chat/threads/:id', () => {
     const validId = '615f7b1b3b3b3b3b3b3b3b3b';
     const notFoundId = '615f7b1b3b3b3b3b3b3b3b3c';

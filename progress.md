@@ -45,25 +45,29 @@ This document tracks the progress of the Food Discovery Platform revamp. It is d
 
 ---
 
-## Phase 2: Chat Page & Recommendations
+## Phase 2: Chat Page & Recommendations Migration
 
 **Status:** `[IN PROGRESS]`
 **Depends on:** Phase 1
 
-1.  **Core Implementation:**
-    - `[DONE]` Build Chat UI Components (Complete, including layout, styling, and responsiveness)
-    - `[TODO]` Implement real-time (WebSocket/streaming) connection
-    - `[DONE]` Implement end-to-end chat flow (with mock backend first)
-    - `[DONE]` UI Polish: Refined recommendation card design and implemented full-bleed carousel.
-    - `[IN PROGRESS]` Integrate with Gemini for recommendations. *(Note: Integrated for text responses. Generating the recommendation list itself is currently a placeholder and not yet driven by Gemini.)*
-    - `[IN PROGRESS]` Polish and bugfix chat UI (Markdown rendering, modals, performance).
-2.  **QA & Testing:**
-    - `[TODO]` Unit tests for Chat UI components.
-    - `[TODO]` E2E tests for the chat flow (from user message to recommendation display).
-3.  **Integration Points Checklist:**
-    - `[x]` Does the Gemini API fully integrate here for basic responses?
-    - `[TODO]` Re-implement real-time connection for chat.
-    - `[x]` Does the frontend correctly render `ChatRecommendationPayload`? *(Note: Renders placeholder data from the API correctly.)*
+1.  **Core Implementation (Orchestrator):**
+    - `[DONE]` Migrate chat thread management (`GET /threads`, `PUT /threads/:id`, `DELETE /threads/:id`).
+    - `[DONE]` Migrate chat history (`GET /history?threadId=...`).
+    - `[IN PROGRESS]` Migrate message sending (`POST /message`), including Gemini integration.
+    - `[TODO]` Implement real-time (WebSocket/streaming) connection.
+
+2.  **Core Implementation (Frontend):**
+    - `[DONE]` Build Chat UI Components (Layout, Sidebar, Thread view, etc.).
+    - `[IN PROGRESS]` Adapt frontend to use new chat API endpoints under a feature flag (`USE_ORCHESTRATOR_CHAT`).
+        - `[DONE]` Chat Sidebar (thread management) adapted.
+        - `[DONE]` Main Chat View (history fetching) adapted.
+        - `[TODO]` Main Chat View (message sending) to be adapted.
+
+3.  **QA & Testing:**
+    - `[DONE]` Unit tests for orchestrator chat thread management endpoints.
+    - `[DONE]` Unit tests for orchestrator history endpoint.
+    - `[TODO]` Unit tests for orchestrator message endpoint.
+    - `[TODO]` E2E tests for the full chat flow via the orchestrator.
 
 ---
 

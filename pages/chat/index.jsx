@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import styled from '@emotion/styled';
+import { isOrchestratorChatEnabled } from '../../lib/flags';
 import ChatPageLayout from '../../components/chat/ChatPageLayout';
 import ChatInput from '../../components/chat/ChatInput';
 import FloatingCatAssistant from '../../components/chat/FloatingCatAssistant';
@@ -35,9 +36,28 @@ const ChatPage = () => {
     }
 
     const fetchHistory = async () => {
-      // Use a different endpoint if we have a threadId
-      const historyUrl = currentThreadId ? `/api/v1/chat/history?threadId=${currentThreadId}` : '/api/v1/chat/history';
+      if (!currentThreadId) {
+        setMessages([{
+          id: 'init_msg_0',
+          role: 'assistant',
+          text: 'Hello! How can I help you discover amazing food today?',
+          createdAt: new Date().toISOString(),
+        }]);
+        return;
+      }
+
       try {
+        const useOrchestrator = isOrchestratorChatEnabled();
+        let historyUrl;
+        if (useOrchestrator) {
+          console.log('Fetching chat history from orchestrator...');
+          const orchestratorUrl = process.env.NEXT_PUBLIC_ORCHESTRATOR_URL || 'http://localhost:3001';
+          historyUrl = `${orchestratorUrl}/api/v1/chat/history?threadId=${currentThreadId}`;
+        } else {
+          console.log('Fetching chat history from monolith...');
+          historyUrl = `/api/v1/chat/history?threadId=${currentThreadId}`;
+        }
+
         const response = await fetch(historyUrl);
         if (response.ok) {
           const { messages: historyMessages, recommendationsByMessageId: historyRecs } = await response.json();
@@ -45,10 +65,11 @@ const ChatPage = () => {
             setMessages(historyMessages);
             setRecommendationsByMessageId(historyRecs || {});
           } else {
+            // If history is empty, still show the initial message.
             setMessages([{
               id: 'init_msg_0',
               role: 'assistant',
-              text: 'Hello! How can I help you discover amazing food today?',
+              text: 'This is a new chat. What would you like to talk about?',
               createdAt: new Date().toISOString(),
             }]);
           }
@@ -56,9 +77,9 @@ const ChatPage = () => {
       } catch (error) {
         console.error("Failed to fetch chat history:", error);
         setMessages([{
-          id: 'init_msg_0',
+          id: 'error_msg_0',
           role: 'assistant',
-          text: 'Hello! How can I help you discover amazing food today?',
+          text: 'Sorry, I couldn\'t load the chat history.',
           createdAt: new Date().toISOString(),
         }]);
       }
