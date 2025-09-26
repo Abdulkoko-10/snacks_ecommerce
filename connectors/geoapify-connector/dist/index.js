@@ -22,6 +22,7 @@ function search(query, lat, lon) {
             return [];
         }
         const params = {
+            categories: 'commercial.food_and_drink',
             text: query,
             filter: `circle:${lon},${lat},5000`,
             bias: `proximity:${lon},${lat}`,

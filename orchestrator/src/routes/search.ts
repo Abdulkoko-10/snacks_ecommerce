@@ -65,12 +65,29 @@ router.get('/', async (req, res) => {
     await productsCollection.createIndex({ location: "2dsphere" });
     await productsCollection.createIndex({ title: "text", description: "text" });
 
-    const cachedProducts = await productsCollection.find({
-      $and: [
-        { location: { $near: { $geometry: { type: "Point", coordinates: [longitude, latitude] }, $maxDistance: CACHE_RADIUS_METERS } } },
-        { $text: { $search: query } }
-      ]
-    }).limit(20).toArray();
+    const pipeline: any[] = [
+      {
+        $geoNear: {
+          near: {
+            type: 'Point',
+            coordinates: [longitude, latitude],
+          },
+          distanceField: 'distance',
+          maxDistance: CACHE_RADIUS_METERS,
+          spherical: true,
+        },
+      },
+      {
+        $match: {
+          $text: { $search: query },
+        },
+      },
+      {
+        $limit: 20,
+      },
+    ];
+
+    const cachedProducts = await productsCollection.aggregate(pipeline).toArray();
 
     if (cachedProducts.length > 0) {
       console.log(`Cache hit: Found ${cachedProducts.length} products for query "${query}" in the database.`);

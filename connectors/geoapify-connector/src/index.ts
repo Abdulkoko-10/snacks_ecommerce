@@ -10,6 +10,7 @@ export async function search(query: string, lat: number, lon: number): Promise<P
   }
 
   const params = {
+    categories: 'commercial.food_and_drink',
     text: query,
     filter: `circle:${lon},${lat},5000`, // 5km radius
     bias: `proximity:${lon},${lat}`,
