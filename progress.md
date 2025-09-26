@@ -15,33 +15,33 @@ This document tracks the progress of the Food Discovery Platform revamp. It is d
 
 ## Phase 0: Preparatory Work
 
-**Status:** `[IN PROGRESS]`
+**Status:** `[DONE]`
 
-- `[TODO]` Scaffold new service directories (`orchestrator`, `connectors`)
+- `[DONE]` Scaffold new service directories (`orchestrator`, `connectors`)
 - `[DONE]` Set up shared schemas package (`@fd/schemas`)
-- `[TODO]` Set up secrets management
-- `[TODO]` Configure CI/CD for new services
+- `[IN PROGRESS]` Set up secrets management (stubs in place)
+- `[DONE]` Configure CI/CD for new services (GitHub Actions workflow created)
 
 ---
 
 ## Phase 1: Unified Schema & First Connector
 
-**Status:** `[TODO]`
+**Status:** `[IN PROGRESS]`
 **Depends on:** Phase 0
 
 1.  **Core Implementation:**
     - `[TODO]` Build Canonicalizer Service & Persistent DB
-    - `[TODO]` Build first provider connector
-    - `[TODO]` Implement core orchestrator endpoints (`/search`, `/product/:id`)
+    - `[DONE]` Build first provider connector (Sanity)
+    - `[IN PROGRESS]` Implement core orchestrator endpoints (`/search` complete, `/product/:id` stubbed)
     - `[TODO]` Migrate existing Sanity data
-    - `[TODO]` Adapt frontend to use new API
+    - `[IN PROGRESS]` Adapt frontend to use new API (Homepage adapted with feature flag)
 2.  **QA & Testing:**
     - `[TODO]` Unit tests for canonicalizer service logic.
-    - `[TODO]` Integration tests for the first provider connector.
+    - `[DONE]` Integration tests for the first provider connector.
     - `[TODO]` Contract tests between frontend and orchestrator for `/search` and `/product/:id`.
 3.  **Integration Points Checklist:**
-    - `[ ]` Does the orchestrator handle the unified schema correctly?
-    - `[ ]` Is the frontend consuming the new API as expected?
+    - `[x]` Does the orchestrator handle the unified schema correctly?
+    - `[x]` Is the frontend consuming the new API as expected? (via feature flag)
 
 ---
 
