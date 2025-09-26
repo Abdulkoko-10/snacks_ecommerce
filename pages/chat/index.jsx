@@ -17,6 +17,8 @@ const ChatPageWrapper = styled.div`
 
 const ChatPage = () => {
   const router = useRouter();
+  const { threadId: currentThreadId } = router.query; // Destructure outside for stable dependency
+
   const [threadId, setThreadId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [recommendationsByMessageId, setRecommendationsByMessageId] = useState({});
@@ -34,14 +36,10 @@ const ChatPage = () => {
     const useOrchestrator = isOrchestratorChatEnabled();
     if (useOrchestrator) {
       const orchestratorUrl = process.env.NEXT_PUBLIC_ORCHESTRATOR_URL || 'http://localhost:3001';
-      console.log(`Connecting to WebSocket server at ${orchestratorUrl}`);
       const socket = io(orchestratorUrl);
       socketRef.current = socket;
 
-      socket.on('connect', () => {
-        console.log('WebSocket connected!');
-        setIsSocketConnected(true);
-      });
+      socket.on('connect', () => setIsSocketConnected(true));
       socket.on('thread_created', ({ threadId: newThreadId }) => {
         setThreadId(newThreadId);
         updateThreadUrl(newThreadId);
@@ -60,19 +58,16 @@ const ChatPage = () => {
         setIsLoading(false);
       });
 
-      // Cleanup on component unmount
       return () => {
-        console.log('Disconnecting WebSocket.');
         setIsSocketConnected(false);
         socket.disconnect();
       };
     }
-  }, [updateThreadUrl]); // The linter is now satisfied
+  }, [updateThreadUrl]);
 
   // --- Effect for History Fetching ---
   useEffect(() => {
     document.body.classList.add('chat-page-active');
-    const currentThreadId = router.query.threadId;
 
     if (currentThreadId) {
       setThreadId(currentThreadId);
@@ -107,30 +102,29 @@ const ChatPage = () => {
     return () => {
       document.body.classList.remove('chat-page-active');
     };
-  }, [router.query.threadId]); // Only depends on the threadId
+  }, [currentThreadId]); // Now depends on the stable, destructured primitive
 
 
   const handleSend = async (text) => {
     const userMessage = { id: `user_msg_${Date.now()}`, role: 'user', text, createdAt: new Date().toISOString() };
-    const newMessages = [...messages, userMessage];
-    setMessages(newMessages);
+    setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
 
     const useOrchestrator = isOrchestratorChatEnabled();
 
     if (useOrchestrator && socketRef.current) {
-      socketRef.current.emit('chat_message', { text, chatHistory: newMessages, threadId });
+      socketRef.current.emit('chat_message', { text, chatHistory: messages, threadId });
     } else {
-      // Legacy REST API Logic (or if socket isn't connected yet)
+      if (useOrchestrator) {
+        setIsLoading(false);
+        setMessages(prev => [...prev, { id: `err_msg_${Date.now()}`, role: 'assistant', text: 'Cannot connect to chat service. Please wait a moment and try again.', createdAt: new Date().toISOString() }]);
+        return;
+      }
       try {
-        // If orchestrator is enabled but socket isn't ready, show an error instead of falling back
-        if (useOrchestrator) {
-            throw new Error("WebSocket not connected. Please wait a moment and try again.");
-        }
         const response = await fetch('/api/v1/chat/message', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text, chatHistory: newMessages, threadId }),
+          body: JSON.stringify({ text, chatHistory: messages, threadId }),
         });
         if (!response.ok) throw new Error('API request failed');
 
