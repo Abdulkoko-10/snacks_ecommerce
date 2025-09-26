@@ -15,6 +15,11 @@ export async function connectToDatabase() {
     return { client: cachedClient, db: cachedDb };
   }
 
+  if (!MONGODB_URI) {
+    // This check ensures the type is narrowed to `string` for the connect call
+    throw new Error('MONGODB_URI is not defined at runtime');
+  }
+
   const client = await MongoClient.connect(MONGODB_URI);
   const db = client.db(DB_NAME);
 
