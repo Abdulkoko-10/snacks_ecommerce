@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import styled from '@emotion/styled';
 import io from 'socket.io-client';
@@ -23,6 +23,11 @@ const ChatPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const socketRef = useRef(null);
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
+
+  const updateThreadUrl = useCallback((newThreadId) => {
+    router.replace(`/chat?threadId=${newThreadId}`, undefined, { shallow: true });
+  }, [router]);
 
   // --- Effect for WebSocket Connection Lifecycle ---
   useEffect(() => {
@@ -33,11 +38,13 @@ const ChatPage = () => {
       const socket = io(orchestratorUrl);
       socketRef.current = socket;
 
-      socket.on('connect', () => console.log('WebSocket connected!'));
+      socket.on('connect', () => {
+        console.log('WebSocket connected!');
+        setIsSocketConnected(true);
+      });
       socket.on('thread_created', ({ threadId: newThreadId }) => {
         setThreadId(newThreadId);
-        // Use router.replace to update URL without adding to history
-        router.replace(`/chat?threadId=${newThreadId}`, undefined, { shallow: true });
+        updateThreadUrl(newThreadId);
       });
       socket.on('ai_response', ({ fullText, recommendations }) => {
         const assistantMessage = { id: `asst_msg_${Date.now()}`, role: 'assistant', text: fullText, createdAt: new Date().toISOString() };
@@ -56,10 +63,11 @@ const ChatPage = () => {
       // Cleanup on component unmount
       return () => {
         console.log('Disconnecting WebSocket.');
+        setIsSocketConnected(false);
         socket.disconnect();
       };
     }
-  }, []); // Empty dependency array ensures this runs only once on mount
+  }, [updateThreadUrl]); // The linter is now satisfied
 
   // --- Effect for History Fetching ---
   useEffect(() => {
@@ -70,7 +78,6 @@ const ChatPage = () => {
       setThreadId(currentThreadId);
     }
 
-    // Fetch initial history via REST
     const fetchHistory = async () => {
       if (!currentThreadId) {
         setMessages([{ id: 'init_msg_0', role: 'assistant', text: 'Hello! How can I help you discover amazing food today?', createdAt: new Date().toISOString() }]);
@@ -100,7 +107,7 @@ const ChatPage = () => {
     return () => {
       document.body.classList.remove('chat-page-active');
     };
-  }, [router.query.threadId, router]); // Added router to dependency array to fix the warning
+  }, [router.query.threadId]); // Only depends on the threadId
 
 
   const handleSend = async (text) => {
@@ -112,11 +119,14 @@ const ChatPage = () => {
     const useOrchestrator = isOrchestratorChatEnabled();
 
     if (useOrchestrator && socketRef.current) {
-      // --- WebSocket Logic ---
       socketRef.current.emit('chat_message', { text, chatHistory: newMessages, threadId });
     } else {
-      // --- Legacy REST API Logic ---
+      // Legacy REST API Logic (or if socket isn't connected yet)
       try {
+        // If orchestrator is enabled but socket isn't ready, show an error instead of falling back
+        if (useOrchestrator) {
+            throw new Error("WebSocket not connected. Please wait a moment and try again.");
+        }
         const response = await fetch('/api/v1/chat/message', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -127,7 +137,7 @@ const ChatPage = () => {
         const newThreadId = response.headers.get('X-Thread-Id');
         if (newThreadId && newThreadId !== threadId) {
           setThreadId(newThreadId);
-          router.replace(`/chat?threadId=${newThreadId}`, undefined, { shallow: true });
+          updateThreadUrl(newThreadId);
         }
         const data = await response.json();
         const { fullText, recommendations } = data;
@@ -137,8 +147,8 @@ const ChatPage = () => {
           setRecommendationsByMessageId(prev => ({ ...prev, [assistantMessage.id]: recommendations }));
         }
       } catch (error) {
-        console.error("Failed to send message via REST:", error);
-        const errorAssistantMessage = { id: `asst_msg_err_${Date.now()}`, role: 'assistant', text: 'Sorry, I seem to be having some trouble right now.', createdAt: new Date().toISOString() };
+        console.error("Failed to send message:", error);
+        const errorAssistantMessage = { id: `asst_msg_err_${Date.now()}`, role: 'assistant', text: `Sorry, I seem to be having some trouble right now. (${error.message})`, createdAt: new Date().toISOString() };
         setMessages(prev => [...prev, errorAssistantMessage]);
       } finally {
         setIsLoading(false);
@@ -146,10 +156,12 @@ const ChatPage = () => {
     }
   };
 
+  const useOrchestrator = isOrchestratorChatEnabled();
+
   return (
     <ChatPageWrapper>
       <ChatPageLayout messages={messages} recommendationsByMessageId={recommendationsByMessageId} isSidebarOpen={isSidebarOpen} setSidebarOpen={setSidebarOpen} />
-      <ChatInput onSend={handleSend} disabled={isLoading} />
+      <ChatInput onSend={handleSend} disabled={isLoading || (useOrchestrator && !isSocketConnected)} />
       <FloatingCatAssistant onClick={() => setSidebarOpen(true)} />
     </ChatPageWrapper>
   );
