@@ -4,10 +4,14 @@ const request = require('supertest');
 const mockDb = {
   collection: jest.fn().mockReturnThis(),
   find: jest.fn().mockReturnThis(),
+  sort: jest.fn().mockReturnThis(),
   limit: jest.fn().mockReturnThis(),
   toArray: jest.fn(),
   bulkWrite: jest.fn(),
   findOne: jest.fn(),
+  deleteOne: jest.fn(),
+  deleteMany: jest.fn(),
+  updateOne: jest.fn(),
 };
 const mockClientPromise = Promise.resolve({ db: () => mockDb });
 jest.mock('./lib/mongodb', () => mockClientPromise);
@@ -77,6 +81,101 @@ describe('Orchestrator Service', () => {
 
       expect(res.statusCode).toEqual(404);
       expect(res.body).toEqual({ error: 'Product not found.' });
+    });
+  });
+
+  describe('GET /api/v1/chat/threads', () => {
+    it('should return a list of chat threads', async () => {
+      const mockThreads = [{ _id: 'thread_1', title: 'My First Chat' }];
+      mockDb.collection().find().toArray.mockResolvedValue(mockThreads);
+
+      const res = await request(app).get('/api/v1/chat/threads');
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body).toEqual(mockThreads);
+      expect(mockDb.collection).toHaveBeenCalledWith('threads');
+      expect(mockDb.collection().find).toHaveBeenCalledWith({});
+    });
+
+    it('should return a 500 error if the database call fails', async () => {
+      mockDb.collection().find().toArray.mockRejectedValue(new Error('DB Error'));
+
+      const res = await request(app).get('/api/v1/chat/threads');
+
+      expect(res.statusCode).toEqual(500);
+      expect(res.body).toEqual({ error: 'Failed to fetch chat threads.' });
+    });
+  });
+
+  describe('DELETE /api/v1/chat/threads/:id', () => {
+    const validId = '615f7b1b3b3b3b3b3b3b3b3b';
+    const notFoundId = '615f7b1b3b3b3b3b3b3b3b3c';
+
+    it('should delete a thread and its messages successfully', async () => {
+      mockDb.deleteOne.mockResolvedValue({ deletedCount: 1 });
+      mockDb.deleteMany.mockResolvedValue({ deletedCount: 5 });
+
+      const res = await request(app).delete(`/api/v1/chat/threads/${validId}`);
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.message).toBe('Thread deleted successfully.');
+      expect(mockDb.deleteMany).toHaveBeenCalledWith({ threadId: validId });
+    });
+
+    it('should return 404 if the thread to delete is not found', async () => {
+      mockDb.deleteOne.mockResolvedValue({ deletedCount: 0 });
+
+      const res = await request(app).delete(`/api/v1/chat/threads/${notFoundId}`);
+
+      expect(res.statusCode).toEqual(404);
+    });
+
+    it('should return 400 for an invalid ID format', async () => {
+        const res = await request(app).delete('/api/v1/chat/threads/invalid-id');
+        expect(res.statusCode).toEqual(400);
+        expect(res.body.error).toBe('Invalid thread ID format.');
+    });
+  });
+
+  describe('PUT /api/v1/chat/threads/:id', () => {
+    const validId = '615f7b1b3b3b3b3b3b3b3b3b';
+    const notFoundId = '615f7b1b3b3b3b3b3b3b3b3c';
+
+    it('should rename a thread successfully', async () => {
+      mockDb.updateOne.mockResolvedValue({ matchedCount: 1 });
+
+      const res = await request(app)
+        .put(`/api/v1/chat/threads/${validId}`)
+        .send({ title: 'New Title' });
+
+      expect(res.statusCode).toEqual(200);
+    });
+
+    it('should return 400 if title is missing', async () => {
+      const res = await request(app)
+        .put(`/api/v1/chat/threads/${validId}`)
+        .send({});
+
+      expect(res.statusCode).toEqual(400);
+      expect(res.body.error).toBe('Title is required.');
+    });
+
+    it('should return 404 if the thread to rename is not found', async () => {
+      mockDb.updateOne.mockResolvedValue({ matchedCount: 0 });
+
+      const res = await request(app)
+        .put(`/api/v1/chat/threads/${notFoundId}`)
+        .send({ title: 'New Title' });
+
+      expect(res.statusCode).toEqual(404);
+    });
+
+    it('should return 400 for an invalid ID format', async () => {
+        const res = await request(app)
+          .put('/api/v1/chat/threads/invalid-id')
+          .send({ title: 'New Title' });
+        expect(res.statusCode).toEqual(400);
+        expect(res.body.error).toBe('Invalid thread ID format.');
     });
   });
 
