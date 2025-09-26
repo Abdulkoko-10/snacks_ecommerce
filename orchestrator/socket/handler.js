@@ -5,19 +5,30 @@ const clientPromise = require('../lib/mongodb');
 const DB_NAME = process.env.MONGODB_DB_NAME || 'food-discovery-orchestrator';
 
 function initializeSocket(io) {
+  // Pre-flight check for essential configuration
+  const isDbConnected = !!clientPromise;
+  const hasGeminiKey = !!process.env.GEMINI_API_KEY;
+
   io.on('connection', (socket) => {
     console.log(`A user connected: ${socket.id}`);
+
+    // Immediately check for server readiness on connection
+    if (!isDbConnected) {
+      socket.emit('chat_error', { message: 'Service Unavailable: Database not configured.' });
+      socket.disconnect(true);
+      return;
+    }
+    if (!hasGeminiKey) {
+        socket.emit('chat_error', { message: 'Service Unavailable: AI service not configured.' });
+        socket.disconnect(true);
+        return;
+    }
 
     socket.on('chat_message', async (data) => {
       const { text: userMessageText, chatHistory, threadId: currentThreadId } = data;
       const userId = 'user_placeholder';
-      const apiKey = process.env.GEMINI_API_KEY;
+      const apiKey = process.env.GEMINI_API_KEY; // We know this exists from the check above
 
-      if (!apiKey) {
-        console.error('Server config error: Missing GEMINI_API_KEY.');
-        socket.emit('chat_error', { message: 'Server configuration error.' });
-        return;
-      }
       if (!userMessageText) {
         socket.emit('chat_error', { message: 'Message text is required.' });
         return;
@@ -48,17 +59,24 @@ function initializeSocket(io) {
         const payload = { fullText: fullResponseText, recommendations };
         socket.emit('ai_response', payload);
 
-        const messagesCollection = db.collection('chat_messages');
-        const threadsCollection = db.collection('threads');
-        if (isNewThread) {
-          await threadsCollection.insertOne({ _id: new ObjectId(threadId), userId, title: userMessageText.substring(0, 50), createdAt: new Date(), lastUpdated: new Date() });
-        } else {
-          await threadsCollection.updateOne({ _id: new ObjectId(threadId) }, { $set: { lastUpdated: new Date() } });
-        }
-        const userMessage = { role: 'user', text: userMessageText, userId, threadId, createdAt: new Date() };
-        const assistantMessage = { role: 'assistant', text: fullResponseText, userId, threadId, createdAt: new Date() };
-        await messagesCollection.insertMany([userMessage, assistantMessage]);
-        console.log(`Saved messages for thread ${threadId}`);
+        // Intentionally not awaiting this for faster response time
+        (async () => {
+            try {
+                const messagesCollection = db.collection('chat_messages');
+                const threadsCollection = db.collection('threads');
+                if (isNewThread) {
+                    await threadsCollection.insertOne({ _id: new ObjectId(threadId), userId, title: userMessageText.substring(0, 50), createdAt: new Date(), lastUpdated: new Date() });
+                } else {
+                    await threadsCollection.updateOne({ _id: new ObjectId(threadId) }, { $set: { lastUpdated: new Date() } });
+                }
+                const userMessage = { role: 'user', text: userMessageText, userId, threadId, createdAt: new Date() };
+                const assistantMessage = { role: 'assistant', text: fullResponseText, userId, threadId, createdAt: new Date() };
+                await messagesCollection.insertMany([userMessage, assistantMessage]);
+                console.log(`Saved messages for thread ${threadId}`);
+            } catch (dbError) {
+                console.error("Error during async DB write:", dbError);
+            }
+        })();
 
       } catch (error) {
         console.error(`Error handling chat message for thread ${threadId}:`, error);

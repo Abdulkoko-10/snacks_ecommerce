@@ -7,15 +7,27 @@ const clientPromise = require('./lib/mongodb');
 const app = express();
 app.use(express.json());
 
-// --- Service Configuration ---
+// --- Service Configuration & Middleware ---
 const DB_NAME = process.env.MONGODB_DB_NAME || 'food-discovery-orchestrator';
 
-// --- Health Check Endpoint ---
+const checkDbConnection = (req, res, next) => {
+  if (!clientPromise) {
+    return res.status(503).json({ error: 'Service Unavailable: Database not configured.' });
+  }
+  next();
+};
+
+const checkGeminiApiKey = (req, res, next) => {
+    if (!process.env.GEMINI_API_KEY) {
+        return res.status(503).json({ error: 'Service Unavailable: Gemini API key not configured.' });
+    }
+    next();
+};
+
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
-// --- Authentication Middleware Stub ---
 const requireAuth = (req, res, next) => {
     console.log('Authentication middleware stub: Bypassing auth for development.');
     next();
@@ -25,7 +37,7 @@ const requireAuth = (req, res, next) => {
 const apiRouter = express.Router();
 apiRouter.use(requireAuth);
 
-apiRouter.get('/search', async (req, res) => {
+apiRouter.get('/search', checkDbConnection, async (req, res) => {
   try {
     const client = await clientPromise;
     const db = client.db(DB_NAME);
@@ -37,19 +49,15 @@ apiRouter.get('/search', async (req, res) => {
   }
 });
 
-apiRouter.get('/product/:slug', async (req, res) => {
+apiRouter.get('/product/:slug', checkDbConnection, async (req, res) => {
   try {
     const client = await clientPromise;
     const db = client.db(DB_NAME);
     const { slug } = req.params;
-
-    // Find the product by its slug, which is the public identifier.
     const product = await db.collection('canonical_products').findOne({ 'preview.slug': slug });
-
     if (!product) {
       return res.status(404).json({ error: 'Product not found.' });
     }
-
     res.status(200).json(product);
   } catch (error) {
     console.error(`Error fetching product by slug (${req.params.slug}):`, error);
@@ -57,31 +65,9 @@ apiRouter.get('/product/:slug', async (req, res) => {
   }
 });
 
-apiRouter.post('/chat/recommend', (req, res) => {
-  res.json({ message: 'Chat recommendation endpoint stub' });
-});
-
 // --- Ingestion Endpoint ---
 const ingestRouter = express.Router();
-
-async function canonicalizeAndStore(db, provider, products) {
-  const collection = db.collection('canonical_products');
-  const operations = products.map(product => {
-    const filter = {
-      'meta.provider': provider,
-      'meta.providerProductId': product.canonicalProductId
-    };
-    const update = {
-      $set: { ...product, 'meta.provider': provider, 'meta.providerProductId': product.canonicalProductId, lastIngestedAt: new Date() },
-      $setOnInsert: { createdAt: new Date() }
-    };
-    return { updateOne: { filter, update, upsert: true } };
-  });
-  if (operations.length === 0) return { acknowledged: true, upsertedCount: 0, modifiedCount: 0 };
-  return await collection.bulkWrite(operations);
-}
-
-ingestRouter.post('/provider-data', async (req, res) => {
+ingestRouter.post('/provider-data', checkDbConnection, async (req, res) => {
     const { provider, products } = req.body;
     if (!provider || !Array.isArray(products)) {
         return res.status(400).json({ error: 'Request body must include a "provider" string and a "products" array.' });
@@ -89,7 +75,18 @@ ingestRouter.post('/provider-data', async (req, res) => {
     try {
         const client = await clientPromise;
         const db = client.db(DB_NAME);
-        const result = await canonicalizeAndStore(db, provider, products);
+        const collection = db.collection('canonical_products');
+        const operations = products.map(product => ({
+            updateOne: {
+                filter: { 'meta.provider': provider, 'meta.providerProductId': product.canonicalProductId },
+                update: { $set: { ...product, lastIngestedAt: new Date() }, $setOnInsert: { createdAt: new Date() } },
+                upsert: true,
+            },
+        }));
+        if (operations.length === 0) {
+            return res.status(200).json({ message: 'No products to ingest.' });
+        }
+        const result = await collection.bulkWrite(operations);
         res.status(201).json({ message: 'Data ingested successfully.', result });
     } catch (error) {
         console.error('Error during data ingestion:', error);
@@ -97,17 +94,11 @@ ingestRouter.post('/provider-data', async (req, res) => {
     }
 });
 
-app.use('/api/v1', apiRouter);
-app.use('/api/v1/ingest', ingestRouter);
-
 // --- Chat Router ---
 const chatRouter = express.Router();
-chatRouter.use(requireAuth); // Apply auth to all chat routes
+chatRouter.use(requireAuth, checkDbConnection); // Check DB for all chat routes
 
 chatRouter.get('/threads', async (req, res) => {
-    // Note: In a real implementation, we would get the userId from the authenticated session.
-    // const { userId } = req.auth;
-    // For now, we'll proceed without user-specific filtering for demonstration.
     try {
         const client = await clientPromise;
         const db = client.db(DB_NAME);
@@ -122,22 +113,14 @@ chatRouter.get('/threads', async (req, res) => {
 chatRouter.delete('/threads/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { ObjectId } = require('mongodb');
-
-        if (!ObjectId.isValid(id)) {
-            return res.status(400).json({ error: 'Invalid thread ID format.' });
-        }
+        if (!ObjectId.isValid(id)) return res.status(400).json({ error: 'Invalid thread ID format.' });
 
         const client = await clientPromise;
         const db = client.db(DB_NAME);
         const result = await db.collection('threads').deleteOne({ _id: new ObjectId(id) });
-
-        if (result.deletedCount === 0) {
-            return res.status(404).json({ error: 'Thread not found.' });
-        }
+        if (result.deletedCount === 0) return res.status(404).json({ error: 'Thread not found.' });
 
         await db.collection('chat_messages').deleteMany({ threadId: id });
-
         res.status(200).json({ message: 'Thread deleted successfully.' });
     } catch (error) {
         console.error(`Error deleting thread ${req.params.id}:`, error);
@@ -149,25 +132,13 @@ chatRouter.put('/threads/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const { title } = req.body;
-        const { ObjectId } = require('mongodb');
-
-        if (!ObjectId.isValid(id)) {
-            return res.status(400).json({ error: 'Invalid thread ID format.' });
-        }
-        if (!title) {
-            return res.status(400).json({ error: 'Title is required.' });
-        }
+        if (!ObjectId.isValid(id)) return res.status(400).json({ error: 'Invalid thread ID format.' });
+        if (!title) return res.status(400).json({ error: 'Title is required.' });
 
         const client = await clientPromise;
         const db = client.db(DB_NAME);
-        const result = await db.collection('threads').updateOne(
-            { _id: new ObjectId(id) },
-            { $set: { title: title, lastUpdated: new Date() } }
-        );
-
-        if (result.matchedCount === 0) {
-            return res.status(404).json({ error: 'Thread not found.' });
-        }
+        const result = await db.collection('threads').updateOne({ _id: new ObjectId(id) }, { $set: { title, lastUpdated: new Date() } });
+        if (result.matchedCount === 0) return res.status(404).json({ error: 'Thread not found.' });
 
         res.status(200).json({ message: 'Thread renamed successfully.' });
     } catch (error) {
@@ -179,29 +150,19 @@ chatRouter.put('/threads/:id', async (req, res) => {
 chatRouter.get('/history', async (req, res) => {
     try {
         const { threadId } = req.query;
-        if (!threadId) {
-            return res.status(400).json({ error: 'threadId query parameter is required.' });
-        }
+        if (!threadId) return res.status(400).json({ error: 'threadId query parameter is required.' });
 
         const client = await clientPromise;
         const db = client.db(DB_NAME);
+        const messages = await db.collection('chat_messages').find({ threadId }).sort({ createdAt: 1 }).toArray();
 
-        // In a real app, we would also filter by the authenticated userId
-        // const { userId } = req.auth;
-        // const query = { threadId, userId };
-        const query = { threadId };
-
-        const messages = await db.collection('chat_messages').find(query).sort({ createdAt: 1 }).toArray();
-
-        // The original API returns a more complex object. We will replicate that here for compatibility.
         const recommendationsByMessageId = {};
         messages.forEach(message => {
             if (message.role === 'assistant' && message.recommendationPayload) {
                 recommendationsByMessageId[message.id] = message.recommendationPayload.recommendations;
-                delete message.recommendationPayload; // Clean up payload
+                delete message.recommendationPayload;
             }
         });
-
         res.status(200).json({ messages, recommendationsByMessageId });
     } catch (error) {
         console.error(`Error fetching history for thread ${req.query.threadId}:`, error);
@@ -209,8 +170,9 @@ chatRouter.get('/history', async (req, res) => {
     }
 });
 
-// The POST /message endpoint is now removed, as this logic is handled by the WebSocket server in index.js.
-
+// Apply Routers
+app.use('/api/v1', apiRouter);
+app.use('/api/v1/ingest', ingestRouter);
 app.use('/api/v1/chat', chatRouter);
 
 module.exports = app;
