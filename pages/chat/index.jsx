@@ -24,10 +24,46 @@ const ChatPage = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const socketRef = useRef(null);
 
-  // --- Main Effect for Socket Connection & History Fetching ---
+  // --- Effect for WebSocket Connection Lifecycle ---
+  useEffect(() => {
+    const useOrchestrator = isOrchestratorChatEnabled();
+    if (useOrchestrator) {
+      const orchestratorUrl = process.env.NEXT_PUBLIC_ORCHESTRATOR_URL || 'http://localhost:3001';
+      console.log(`Connecting to WebSocket server at ${orchestratorUrl}`);
+      const socket = io(orchestratorUrl);
+      socketRef.current = socket;
+
+      socket.on('connect', () => console.log('WebSocket connected!'));
+      socket.on('thread_created', ({ threadId: newThreadId }) => {
+        setThreadId(newThreadId);
+        // Use router.replace to update URL without adding to history
+        router.replace(`/chat?threadId=${newThreadId}`, undefined, { shallow: true });
+      });
+      socket.on('ai_response', ({ fullText, recommendations }) => {
+        const assistantMessage = { id: `asst_msg_${Date.now()}`, role: 'assistant', text: fullText, createdAt: new Date().toISOString() };
+        setMessages(prev => [...prev, assistantMessage]);
+        if (recommendations && recommendations.length > 0) {
+          setRecommendationsByMessageId(prev => ({ ...prev, [assistantMessage.id]: recommendations }));
+        }
+        setIsLoading(false);
+      });
+      socket.on('chat_error', ({ message }) => {
+        const errorAssistantMessage = { id: `asst_msg_err_${Date.now()}`, role: 'assistant', text: `Sorry, an error occurred: ${message}`, createdAt: new Date().toISOString() };
+        setMessages(prev => [...prev, errorAssistantMessage]);
+        setIsLoading(false);
+      });
+
+      // Cleanup on component unmount
+      return () => {
+        console.log('Disconnecting WebSocket.');
+        socket.disconnect();
+      };
+    }
+  }, []); // Empty dependency array ensures this runs only once on mount
+
+  // --- Effect for History Fetching ---
   useEffect(() => {
     document.body.classList.add('chat-page-active');
-    const useOrchestrator = isOrchestratorChatEnabled();
     const currentThreadId = router.query.threadId;
 
     if (currentThreadId) {
@@ -41,6 +77,7 @@ const ChatPage = () => {
         return;
       }
       try {
+        const useOrchestrator = isOrchestratorChatEnabled();
         const orchestratorUrl = process.env.NEXT_PUBLIC_ORCHESTRATOR_URL || 'http://localhost:3001';
         const historyUrl = useOrchestrator
           ? `${orchestratorUrl}/api/v1/chat/history?threadId=${currentThreadId}`
@@ -57,43 +94,13 @@ const ChatPage = () => {
         setMessages([{ id: 'error_msg_0', role: 'assistant', text: 'Sorry, I couldn\'t load the chat history.', createdAt: new Date().toISOString() }]);
       }
     };
+
     fetchHistory();
-
-    // Establish WebSocket connection if using orchestrator
-    if (useOrchestrator) {
-      const orchestratorUrl = process.env.NEXT_PUBLIC_ORCHESTRATOR_URL || 'http://localhost:3001';
-      console.log(`Connecting to WebSocket server at ${orchestratorUrl}`);
-      const socket = io(orchestratorUrl);
-      socketRef.current = socket;
-
-      socket.on('connect', () => console.log('WebSocket connected!'));
-      socket.on('thread_created', ({ threadId: newThreadId }) => {
-        setThreadId(newThreadId);
-        router.replace(`/chat?threadId=${newThreadId}`, undefined, { shallow: true });
-      });
-      socket.on('ai_response', ({ fullText, recommendations }) => {
-        const assistantMessage = { id: `asst_msg_${Date.now()}`, role: 'assistant', text: fullText, createdAt: new Date().toISOString() };
-        setMessages(prev => [...prev, assistantMessage]);
-        if (recommendations && recommendations.length > 0) {
-          setRecommendationsByMessageId(prev => ({ ...prev, [assistantMessage.id]: recommendations }));
-        }
-        setIsLoading(false);
-      });
-      socket.on('chat_error', ({ message }) => {
-        const errorAssistantMessage = { id: `asst_msg_err_${Date.now()}`, role: 'assistant', text: `Sorry, an error occurred: ${message}`, createdAt: new Date().toISOString() };
-        setMessages(prev => [...prev, errorAssistantMessage]);
-        setIsLoading(false);
-      });
-    }
 
     return () => {
       document.body.classList.remove('chat-page-active');
-      if (socketRef.current) {
-        console.log('Disconnecting WebSocket.');
-        socketRef.current.disconnect();
-      }
     };
-  }, [router.query.threadId]);
+  }, [router.query.threadId, router]); // Added router to dependency array to fix the warning
 
 
   const handleSend = async (text) => {
