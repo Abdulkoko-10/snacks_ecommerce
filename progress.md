@@ -47,26 +47,26 @@ This document tracks the progress of the Food Discovery Platform revamp. It is d
 
 ## Phase 2: Chat Page & Recommendations Migration
 
-**Status:** `[IN PROGRESS]`
+**Status:** `[DONE]`
 **Depends on:** Phase 1
 
 1.  **Core Implementation (Orchestrator):**
     - `[DONE]` Migrate chat thread management (`GET /threads`, `PUT /threads/:id`, `DELETE /threads/:id`).
     - `[DONE]` Migrate chat history (`GET /history?threadId=...`).
-    - `[DONE]` Migrate message sending (`POST /message`), including Gemini integration.
-    - `[TODO]` Implement real-time (WebSocket/streaming) connection.
+    - `[DONE]` Migrate message sending from REST to a WebSocket-based architecture.
+    - `[DONE]` Implement real-time (WebSocket/streaming) connection using Socket.IO.
 
 2.  **Core Implementation (Frontend):**
     - `[DONE]` Build Chat UI Components (Layout, Sidebar, Thread view, etc.).
-    - `[DONE]` Adapt frontend to use new chat API endpoints under a feature flag (`USE_ORCHESTRATOR_CHAT`).
+    - `[DONE]` Adapt frontend to use new chat architecture under a feature flag (`USE_ORCHESTRATOR_CHAT`).
         - `[DONE]` Chat Sidebar (thread management) adapted.
         - `[DONE]` Main Chat View (history fetching) adapted.
-        - `[DONE]` Main Chat View (message sending) adapted.
+        - `[DONE]` Main Chat View now uses WebSockets for sending and receiving messages.
 
 3.  **QA & Testing:**
     - `[DONE]` Unit tests for orchestrator chat thread management endpoints.
     - `[DONE]` Unit tests for orchestrator history endpoint.
-    - `[DONE]` Unit tests for orchestrator message endpoint.
+    - `[DONE]` Unit tests for orchestrator WebSocket chat handler.
     - `[TODO]` E2E tests for the full chat flow via the orchestrator.
 
 ---
