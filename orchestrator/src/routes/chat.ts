@@ -78,7 +78,9 @@ router.post('/message', async (req, res) => {
 
   } catch (error) {
     console.error("Error in chat message handler:", error);
-    res.status(500).json({ error: 'An internal server error occurred.' });
+    // Provide a more specific error message to the client if possible
+    const errorMessage = error instanceof Error ? error.message : 'An internal server error occurred.';
+    res.status(500).json({ error: `An internal server error occurred: ${errorMessage}` });
   }
 });
 
