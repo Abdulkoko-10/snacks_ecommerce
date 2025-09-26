@@ -20,6 +20,31 @@ const ChatPage = () => {
   const [recommendationsByMessageId, setRecommendationsByMessageId] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [location, setLocation] = useState(null);
+
+  // Get user's location on component mount
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocation({
+            lat: position.coords.latitude,
+            lon: position.coords.longitude,
+          });
+        },
+        (error) => {
+          console.error("Geolocation error:", error);
+          setMessages((prev) => [...prev, {
+            id: `loc_err_${Date.now()}`,
+            role: 'system',
+            type: 'error',
+            text: 'Could not get your location. To search for food, please enable location services in your browser settings and refresh the page.',
+            createdAt: new Date().toISOString(),
+          }]);
+        }
+      );
+    }
+  }, []);
 
   useEffect(() => {
     document.body.classList.add('chat-page-active');
@@ -28,45 +53,17 @@ const ChatPage = () => {
     };
   }, []);
 
+  // This useEffect can be simplified or removed if history is not a feature yet.
   useEffect(() => {
-    const currentThreadId = router.query.threadId;
-    if (currentThreadId) {
-      setThreadId(currentThreadId);
-    }
-
-    const fetchHistory = async () => {
-      // Use a different endpoint if we have a threadId
-      const historyUrl = currentThreadId ? `/api/v1/chat/history?threadId=${currentThreadId}` : '/api/v1/chat/history';
-      try {
-        const response = await fetch(historyUrl);
-        if (response.ok) {
-          const { messages: historyMessages, recommendationsByMessageId: historyRecs } = await response.json();
-          if (historyMessages && historyMessages.length > 0) {
-            setMessages(historyMessages);
-            setRecommendationsByMessageId(historyRecs || {});
-          } else {
-            setMessages([{
-              id: 'init_msg_0',
-              role: 'assistant',
-              text: 'Hello! How can I help you discover amazing food today?',
-              createdAt: new Date().toISOString(),
-            }]);
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch chat history:", error);
+    if (messages.length === 0) {
         setMessages([{
-          id: 'init_msg_0',
-          role: 'assistant',
-          text: 'Hello! How can I help you discover amazing food today?',
-          createdAt: new Date().toISOString(),
+            id: 'init_msg_0',
+            role: 'assistant',
+            text: 'Hello! How can I help you discover amazing food today?',
+            createdAt: new Date().toISOString(),
         }]);
-      }
-    };
-
-    fetchHistory();
-    // Re-fetch history if the threadId in the URL changes
-  }, [router.query.threadId]);
+    }
+  }, [messages.length]);
 
   const handleSend = async (text) => {
     const userMessage = {
@@ -84,29 +81,25 @@ const ChatPage = () => {
       const response = await fetch('/api/v1/chat/message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, chatHistory: newMessages, threadId }),
+        body: JSON.stringify({
+          text,
+          chatHistory: newMessages,
+          threadId,
+          lat: location?.lat,
+          lon: location?.lon,
+        }),
       });
 
       if (!response.ok) {
-        if (response.status === 401) {
-          const authMessage = {
-            id: `auth_msg_${Date.now()}`,
-            role: 'system',
-            type: 'auth',
-            text: 'Please sign in or sign up to continue the conversation.',
-            createdAt: new Date().toISOString(),
-          };
-          setMessages((prev) => [...prev, authMessage]);
-        } else {
-          throw new Error('API request failed');
-        }
-        return;
+        // Try to parse a specific error message from the backend, otherwise use a generic one.
+        const errorData = await response.json().catch(() => null);
+        const errorMessage = errorData?.error || `API request failed with status ${response.status}`;
+        throw new Error(errorMessage);
       }
 
       const newThreadId = response.headers.get('X-Thread-Id');
       if (newThreadId && newThreadId !== threadId) {
         setThreadId(newThreadId);
-        // Use replace to avoid polluting browser history for thread ID changes
         router.replace(`/chat?threadId=${newThreadId}`, undefined, { shallow: true });
       }
 
@@ -134,17 +127,10 @@ const ChatPage = () => {
       const errorAssistantMessage = {
         id: `asst_msg_err_${Date.now()}`,
         role: 'assistant',
-        text: 'Sorry, I seem to be having some trouble right now. Please try again later.',
+        text: error.message || 'Sorry, I seem to be having some trouble right now. Please try again later.',
         createdAt: new Date().toISOString(),
       };
-      setMessages((prev) => {
-        const lastMessage = prev[prev.length - 1];
-        // If the last message was the empty assistant shell, remove it before adding error
-        if(lastMessage.id.startsWith('asst_msg_') && lastMessage.text === '') {
-          return [...prev.slice(0, -1), errorAssistantMessage];
-        }
-        return [...prev, errorAssistantMessage];
-      });
+      setMessages((prev) => [...prev, errorAssistantMessage]);
     } finally {
       setIsLoading(false);
     }
