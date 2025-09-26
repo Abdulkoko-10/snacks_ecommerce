@@ -16,10 +16,32 @@ const Home = ({ products, bannerData }) => {
     setResults([]);
     setSearched(true);
 
+    const getLocation = () => {
+      return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+          return reject(new Error('Geolocation is not supported by your browser.'));
+        }
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            resolve({
+              lat: position.coords.latitude,
+              lon: position.coords.longitude,
+            });
+          },
+          () => {
+            reject(new Error('Unable to retrieve your location. Please enable location permissions.'));
+          }
+        );
+      });
+    };
+
     try {
-      const response = await fetch(`/api/v1/search?q=${encodeURIComponent(query)}`);
+      const { lat, lon } = await getLocation();
+      const response = await fetch(`/api/v1/search?q=${encodeURIComponent(query)}&lat=${lat}&lon=${lon}`);
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => null);
+        const errorMessage = errorData?.error || `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
       }
       const data = await response.json();
       const adaptedResults = data.map(result => ({

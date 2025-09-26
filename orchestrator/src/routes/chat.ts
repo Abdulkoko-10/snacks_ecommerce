@@ -8,7 +8,7 @@ const router = Router();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-flash-latest",
+  model: "gemini-2.0-flash",
   systemInstruction: `You are a helpful and friendly food discovery assistant.
 Your goal is to understand the user's request for food and respond in a conversational way.
 Based on the user's message, you must determine two things:
@@ -42,7 +42,7 @@ router.post('/message', async (req, res) => {
       intentData = JSON.parse(aiResponseText);
     } catch (e) {
       console.error("Failed to parse AI response JSON:", aiResponseText);
-      const chatModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+      const chatModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
       const chatResponse = await chatModel.generateContent(`Continue the conversation. The user said: "${text}"`);
       return res.status(200).json({
         fullText: chatResponse.response.text(),
@@ -68,7 +68,7 @@ router.post('/message', async (req, res) => {
       });
 
     } else {
-      const chatModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+      const chatModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
       const chatResponse = await chatModel.generateContent(`Continue the conversation. The user said: "${text}"`);
       return res.status(200).json({
         fullText: chatResponse.response.text(),
