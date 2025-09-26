@@ -65,21 +65,22 @@ router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const productsCollection = db.collection('products');
         yield productsCollection.createIndex({ location: "2dsphere" });
         yield productsCollection.createIndex({ title: "text", description: "text" });
+        // MongoDB requires $text search to be the first stage in an aggregation pipeline.
+        // We use $geoWithin in a subsequent $match stage to filter by location.
         const pipeline = [
             {
-                $geoNear: {
-                    near: {
-                        type: 'Point',
-                        coordinates: [longitude, latitude],
-                    },
-                    distanceField: 'distance',
-                    maxDistance: CACHE_RADIUS_METERS,
-                    spherical: true,
+                $match: {
+                    $text: { $search: query },
                 },
             },
             {
                 $match: {
-                    $text: { $search: query },
+                    location: {
+                        $geoWithin: {
+                            // Convert radius from meters to radians for $centerSphere
+                            $centerSphere: [[longitude, latitude], CACHE_RADIUS_METERS / 6378100],
+                        },
+                    },
                 },
             },
             {

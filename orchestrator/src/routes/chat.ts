@@ -21,6 +21,8 @@ Example 2: User says 'hi how are you'. You respond with: {"intent": "CHAT", "que
 Example 3: User says 'I could really go for some pho right now'. You respond with: {"intent": "SEARCH", "query": "pho"}`
 });
 
+const conversationalModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
 router.post('/message', async (req, res) => {
   const { text, chatHistory, threadId, lat, lon } = req.body;
 
@@ -32,20 +34,21 @@ router.post('/message', async (req, res) => {
   res.setHeader('X-Thread-Id', newThreadId);
 
   try {
-    const chat = model.startChat();
-    const result = await chat.sendMessage(text);
-    const response = await result.response;
-    const aiResponseText = response.text();
+    // Use generateContent for one-off intent detection
+    const intentResult = await model.generateContent(text);
+    const aiResponseText = intentResult.response.text();
 
     let intentData;
     try {
       intentData = JSON.parse(aiResponseText);
     } catch (e) {
       console.error("Failed to parse AI response JSON:", aiResponseText);
-      const chatModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-      const chatResponse = await chatModel.generateContent(`Continue the conversation. The user said: "${text}"`);
+      // Fallback to conversational response with history
+      const chat = conversationalModel.startChat({ history: chatHistory });
+      const result = await chat.sendMessage(text);
+      const response = await result.response;
       return res.status(200).json({
-        fullText: chatResponse.response.text(),
+        fullText: response.text(),
         recommendations: [],
       });
     }
@@ -68,10 +71,12 @@ router.post('/message', async (req, res) => {
       });
 
     } else {
-      const chatModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-      const chatResponse = await chatModel.generateContent(`Continue the conversation. The user said: "${text}"`);
+      // Handle CHAT intent with history
+      const chat = conversationalModel.startChat({ history: chatHistory });
+      const result = await chat.sendMessage(text);
+      const response = await result.response;
       return res.status(200).json({
-        fullText: chatResponse.response.text(),
+        fullText: response.text(),
         recommendations: [],
       });
     }
