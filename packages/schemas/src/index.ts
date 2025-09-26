@@ -1,3 +1,8 @@
+export * from './product';
+export * from './comment';
+export * from './chatMessage';
+export * from './recommendationPayload';
+
 import { z } from 'zod';
 
 // Zod Schema for validation

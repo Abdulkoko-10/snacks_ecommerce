@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { readClient } from "../lib/client";
+import { isOrchestratorEnabled } from "../lib/flags";
 import { Product, FooterBanner, HeroBanner, SearchControls, RecommendationCarousel } from "../components";
 
-const Home = ({ products, bannerData }) => {
+const Home = ({ products, bannerData, source }) => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -78,7 +79,7 @@ const Home = ({ products, bannerData }) => {
             <p>Snacks of many variations</p>
           </div>
           <div className="products-container">
-            {products?.map((product) => <Product key={product._id} product={product} />)}
+            {products?.map((product) => <Product key={product._id || product.canonicalProductId} product={product} source={source} />)}
           </div>
         </>
       )}
@@ -89,15 +90,41 @@ const Home = ({ products, bannerData }) => {
 };
 
 export const getStaticProps = async () => {
-  // The original query for products is kept for the initial page load.
-  const productQuery = `*[_type == "product"] | order(_createdAt desc) [0...10]`;
-  const products = await readClient.fetch(productQuery);
+  const useOrchestrator = isOrchestratorEnabled();
+  let products;
+  let source;
+
+  if (useOrchestrator) {
+    console.log('Using Orchestrator for initial product fetch...');
+    source = 'orchestrator';
+    try {
+      // This needs to be the public URL of the orchestrator when deployed,
+      // or the local URL during development.
+      const orchestratorUrl = process.env.ORCHESTRATOR_URL || 'http://localhost:3001';
+      const response = await fetch(`${orchestratorUrl}/api/v1/search`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch from orchestrator: ${response.statusText}`);
+      }
+      products = await response.json();
+    } catch (e) {
+      console.error("Could not fetch from orchestrator, falling back to Sanity.", e);
+      // Fallback to sanity if orchestrator fails
+      const productQuery = `*[_type == "product"] | order(_createdAt desc) [0...10]`;
+      products = await readClient.fetch(productQuery);
+      source = 'sanity';
+    }
+  } else {
+    console.log('Using Sanity for initial product fetch...');
+    source = 'sanity';
+    const productQuery = `*[_type == "product"] | order(_createdAt desc) [0...10]`;
+    products = await readClient.fetch(productQuery);
+  }
 
   const bannerQuery = `*[_type == "banner"]`;
   const bannerData = await readClient.fetch(bannerQuery);
 
   return {
-    props: { products, bannerData },
+    props: { products, bannerData, source },
     revalidate: 60,
   };
 };
