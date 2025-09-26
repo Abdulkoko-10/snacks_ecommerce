@@ -53,20 +53,20 @@ This document tracks the progress of the Food Discovery Platform revamp. It is d
 1.  **Core Implementation (Orchestrator):**
     - `[DONE]` Migrate chat thread management (`GET /threads`, `PUT /threads/:id`, `DELETE /threads/:id`).
     - `[DONE]` Migrate chat history (`GET /history?threadId=...`).
-    - `[IN PROGRESS]` Migrate message sending (`POST /message`), including Gemini integration.
+    - `[DONE]` Migrate message sending (`POST /message`), including Gemini integration.
     - `[TODO]` Implement real-time (WebSocket/streaming) connection.
 
 2.  **Core Implementation (Frontend):**
     - `[DONE]` Build Chat UI Components (Layout, Sidebar, Thread view, etc.).
-    - `[IN PROGRESS]` Adapt frontend to use new chat API endpoints under a feature flag (`USE_ORCHESTRATOR_CHAT`).
+    - `[DONE]` Adapt frontend to use new chat API endpoints under a feature flag (`USE_ORCHESTRATOR_CHAT`).
         - `[DONE]` Chat Sidebar (thread management) adapted.
         - `[DONE]` Main Chat View (history fetching) adapted.
-        - `[TODO]` Main Chat View (message sending) to be adapted.
+        - `[DONE]` Main Chat View (message sending) adapted.
 
 3.  **QA & Testing:**
     - `[DONE]` Unit tests for orchestrator chat thread management endpoints.
     - `[DONE]` Unit tests for orchestrator history endpoint.
-    - `[TODO]` Unit tests for orchestrator message endpoint.
+    - `[DONE]` Unit tests for orchestrator message endpoint.
     - `[TODO]` E2E tests for the full chat flow via the orchestrator.
 
 ---

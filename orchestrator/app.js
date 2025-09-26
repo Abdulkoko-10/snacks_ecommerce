@@ -1,5 +1,7 @@
 const express = require('express');
 const { ClerkExpressRequireAuth } = require('@clerk/clerk-sdk-node');
+const { ObjectId } = require('mongodb');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 const clientPromise = require('./lib/mongodb');
 
 const app = express();
@@ -204,6 +206,86 @@ chatRouter.get('/history', async (req, res) => {
     } catch (error) {
         console.error(`Error fetching history for thread ${req.query.threadId}:`, error);
         res.status(500).json({ error: 'Failed to fetch chat history.' });
+    }
+});
+
+chatRouter.post('/message', async (req, res) => {
+    // Note: In a real app, userId would come from req.auth after Clerk validation
+    const userId = 'user_placeholder'; // Placeholder
+    const apiKey = process.env.GEMINI_API_KEY;
+
+    if (!apiKey) {
+        console.error('Server configuration error: Missing GEMINI_API_KEY.');
+        return res.status(500).json({ error: 'Server configuration error.' });
+    }
+
+    try {
+        const { text: userMessageText, chatHistory, threadId: currentThreadId } = req.body;
+
+        if (!userMessageText) {
+            return res.status(400).json({ error: 'Bad Request: "text" is required.' });
+        }
+
+        let threadId = currentThreadId;
+        let isNewThread = !threadId;
+        if (isNewThread) {
+            threadId = new ObjectId().toString();
+        }
+        res.setHeader('X-Thread-Id', threadId);
+
+        // 1. Generate AI Response
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        const history = (chatHistory || []).filter(msg => msg.role !== 'system').map(msg => ({
+            role: msg.role === 'user' ? 'user' : 'model',
+            parts: [{ text: msg.text }],
+        }));
+        const chat = model.startChat({ history });
+        const result = await chat.sendMessage(userMessageText);
+        const fullResponseText = result.response.text();
+
+        // 2. Fetch Product Recommendations from our own DB
+        const client = await clientPromise;
+        const db = client.db(DB_NAME);
+        const recommendations = await db.collection('canonical_products').find({}).limit(3).toArray();
+
+        // 3. Send Response Payload
+        const payload = { fullText: fullResponseText, recommendations };
+        res.status(200).json(payload);
+
+        // 4. Perform Database Writes Asynchronously
+        const saveToDb = async () => {
+            try {
+                const messagesCollection = db.collection('chat_messages');
+                const threadsCollection = db.collection('threads');
+
+                if (isNewThread) {
+                    await threadsCollection.insertOne({
+                        _id: new ObjectId(threadId),
+                        userId,
+                        title: userMessageText.substring(0, 50),
+                        createdAt: new Date(),
+                        lastUpdated: new Date(),
+                    });
+                } else {
+                    await threadsCollection.updateOne({ _id: new ObjectId(threadId) }, { $set: { lastUpdated: new Date() } });
+                }
+
+                const userMessage = { role: 'user', text: userMessageText, userId, threadId, createdAt: new Date() };
+                const assistantMessage = { role: 'assistant', text: fullResponseText, userId, threadId, createdAt: new Date() };
+                await messagesCollection.insertMany([userMessage, assistantMessage]);
+
+            } catch (dbError) {
+                console.error("Error saving chat conversation to DB:", dbError);
+            }
+        };
+        saveToDb();
+
+    } catch (error) {
+        console.error('Error in chat message handler:', error);
+        if (!res.headersSent) {
+            res.status(500).json({ error: 'Failed to process chat message.' });
+        }
     }
 });
 

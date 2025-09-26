@@ -1,6 +1,19 @@
 const request = require('supertest');
 
-// Mock the MongoDB client and export the mock for use in tests
+// --- Mocks ---
+
+// Mock Google Generative AI
+const mockGenAI = {
+  getGenerativeModel: jest.fn().mockReturnThis(),
+  startChat: jest.fn().mockReturnThis(),
+  sendMessage: jest.fn(),
+};
+jest.mock('@google/generative-ai', () => ({
+  GoogleGenerativeAI: jest.fn(() => mockGenAI),
+}));
+
+
+// Mock MongoDB client
 const mockDb = {
   collection: jest.fn().mockReturnThis(),
   find: jest.fn().mockReturnThis(),
@@ -12,6 +25,8 @@ const mockDb = {
   deleteOne: jest.fn(),
   deleteMany: jest.fn(),
   updateOne: jest.fn(),
+  insertOne: jest.fn(),
+  insertMany: jest.fn(),
 };
 const mockClientPromise = Promise.resolve({ db: () => mockDb });
 jest.mock('./lib/mongodb', () => mockClientPromise);
@@ -134,6 +149,74 @@ describe('Orchestrator Service', () => {
         const res = await request(app).delete('/api/v1/chat/threads/invalid-id');
         expect(res.statusCode).toEqual(400);
         expect(res.body.error).toBe('Invalid thread ID format.');
+    });
+  });
+
+  describe('POST /api/v1/chat/message', () => {
+    beforeEach(() => {
+      // Provide a default mock implementation for successful calls
+      mockGenAI.sendMessage.mockResolvedValue({ response: { text: () => 'Hello from Gemini!' } });
+      mockDb.collection().find().toArray.mockResolvedValue([{ id: 'rec1' }]);
+      mockDb.insertOne.mockResolvedValue({ acknowledged: true });
+      mockDb.insertMany.mockResolvedValue({ acknowledged: true });
+      process.env.GEMINI_API_KEY = 'test-key'; // Ensure key exists for most tests
+    });
+
+    it('should process a message, call Gemini, and save to DB', async () => {
+      const validThreadId = '615f7b1b3b3b3b3b3b3b3b3b';
+      const res = await request(app)
+        .post('/api/v1/chat/message')
+        .send({ text: 'Hello', threadId: validThreadId });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.fullText).toBe('Hello from Gemini!');
+      expect(res.body.recommendations).toHaveLength(1);
+      expect(mockGenAI.sendMessage).toHaveBeenCalledWith('Hello');
+
+      // Allow async DB writes to complete
+      await new Promise(process.nextTick);
+
+      expect(mockDb.insertMany).toHaveBeenCalled();
+    });
+
+    it('should create a new thread if no threadId is provided', async () => {
+        const res = await request(app)
+          .post('/api/v1/chat/message')
+          .send({ text: 'First message' });
+
+        expect(res.statusCode).toEqual(200);
+        expect(res.headers['x-thread-id']).toBeDefined();
+
+        await new Promise(process.nextTick);
+
+        expect(mockDb.insertOne).toHaveBeenCalled(); // For the new thread
+        expect(mockDb.insertMany).toHaveBeenCalled(); // For the messages
+    });
+
+    it('should return 500 if GEMINI_API_KEY is missing', async () => {
+        delete process.env.GEMINI_API_KEY;
+        const res = await request(app)
+            .post('/api/v1/chat/message')
+            .send({ text: 'Hello' });
+        expect(res.statusCode).toEqual(500);
+        expect(res.body.error).toBe('Server configuration error.');
+    });
+
+    it('should return 400 if text is missing', async () => {
+        const res = await request(app)
+            .post('/api/v1/chat/message')
+            .send({}); // No text
+        expect(res.statusCode).toEqual(400);
+        expect(res.body.error).toBe('Bad Request: "text" is required.');
+    });
+
+    it('should return 500 if Gemini call fails', async () => {
+        mockGenAI.sendMessage.mockRejectedValue(new Error('Gemini API Error'));
+        const res = await request(app)
+            .post('/api/v1/chat/message')
+            .send({ text: 'Hello' });
+        expect(res.statusCode).toEqual(500);
+        expect(res.body.error).toBe('Failed to process chat message.');
     });
   });
 

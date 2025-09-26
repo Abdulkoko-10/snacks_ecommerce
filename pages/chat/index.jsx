@@ -102,7 +102,13 @@ const ChatPage = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/v1/chat/message', {
+      const useOrchestrator = isOrchestratorChatEnabled();
+      const orchestratorUrl = process.env.NEXT_PUBLIC_ORCHESTRATOR_URL || 'http://localhost:3001';
+      const url = useOrchestrator ? `${orchestratorUrl}/api/v1/chat/message` : '/api/v1/chat/message';
+
+      console.log(`Sending message to: ${url}`);
+
+      const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text, chatHistory: newMessages, threadId }),
@@ -127,7 +133,6 @@ const ChatPage = () => {
       const newThreadId = response.headers.get('X-Thread-Id');
       if (newThreadId && newThreadId !== threadId) {
         setThreadId(newThreadId);
-        // Use replace to avoid polluting browser history for thread ID changes
         router.replace(`/chat?threadId=${newThreadId}`, undefined, { shallow: true });
       }
 
@@ -160,7 +165,6 @@ const ChatPage = () => {
       };
       setMessages((prev) => {
         const lastMessage = prev[prev.length - 1];
-        // If the last message was the empty assistant shell, remove it before adding error
         if(lastMessage.id.startsWith('asst_msg_') && lastMessage.text === '') {
           return [...prev.slice(0, -1), errorAssistantMessage];
         }
