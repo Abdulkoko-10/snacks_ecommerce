@@ -4,7 +4,7 @@
     {
       "src": "orchestrator/index.js",
       "use": "@vercel/node",
-      "config": { "includeFiles": ["orchestrator/app.js", "orchestrator/lib/**", "orchestrator/socket/**"] }
+      "config": { "includeFiles": ["app.js", "lib/**", "socket/**"] }
     },
     {
       "src": "connectors/sanity-connector/index.js",
