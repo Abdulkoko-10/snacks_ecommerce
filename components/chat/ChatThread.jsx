@@ -2,15 +2,7 @@ import React, { Fragment } from 'react';
 import styled from '@emotion/styled';
 import { SignIn } from '@clerk/nextjs';
 import ChatBubble from './ChatBubble';
-import ChatRecommendationCard from './ChatRecommendationCard';
-
-// Swiper imports
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { EffectCoverflow, Pagination, Navigation } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/effect-coverflow';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
+import RecommendationCarousel from '../RecommendationCarousel';
 
 const ThreadContainer = styled.div`
   flex-grow: 1;
@@ -34,28 +26,6 @@ const ScrollableArea = styled.div`
   gap: 5px;
 `;
 
-const RecommendationCarousel = styled.div`
-  /* Full-bleed effect */
-  width: 100vw;
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
-
-  margin-top: 15px;
-  margin-bottom: 15px;
-  padding: 10px 0; /* Add some vertical padding */
-
-  .recommendation-swiper .swiper-slide {
-    height: 100%;
-    display: flex;
-    align-items: stretch; /* Make the card fill the slide's height */
-    width: 280px; /* Give slides a fixed width */
-  }
-
-  .recommendation-swiper .swiper-slide .card-wrapper {
-    width: 100%; /* Make the card wrapper take full width of the slide */
-  }
-`;
 
 const AuthWrapper = styled.div`
   display: flex;
@@ -97,31 +67,7 @@ const ChatThread = ({ messages = [], recommendationsByMessageId = {} }) => {
                 message={message}
               />
               {message.role === 'assistant' && hasRecommendations && (
-                <RecommendationCarousel>
-                  <Swiper
-                    modules={[EffectCoverflow, Pagination, Navigation]}
-                    effect="coverflow"
-                    grabCursor={true}
-                    centeredSlides={true}
-                    slidesPerView="auto"
-                    coverflowEffect={{
-                      rotate: 50,
-                      stretch: 0,
-                      depth: 100,
-                      modifier: 1,
-                      slideShadows: true,
-                    }}
-                    pagination={{ clickable: true }}
-                    navigation={true}
-                    className="recommendation-swiper"
-                  >
-                    {recommendations.map((card) => (
-                      <SwiperSlide key={card.canonicalProductId}>
-                        <ChatRecommendationCard card={card} />
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
-                </RecommendationCarousel>
+                <RecommendationCarousel recommendations={recommendations} />
               )}
             </Fragment>
           );
