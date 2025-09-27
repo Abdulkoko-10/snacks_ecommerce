@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import styled from '@emotion/styled';
 import io from 'socket.io-client';
-import { isOrchestratorChatEnabled } from '../../lib/flags';
 import ChatPageLayout from '../../components/chat/ChatPageLayout';
 import ChatInput from '../../components/chat/ChatInput';
 import FloatingCatAssistant from '../../components/chat/FloatingCatAssistant';
@@ -33,7 +32,6 @@ const ChatPage = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const socketRef = useRef(null);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
-  const useOrchestrator = isOrchestratorChatEnabled();
 
   const updateThreadUrl = useCallback((newThreadId) => {
     router.replace(`/chat?threadId=${newThreadId}`, undefined, { shallow: true });
@@ -41,53 +39,47 @@ const ChatPage = () => {
 
   // --- Effect for WebSocket Connection Lifecycle ---
   useEffect(() => {
-    if (useOrchestrator) {
-      const orchestratorUrl = getOrchestratorUrl();
-      const socket = io(orchestratorUrl, {
-        path: "/api/v1/chat/socket.io", // This MUST match the server-side path
-      });
-      socketRef.current = socket;
+    const orchestratorUrl = getOrchestratorUrl();
+    const socket = io(orchestratorUrl, {
+      path: "/api/v1/chat/socket.io", // This MUST match the server-side path
+    });
+    socketRef.current = socket;
 
-      socket.on('connect', () => setIsSocketConnected(true));
-      socket.on('connect_error', (err) => {
-        console.error('Socket connection error:', err.message);
-        setMessages(prev => [...prev, { id: `err_conn_${Date.now()}`, role: 'assistant', text: `Error connecting to chat service: ${err.message}. Please try again later.`, createdAt: new Date().toISOString() }]);
-        setIsSocketConnected(false);
-      });
-      socket.on('thread_created', ({ threadId: newThreadId }) => {
-        setThreadId(newThreadId);
-        updateThreadUrl(newThreadId);
-      });
-      socket.on('ai_response', ({ fullText, recommendations }) => {
-        const assistantMessage = { id: `asst_msg_${Date.now()}`, role: 'assistant', text: fullText, createdAt: new Date().toISOString() };
-        setMessages(prev => [...prev, assistantMessage]);
-        if (recommendations && recommendations.length > 0) {
-          setRecommendationsByMessageId(prev => ({ ...prev, [assistantMessage.id]: recommendations }));
-        }
-        setIsLoading(false);
-      });
-      socket.on('chat_error', ({ message }) => {
-        const errorAssistantMessage = { id: `asst_msg_err_${Date.now()}`, role: 'assistant', text: `Sorry, an error occurred: ${message}`, createdAt: new Date().toISOString() };
-        setMessages(prev => [...prev, errorAssistantMessage]);
-        setIsLoading(false);
-      });
+    socket.on('connect', () => setIsSocketConnected(true));
+    socket.on('connect_error', (err) => {
+      console.error('Socket connection error:', err.message);
+      setMessages(prev => [...prev, { id: `err_conn_${Date.now()}`, role: 'assistant', text: `Error connecting to chat service: ${err.message}. Please try again later.`, createdAt: new Date().toISOString() }]);
+      setIsSocketConnected(false);
+    });
+    socket.on('thread_created', ({ threadId: newThreadId }) => {
+      setThreadId(newThreadId);
+      updateThreadUrl(newThreadId);
+    });
+    socket.on('ai_response', ({ fullText, recommendations }) => {
+      const assistantMessage = { id: `asst_msg_${Date.now()}`, role: 'assistant', text: fullText, createdAt: new Date().toISOString() };
+      setMessages(prev => [...prev, assistantMessage]);
+      if (recommendations && recommendations.length > 0) {
+        setRecommendationsByMessageId(prev => ({ ...prev, [assistantMessage.id]: recommendations }));
+      }
+      setIsLoading(false);
+    });
+    socket.on('chat_error', ({ message }) => {
+      const errorAssistantMessage = { id: `asst_msg_err_${Date.now()}`, role: 'assistant', text: `Sorry, an error occurred: ${message}`, createdAt: new Date().toISOString() };
+      setMessages(prev => [...prev, errorAssistantMessage]);
+      setIsLoading(false);
+    });
 
-      return () => {
-        setIsSocketConnected(false);
-        socket.disconnect();
-      };
-    }
-  }, [useOrchestrator, updateThreadUrl]);
+    return () => {
+      setIsSocketConnected(false);
+      socket.disconnect();
+    };
+  }, [updateThreadUrl]);
 
   // --- Effect for History Fetching ---
   useEffect(() => {
     document.body.classList.add('chat-page-active');
 
     const fetchHistory = async () => {
-      if (!useOrchestrator) {
-        setMessages([{ id: 'init_msg_0', role: 'assistant', text: 'Chat is currently disabled.', createdAt: new Date().toISOString() }]);
-        return;
-      }
       if (!currentThreadId) {
         setMessages([{ id: 'init_msg_0', role: 'assistant', text: 'Hello! How can I help you discover amazing food today?', createdAt: new Date().toISOString() }]);
         return;
@@ -120,11 +112,11 @@ const ChatPage = () => {
     return () => {
       document.body.classList.remove('chat-page-active');
     };
-  }, [currentThreadId, useOrchestrator]);
+  }, [currentThreadId]);
 
 
   const handleSend = (text) => {
-    if (!useOrchestrator || !socketRef.current?.connected) {
+    if (!socketRef.current?.connected) {
       setMessages(prev => [...prev, { id: `err_msg_${Date.now()}`, role: 'assistant', text: 'Cannot connect to chat service. Please check your connection or try again later.', createdAt: new Date().toISOString() }]);
       return;
     }
@@ -135,17 +127,6 @@ const ChatPage = () => {
 
     socketRef.current.emit('chat_message', { text, chatHistory: messages, threadId });
   };
-
-  if (!useOrchestrator) {
-    return (
-      <ChatPageWrapper>
-        <div style={{ margin: 'auto', textAlign: 'center' }}>
-          <h2>Chat is currently disabled.</h2>
-          <p>Please contact an administrator to enable this feature.</p>
-        </div>
-      </ChatPageWrapper>
-    );
-  }
 
   return (
     <ChatPageWrapper>
