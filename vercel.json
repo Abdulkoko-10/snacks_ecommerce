@@ -4,11 +4,20 @@
     {
       "src": "orchestrator/index.js",
       "use": "@vercel/node",
-      "config": { "includeFiles": ["app.js", "lib/**"] }
+      "config": {
+        "includeFiles": [
+          "orchestrator/**"
+        ]
+      }
     },
     {
       "src": "connectors/sanity-connector/index.js",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": [
+          "connectors/sanity-connector/**"
+        ]
+      }
     },
     {
       "src": "package.json",

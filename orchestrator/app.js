@@ -41,7 +41,8 @@ apiRouter.get('/search', checkDbConnection, async (req, res) => {
   try {
     const client = await clientPromise;
     const db = client.db(DB_NAME);
-    const products = await db.collection('canonical_products').find({}).limit(20).toArray();
+    // Placeholder search: returns the 20 most recently fetched products.
+    const products = await db.collection('canonical_products').find({}).sort({ lastFetchedAt: -1 }).limit(20).toArray();
     res.status(200).json(products);
   } catch (error) {
     console.error('Error fetching products from DB:', error);
@@ -49,18 +50,18 @@ apiRouter.get('/search', checkDbConnection, async (req, res) => {
   }
 });
 
-apiRouter.get('/product/:slug', checkDbConnection, async (req, res) => {
+apiRouter.get('/product/:canonicalId', checkDbConnection, async (req, res) => {
   try {
     const client = await clientPromise;
     const db = client.db(DB_NAME);
-    const { slug } = req.params;
-    const product = await db.collection('canonical_products').findOne({ 'preview.slug': slug });
+    const { canonicalId } = req.params;
+    const product = await db.collection('canonical_products').findOne({ canonicalProductId: canonicalId });
     if (!product) {
       return res.status(404).json({ error: 'Product not found.' });
     }
     res.status(200).json(product);
   } catch (error) {
-    console.error(`Error fetching product by slug (${req.params.slug}):`, error);
+    console.error(`Error fetching product by id (${req.params.canonicalId}):`, error);
     res.status(500).json({ error: 'Failed to fetch data from database.' });
   }
 });
@@ -78,7 +79,7 @@ ingestRouter.post('/provider-data', checkDbConnection, async (req, res) => {
         const collection = db.collection('canonical_products');
         const operations = products.map(product => ({
             updateOne: {
-                filter: { 'meta.provider': provider, 'meta.providerProductId': product.canonicalProductId },
+                filter: { canonicalProductId: product.canonicalProductId },
                 update: { $set: { ...product, lastIngestedAt: new Date() }, $setOnInsert: { createdAt: new Date() } },
                 upsert: true,
             },

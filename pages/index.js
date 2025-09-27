@@ -23,20 +23,8 @@ const Home = ({ products, bannerData, source }) => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      const adaptedResults = data.map(result => ({
-        placeId: result.placeId,
-        reason: `A great choice for a meal.`, // Placeholder reason
-        preview: {
-          slug: result.placeId,
-          title: result.name,
-          image: result.primaryPhoto?.photoUri || '/FoodDiscovery.jpg',
-          rating: result.rating || 0,
-          bestProvider: 'Google',
-          eta: '10-20 min',
-          minPrice: 1000,
-        }
-      }));
-      setResults(adaptedResults);
+      // The search API now returns CanonicalProduct objects, so no adaptation is needed.
+      setResults(data);
     } catch (e) {
       setError(e.message);
     } finally {
@@ -79,7 +67,7 @@ const Home = ({ products, bannerData, source }) => {
             <p>Snacks of many variations</p>
           </div>
           <div className="products-container">
-            {products?.map((product) => <Product key={product._id || product.canonicalProductId} product={product} source={source} />)}
+            {products?.map((product) => <Product key={product.canonicalProductId || product._id} product={product} />)}
           </div>
         </>
       )}
@@ -98,14 +86,17 @@ export const getStaticProps = async () => {
     console.log('Using Orchestrator for initial product fetch...');
     source = 'orchestrator';
     try {
-      // This needs to be the public URL of the orchestrator when deployed,
-      // or the local URL during development.
-      const orchestratorUrl = process.env.ORCHESTRATOR_URL || 'http://localhost:3001';
-      const response = await fetch(`${orchestratorUrl}/api/v1/search`);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch from orchestrator: ${response.statusText}`);
+      const orchestratorUrl = process.env.ORCHESTRATOR_URL;
+      if (orchestratorUrl) {
+        const response = await fetch(`${orchestratorUrl}/api/v1/search`);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch from orchestrator: ${response.statusText}`);
+        }
+        products = await response.json();
+      } else {
+        console.warn('ORCHESTRATOR_URL is not defined. Skipping orchestrator fetch.');
+        products = [];
       }
-      products = await response.json();
     } catch (e) {
       console.error("Could not fetch from orchestrator, falling back to Sanity.", e);
       // Fallback to sanity if orchestrator fails

@@ -1,11 +1,10 @@
 const express = require('express');
 const sanityClient = require('@sanity/client');
-const sanityClient = require('@sanity/client');
 const imageUrlBuilder = require('@sanity/image-url');
 const axios = require('axios');
 
 // --- Service Configuration ---
-const ORCHESTRATOR_URL = process.env.ORCHESTRATOR_URL || 'http://localhost:3001';
+const { ORCHESTRATOR_URL } = process.env;
 
 // --- Sanity Client Configuration ---
 // These should be set as environment variables for the connector service
@@ -45,25 +44,34 @@ app.post('/trigger-ingest', async (req, res) => {
     console.log(`Fetched ${sanityProducts.length} products from Sanity.`);
 
     // 2. Transform data to the canonical schema
-    const canonicalProducts = sanityProducts.map(p => ({
-      canonicalProductId: p._id,
-      preview: {
+    const canonicalProducts = sanityProducts.map(p => {
+      const fetchedAt = new Date().toISOString();
+      return {
+        canonicalProductId: `sanity::${p._id}`,
         title: p.name,
-        image: p.image ? urlFor(p.image[0]).width(400).url() : '/default-product-image.png',
-        rating: 4.5, // Placeholder rating
-        minPrice: p.price,
-        bestProvider: "SnacksCo", // Hardcoded for now, as this is the Sanity provider
-        eta: "15-25 min", // Placeholder ETA
-        originSummary: ["SnacksCo"],
-        slug: p.slug?.current,
-        details: p.details,
-      },
-      reason: "Freshly sourced from our catalog!", // Generic reason
-      meta: {
-        generatedBy: "sanity-connector",
-        confidence: 1.0,
-      }
-    }));
+        images: p.image ? p.image.map(img => urlFor(img).width(400).url()) : ['/default-product-image.png'],
+        description: p.details,
+        price: {
+          amount: p.price,
+          currency: 'USD', // Assuming USD, as it's not provided
+        },
+        rating: 0, // Placeholder
+        numRatings: 0, // Placeholder
+        tags: [], // Not available from Sanity product schema
+        sources: [
+          {
+            provider: 'sanity',
+            providerProductId: p._id,
+            price: p.price,
+            deliveryEtaMin: null,
+            lastFetchedAt: fetchedAt,
+          },
+        ],
+        comments: [], // Reviews are not fetched in this query
+        popularityScore: 0, // Placeholder
+        lastFetchedAt: fetchedAt,
+      };
+    });
 
     // 3. Push data to the orchestrator
     console.log(`Pushing ${canonicalProducts.length} products to the orchestrator...`);
