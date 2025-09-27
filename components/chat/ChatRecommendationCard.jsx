@@ -131,41 +131,49 @@ const ProviderName = styled.span`
 const Eta = styled.span``;
 
 const ChatRecommendationCard = ({ card }) => {
-  if (!card) {
+  // This component now expects a `CanonicalProduct` object.
+  if (!card || !card.canonicalProductId) {
     return null;
   }
 
-  const { preview, reason } = card;
+  const {
+    canonicalProductId,
+    title,
+    images,
+    description,
+    price,
+    rating,
+    sources,
+  } = card;
 
-  if (!preview.slug) {
-    return null;
-  }
+  const displayImage = images && images.length > 0 ? images[0] : '/placeholder.png';
+  const displayProvider = sources && sources.length > 0 ? sources[0].provider : 'N/A';
+  const displayPrice = price?.amount > 0 ? `N${price.amount.toFixed(2)}` : 'Price not available';
 
   return (
     <CardWrapper className="card-wrapper">
-      <Link href={`/product/${preview.slug}`} passHref>
+      <Link href={`/product/${canonicalProductId}`} passHref>
         <ProductCard as="a">
           <ImageContainer>
             <Image
-              src={preview.image}
-              alt={preview.title}
+              src={displayImage}
+              alt={title}
               layout="fill"
               objectFit="cover"
             />
             <RatingTag>
-              <FaStar size={12} /> {preview.rating.toFixed(1)}
+              <FaStar size={12} /> {rating.toFixed(1)}
             </RatingTag>
           </ImageContainer>
           <TextContainer>
             <TextContent>
-              <ProductName>{preview.title}</ProductName>
-              <ProductReason>{reason}</ProductReason>
+              <ProductName>{title}</ProductName>
+              <ProductReason>{description}</ProductReason>
             </TextContent>
             <ProviderAndEta>
-              <ProviderName>{preview.bestProvider}</ProviderName>
-              <Eta>~{preview.eta}</Eta>
+              <ProviderName>{displayProvider}</ProviderName>
             </ProviderAndEta>
-            <ProductPrice>~N{preview.minPrice.toFixed(2)}</ProductPrice>
+            <ProductPrice>{displayPrice}</ProductPrice>
           </TextContainer>
         </ProductCard>
       </Link>

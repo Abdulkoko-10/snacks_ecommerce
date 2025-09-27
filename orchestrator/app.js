@@ -2,6 +2,7 @@ const express = require('express');
 const { ClerkExpressRequireAuth } = require('@clerk/clerk-sdk-node');
 const { ObjectId } = require('mongodb');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const axios = require('axios');
 const clientPromise = require('./lib/mongodb');
 
 const app = express();
@@ -9,6 +10,7 @@ app.use(express.json());
 
 // --- Service Configuration & Middleware ---
 const DB_NAME = process.env.MONGODB_DB_NAME || 'food-discovery-orchestrator';
+const SERPAPI_CONNECTOR_URL = process.env.SERPAPI_CONNECTOR_URL;
 
 const checkDbConnection = (req, res, next) => {
   if (!clientPromise) {
@@ -37,16 +39,29 @@ const requireAuth = (req, res, next) => {
 const apiRouter = express.Router();
 apiRouter.use(requireAuth);
 
-apiRouter.get('/search', checkDbConnection, async (req, res) => {
+const checkSerpApiConnector = (req, res, next) => {
+  if (!SERPAPI_CONNECTOR_URL) {
+    return res.status(503).json({ error: 'Service Unavailable: SerpApi Connector not configured.' });
+  }
+  next();
+};
+
+apiRouter.get('/search', checkSerpApiConnector, async (req, res) => {
   try {
-    const client = await clientPromise;
-    const db = client.db(DB_NAME);
-    // Placeholder search: returns the 20 most recently fetched products.
-    const products = await db.collection('canonical_products').find({}).sort({ lastFetchedAt: -1 }).limit(20).toArray();
-    res.status(200).json(products);
+    const { q, location } = req.query;
+    if (!q) {
+      return res.status(400).json({ error: 'Search query (q) is required.' });
+    }
+
+    const response = await axios.post(`${SERPAPI_CONNECTOR_URL}/search`, {
+      query: q,
+      location: location,
+    });
+
+    res.status(200).json(response.data);
   } catch (error) {
-    console.error('Error fetching products from DB:', error);
-    res.status(500).json({ error: 'Failed to fetch data from database.' });
+    console.error('Error calling SerpApi Connector:', error.message);
+    res.status(500).json({ error: 'Failed to fetch data from search provider.' });
   }
 });
 
