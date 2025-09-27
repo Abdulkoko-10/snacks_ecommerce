@@ -14,14 +14,14 @@ const SERPAPI_CONNECTOR_URL = process.env.SERPAPI_CONNECTOR_URL;
 
 const checkDbConnection = (req, res, next) => {
   if (!clientPromise) {
-    return res.status(503).json({ error: 'Service Unavailable: Database not configured.' });
+    return res.status(503).json({ error: 'Service Unavailable: Database connection is not configured. Check MONGODB_URI environment variable.' });
   }
   next();
 };
 
 const checkGeminiApiKey = (req, res, next) => {
     if (!process.env.GEMINI_API_KEY) {
-        return res.status(503).json({ error: 'Service Unavailable: Gemini API key not configured.' });
+        return res.status(503).json({ error: 'Service Unavailable: Gemini API key is not configured. Check GEMINI_API_KEY environment variable.' });
     }
     next();
 };
@@ -41,7 +41,7 @@ apiRouter.use(requireAuth);
 
 const checkSerpApiConnector = (req, res, next) => {
   if (!SERPAPI_CONNECTOR_URL) {
-    return res.status(503).json({ error: 'Service Unavailable: SerpApi Connector not configured.' });
+    return res.status(503).json({ error: 'Service Unavailable: SerpApi Connector URL is not configured. Check SERPAPI_CONNECTOR_URL environment variable.' });
   }
   next();
 };

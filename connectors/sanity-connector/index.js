@@ -3,6 +3,19 @@ const sanityClient = require('@sanity/client');
 const imageUrlBuilder = require('@sanity/image-url');
 const axios = require('axios');
 
+// --- Pre-flight Checks ---
+const requiredEnvVars = ['ORCHESTRATOR_URL', 'SANITY_TOKEN'];
+const missingEnvVars = requiredEnvVars.filter(varName => !process.env[varName]);
+
+if (missingEnvVars.length > 0) {
+  console.error('CRITICAL ERROR: The following required environment variables are not set:');
+  missingEnvVars.forEach(varName => console.error(`- ${varName}`));
+  console.error('The Sanity connector cannot start without these variables.');
+  process.exit(1); // Exit with a failure code
+}
+// --- End Pre-flight Checks ---
+
+
 // --- Service Configuration ---
 const { ORCHESTRATOR_URL } = process.env;
 

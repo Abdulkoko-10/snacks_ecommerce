@@ -20,12 +20,15 @@ const Home = ({ products, bannerData, source }) => {
     try {
       const response = await fetch(`/api/v1/search?q=${encodeURIComponent(query)}`);
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => null);
+        const errorMessage = errorData?.error || `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
       }
       const data = await response.json();
       // The search API now returns CanonicalProduct objects, so no adaptation is needed.
       setResults(data);
     } catch (e) {
+      console.error('Search failed:', e);
       setError(e.message);
     } finally {
       setLoading(false);

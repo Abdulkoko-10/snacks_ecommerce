@@ -35,11 +35,22 @@ const ChatPage = () => {
   useEffect(() => {
     const useOrchestrator = isOrchestratorChatEnabled();
     if (useOrchestrator) {
-      const orchestratorUrl = process.env.NEXT_PUBLIC_ORCHESTRATOR_URL || 'http://localhost:3001';
+      const orchestratorUrl = process.env.NEXT_PUBLIC_ORCHESTRATOR_URL;
+      if (!orchestratorUrl) {
+        console.error('NEXT_PUBLIC_ORCHESTRATOR_URL is not set. WebSocket cannot connect.');
+        setMessages(prev => [...prev, { id: `err_conn_${Date.now()}`, role: 'assistant', text: 'Chat service is not configured. Please contact support.', createdAt: new Date().toISOString() }]);
+        return;
+      }
+
       const socket = io(orchestratorUrl);
       socketRef.current = socket;
 
       socket.on('connect', () => setIsSocketConnected(true));
+      socket.on('connect_error', (err) => {
+        console.error('Socket connection error:', err.message);
+        setMessages(prev => [...prev, { id: `err_conn_${Date.now()}`, role: 'assistant', text: `Error connecting to chat service: ${err.message}. Please try again later.`, createdAt: new Date().toISOString() }]);
+        setIsSocketConnected(false);
+      });
       socket.on('thread_created', ({ threadId: newThreadId }) => {
         setThreadId(newThreadId);
         updateThreadUrl(newThreadId);
@@ -80,20 +91,27 @@ const ChatPage = () => {
       }
       try {
         const useOrchestrator = isOrchestratorChatEnabled();
-        const orchestratorUrl = process.env.NEXT_PUBLIC_ORCHESTRATOR_URL || 'http://localhost:3001';
-        const historyUrl = useOrchestrator
-          ? `${orchestratorUrl}/api/v1/chat/history?threadId=${currentThreadId}`
-          : `/api/v1/chat/history?threadId=${currentThreadId}`;
+        const orchestratorUrl = process.env.NEXT_PUBLIC_ORCHESTRATOR_URL;
+        let historyUrl;
+
+        if (useOrchestrator) {
+          if (!orchestratorUrl) throw new Error("Chat service is not configured.");
+          historyUrl = `${orchestratorUrl}/api/v1/chat/history?threadId=${currentThreadId}`;
+        } else {
+          historyUrl = `/api/v1/chat/history?threadId=${currentThreadId}`;
+        }
 
         const response = await fetch(historyUrl);
-        if (response.ok) {
-          const { messages: historyMessages, recommendationsByMessageId: historyRecs } = await response.json();
-          setMessages(historyMessages.length > 0 ? historyMessages : [{ id: 'init_msg_0', role: 'assistant', text: 'This is a new chat. What would you like to talk about?', createdAt: new Date().toISOString() }]);
-          setRecommendationsByMessageId(historyRecs || {});
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ error: `Failed to load history. Status: ${response.status}` }));
+          throw new Error(errorData.error);
         }
+        const { messages: historyMessages, recommendationsByMessageId: historyRecs } = await response.json();
+        setMessages(historyMessages.length > 0 ? historyMessages : [{ id: 'init_msg_0', role: 'assistant', text: 'This is a new chat. What would you like to talk about?', createdAt: new Date().toISOString() }]);
+        setRecommendationsByMessageId(historyRecs || {});
       } catch (error) {
         console.error("Failed to fetch chat history:", error);
-        setMessages([{ id: 'error_msg_0', role: 'assistant', text: 'Sorry, I couldn\'t load the chat history.', createdAt: new Date().toISOString() }]);
+        setMessages([{ id: 'error_msg_0', role: 'assistant', text: `Sorry, I couldn't load the chat history: ${error.message}`, createdAt: new Date().toISOString() }]);
       }
     };
 
@@ -102,7 +120,7 @@ const ChatPage = () => {
     return () => {
       document.body.classList.remove('chat-page-active');
     };
-  }, [currentThreadId]); // Now depends on the stable, destructured primitive
+  }, [currentThreadId]);
 
 
   const handleSend = async (text) => {
@@ -126,7 +144,10 @@ const ChatPage = () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ text, chatHistory: messages, threadId }),
         });
-        if (!response.ok) throw new Error('API request failed');
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ error: `API request failed with status: ${response.status}` }));
+          throw new Error(errorData.error);
+        }
 
         const newThreadId = response.headers.get('X-Thread-Id');
         if (newThreadId && newThreadId !== threadId) {

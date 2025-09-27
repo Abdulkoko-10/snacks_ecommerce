@@ -7,6 +7,14 @@ app.use(express.json());
 const PORT = process.env.SERPAPI_CONNECTOR_PORT || 3003;
 const SERPAPI_API_KEY = process.env.SERPAPI_API_KEY;
 
+// --- Pre-flight Checks ---
+if (!SERPAPI_API_KEY) {
+  console.error('CRITICAL ERROR: SERPAPI_API_KEY is not set.');
+  console.error('The SerpApi connector cannot start without this variable.');
+  process.exit(1); // Exit with a failure code
+}
+// --- End Pre-flight Checks ---
+
 // --- Data Transformation ---
 const transformToCanonical = (item) => {
   const fetchedAt = new Date().toISOString();
