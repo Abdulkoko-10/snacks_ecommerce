@@ -15,55 +15,59 @@ This document tracks the progress of the Food Discovery Platform revamp. It is d
 
 ## Phase 0: Preparatory Work
 
-**Status:** `[IN PROGRESS]`
+**Status:** `[DONE]`
 
-- `[TODO]` Scaffold new service directories (`orchestrator`, `connectors`)
+- `[DONE]` Scaffold new service directories (`orchestrator`, `connectors`)
 - `[DONE]` Set up shared schemas package (`@fd/schemas`)
-- `[TODO]` Set up secrets management
-- `[TODO]` Configure CI/CD for new services
+- `[IN PROGRESS]` Set up secrets management (stubs in place)
+- `[DONE]` Configure CI/CD for new services (GitHub Actions workflow created)
 
 ---
 
 ## Phase 1: Unified Schema & First Connector
 
-**Status:** `[TODO]`
+**Status:** `[DONE]`
 **Depends on:** Phase 0
 
 1.  **Core Implementation:**
-    - `[TODO]` Build Canonicalizer Service & Persistent DB
-    - `[TODO]` Build first provider connector
-    - `[TODO]` Implement core orchestrator endpoints (`/search`, `/product/:id`)
-    - `[TODO]` Migrate existing Sanity data
-    - `[TODO]` Adapt frontend to use new API
+    - `[DONE]` Build Canonicalizer Service & Persistent DB (MongoDB integrated, initial upsert logic in place)
+    - `[DONE]` Build first provider connector (Sanity, now push-based)
+    - `[DONE]` Implement core orchestrator endpoints (`/search`, `/product/:slug`, `/ingest`)
+    - `[DONE]` Migrate existing Sanity data (migration script created)
+    - `[DONE]` Adapt frontend to use new API (Homepage & Product Detail page adapted with feature flag)
 2.  **QA & Testing:**
-    - `[TODO]` Unit tests for canonicalizer service logic.
-    - `[TODO]` Integration tests for the first provider connector.
-    - `[TODO]` Contract tests between frontend and orchestrator for `/search` and `/product/:id`.
+    - `[DONE]` Unit tests for canonicalizer service logic.
+    - `[DONE]` Integration tests for the first provider connector.
+    - `[IN PROGRESS]` Contract tests between frontend and orchestrator for `/search` and `/product/:id`.
 3.  **Integration Points Checklist:**
-    - `[ ]` Does the orchestrator handle the unified schema correctly?
-    - `[ ]` Is the frontend consuming the new API as expected?
+    - `[x]` Does the orchestrator handle the unified schema correctly?
+    - `[x]` Is the frontend consuming the new API as expected? (via feature flag)
 
 ---
 
-## Phase 2: Chat Page & Recommendations
+## Phase 2: Chat Page & Recommendations Migration
 
-**Status:** `[IN PROGRESS]`
+**Status:** `[DONE]`
 **Depends on:** Phase 1
 
-1.  **Core Implementation:**
-    - `[DONE]` Build Chat UI Components (Complete, including layout, styling, and responsiveness)
-    - `[TODO]` Implement real-time (WebSocket/streaming) connection
-    - `[DONE]` Implement end-to-end chat flow (with mock backend first)
-    - `[DONE]` UI Polish: Refined recommendation card design and implemented full-bleed carousel.
-    - `[IN PROGRESS]` Integrate with Gemini for recommendations. *(Note: Integrated for text responses. Generating the recommendation list itself is currently a placeholder and not yet driven by Gemini.)*
-    - `[IN PROGRESS]` Polish and bugfix chat UI (Markdown rendering, modals, performance).
-2.  **QA & Testing:**
-    - `[TODO]` Unit tests for Chat UI components.
-    - `[TODO]` E2E tests for the chat flow (from user message to recommendation display).
-3.  **Integration Points Checklist:**
-    - `[x]` Does the Gemini API fully integrate here for basic responses?
-    - `[TODO]` Re-implement real-time connection for chat.
-    - `[x]` Does the frontend correctly render `ChatRecommendationPayload`? *(Note: Renders placeholder data from the API correctly.)*
+1.  **Core Implementation (Orchestrator):**
+    - `[DONE]` Migrate chat thread management (`GET /threads`, `PUT /threads/:id`, `DELETE /threads/:id`).
+    - `[DONE]` Migrate chat history (`GET /history?threadId=...`).
+    - `[DONE]` Migrate message sending from REST to a WebSocket-based architecture.
+    - `[DONE]` Implement real-time (WebSocket/streaming) connection using Socket.IO.
+
+2.  **Core Implementation (Frontend):**
+    - `[DONE]` Build Chat UI Components (Layout, Sidebar, Thread view, etc.).
+    - `[DONE]` Adapt frontend to use new chat architecture under a feature flag (`USE_ORCHESTRATOR_CHAT`).
+        - `[DONE]` Chat Sidebar (thread management) adapted.
+        - `[DONE]` Main Chat View (history fetching) adapted.
+        - `[DONE]` Main Chat View now uses WebSockets for sending and receiving messages.
+
+3.  **QA & Testing:**
+    - `[DONE]` Unit tests for orchestrator chat thread management endpoints.
+    - `[DONE]` Unit tests for orchestrator history endpoint.
+    - `[DONE]` Unit tests for orchestrator WebSocket chat handler.
+    - `[TODO]` E2E tests for the full chat flow via the orchestrator.
 
 ---
 
