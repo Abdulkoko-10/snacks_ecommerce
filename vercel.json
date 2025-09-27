@@ -2,15 +2,6 @@
   "version": 2,
   "builds": [
     {
-      "src": "orchestrator/index.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": [
-          "orchestrator/**"
-        ]
-      }
-    },
-    {
       "src": "connectors/sanity-connector/index.js",
       "use": "@vercel/node",
       "config": {
@@ -34,22 +25,6 @@
     }
   ],
   "routes": [
-    {
-      "src": "/api/v1/chat/(.*)",
-      "dest": "/orchestrator/index.js"
-    },
-    {
-      "src": "/api/v1/product/(.*)",
-      "dest": "/orchestrator/index.js"
-    },
-    {
-      "src": "/api/v1/search",
-      "dest": "/orchestrator/index.js"
-    },
-    {
-      "src": "/api/v1/ingest/(.*)",
-      "dest": "/orchestrator/index.js"
-    },
     {
       "src": "/api/connectors/sanity/trigger-ingest",
       "dest": "/connectors/sanity-connector/index.js"
