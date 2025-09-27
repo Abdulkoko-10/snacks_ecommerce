@@ -53,7 +53,7 @@ apiRouter.get('/search', checkSerpApiConnector, async (req, res) => {
       return res.status(400).json({ error: 'Search query (q) is required.' });
     }
 
-    const response = await axios.post(`${SERPAPI_CONNECTOR_URL}/search`, {
+    const response = await axios.post(SERPAPI_CONNECTOR_URL, {
       query: q,
       location: location,
     });

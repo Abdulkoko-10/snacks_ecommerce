@@ -63,7 +63,7 @@ function initializeSocket(io) {
         let recommendations = [];
         try {
           console.log(`Fetching recommendations from SerpApi for query: "${userMessageText}"`);
-          const serpApiResponse = await axios.post(`${SERPAPI_CONNECTOR_URL}/search`, {
+          const serpApiResponse = await axios.post(SERPAPI_CONNECTOR_URL, {
             query: userMessageText,
           });
           recommendations = serpApiResponse.data.slice(0, 3); // Take top 3 results
