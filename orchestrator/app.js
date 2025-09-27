@@ -10,7 +10,13 @@ app.use(express.json());
 
 // --- Service Configuration & Middleware ---
 const DB_NAME = process.env.MONGODB_DB_NAME || 'food-discovery-orchestrator';
-const SERPAPI_CONNECTOR_URL = process.env.SERPAPI_CONNECTOR_URL;
+
+// Helper to construct the base URL for inter-service communication
+const getBaseUrl = () => {
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  // Provide a fallback for local development
+  return 'http://localhost:3000';
+};
 
 const checkDbConnection = (req, res, next) => {
   if (!clientPromise) {
@@ -39,21 +45,15 @@ const requireAuth = (req, res, next) => {
 const apiRouter = express.Router();
 apiRouter.use(requireAuth);
 
-const checkSerpApiConnector = (req, res, next) => {
-  if (!SERPAPI_CONNECTOR_URL) {
-    return res.status(503).json({ error: 'Service Unavailable: SerpApi Connector URL is not configured. Check SERPAPI_CONNECTOR_URL environment variable.' });
-  }
-  next();
-};
-
-apiRouter.get('/search', checkSerpApiConnector, async (req, res) => {
+apiRouter.get('/search', async (req, res) => {
   try {
     const { q, location } = req.query;
     if (!q) {
       return res.status(400).json({ error: 'Search query (q) is required.' });
     }
 
-    const response = await axios.post(SERPAPI_CONNECTOR_URL, {
+    const connectorUrl = `${getBaseUrl()}/api/connectors/serpapi/search`;
+    const response = await axios.post(connectorUrl, {
       query: q,
       location: location,
     });

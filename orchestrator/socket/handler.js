@@ -4,13 +4,17 @@ const axios = require('axios');
 const clientPromise = require('../lib/mongodb');
 
 const DB_NAME = process.env.MONGODB_DB_NAME || 'food-discovery-orchestrator';
-const SERPAPI_CONNECTOR_URL = process.env.SERPAPI_CONNECTOR_URL;
+
+// Helper to construct the base URL for inter-service communication
+const getBaseUrl = () => {
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  return 'http://localhost:3000'; // Fallback for local development
+};
 
 function initializeSocket(io) {
   // Pre-flight check for essential configuration
   const isDbConnected = !!clientPromise;
   const hasGeminiKey = !!process.env.GEMINI_API_KEY;
-  const hasSerpApiConnector = !!SERPAPI_CONNECTOR_URL;
 
   io.on('connection', (socket) => {
     console.log(`A user connected: ${socket.id}`);
@@ -25,11 +29,6 @@ function initializeSocket(io) {
         socket.emit('chat_error', { message: 'Service Unavailable: AI service not configured.' });
         socket.disconnect(true);
         return;
-    }
-    if (!hasSerpApiConnector) {
-      socket.emit('chat_error', { message: 'Service Unavailable: Search provider not configured.' });
-      socket.disconnect(true);
-      return;
     }
 
     socket.on('chat_message', async (data) => {
@@ -62,8 +61,9 @@ function initializeSocket(io) {
 
         let recommendations = [];
         try {
-          console.log(`Fetching recommendations from SerpApi for query: "${userMessageText}"`);
-          const serpApiResponse = await axios.post(SERPAPI_CONNECTOR_URL, {
+          const connectorUrl = `${getBaseUrl()}/api/connectors/serpapi/search`;
+          console.log(`Fetching recommendations from SerpApi at ${connectorUrl} for query: "${userMessageText}"`);
+          const serpApiResponse = await axios.post(connectorUrl, {
             query: userMessageText,
           });
           recommendations = serpApiResponse.data.slice(0, 3); // Take top 3 results

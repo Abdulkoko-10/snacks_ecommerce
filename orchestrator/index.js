@@ -6,8 +6,7 @@ const { initializeSocket } = require('./socket/handler');
 // --- Pre-flight Checks ---
 const requiredEnvVars = [
   'MONGODB_URI',
-  'GEMINI_API_KEY',
-  'SERPAPI_CONNECTOR_URL'
+  'GEMINI_API_KEY'
 ];
 
 const missingEnvVars = requiredEnvVars.filter(varName => !process.env[varName]);
@@ -26,6 +25,7 @@ const PORT = process.env.ORCHESTRATOR_PORT || 3001;
 const server = http.createServer(app);
 
 const io = new Server(server, {
+  path: "/api/v1/chat/socket.io",
   cors: {
     origin: "*", // In a real app, lock this down to your frontend's URL
     methods: ["GET", "POST"]

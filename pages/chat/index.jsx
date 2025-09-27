@@ -15,9 +15,16 @@ const ChatPageWrapper = styled.div`
   overflow: hidden;
 `;
 
+// Helper to construct the base URL for the orchestrator
+const getOrchestratorUrl = () => {
+  if (process.env.NEXT_PUBLIC_ORCHESTRATOR_URL) return process.env.NEXT_PUBLIC_ORCHESTRATOR_URL;
+  if (process.env.NEXT_PUBLIC_VERCEL_URL) return `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
+  return 'http://localhost:3001'; // Fallback for local development
+};
+
 const ChatPage = () => {
   const router = useRouter();
-  const { threadId: currentThreadId } = router.query; // Destructure outside for stable dependency
+  const { threadId: currentThreadId } = router.query;
 
   const [threadId, setThreadId] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -35,14 +42,10 @@ const ChatPage = () => {
   useEffect(() => {
     const useOrchestrator = isOrchestratorChatEnabled();
     if (useOrchestrator) {
-      const orchestratorUrl = process.env.NEXT_PUBLIC_ORCHESTRATOR_URL;
-      if (!orchestratorUrl) {
-        console.error('NEXT_PUBLIC_ORCHESTRATOR_URL is not set. WebSocket cannot connect.');
-        setMessages(prev => [...prev, { id: `err_conn_${Date.now()}`, role: 'assistant', text: 'Chat service is not configured. Please contact support.', createdAt: new Date().toISOString() }]);
-        return;
-      }
-
-      const socket = io(orchestratorUrl);
+      const orchestratorUrl = getOrchestratorUrl();
+      const socket = io(orchestratorUrl, {
+        path: "/api/v1/chat/socket.io", // This MUST match the server-side path
+      });
       socketRef.current = socket;
 
       socket.on('connect', () => setIsSocketConnected(true));
@@ -91,11 +94,10 @@ const ChatPage = () => {
       }
       try {
         const useOrchestrator = isOrchestratorChatEnabled();
-        const orchestratorUrl = process.env.NEXT_PUBLIC_ORCHESTRATOR_URL;
+        const orchestratorUrl = getOrchestratorUrl();
         let historyUrl;
 
         if (useOrchestrator) {
-          if (!orchestratorUrl) throw new Error("Chat service is not configured.");
           historyUrl = `${orchestratorUrl}/api/v1/chat/history?threadId=${currentThreadId}`;
         } else {
           historyUrl = `/api/v1/chat/history?threadId=${currentThreadId}`;
@@ -130,7 +132,7 @@ const ChatPage = () => {
 
     const useOrchestrator = isOrchestratorChatEnabled();
 
-    if (useOrchestrator && socketRef.current) {
+    if (useOrchestrator && socketRef.current?.connected) {
       socketRef.current.emit('chat_message', { text, chatHistory: messages, threadId });
     } else {
       if (useOrchestrator) {
@@ -138,6 +140,7 @@ const ChatPage = () => {
         setMessages(prev => [...prev, { id: `err_msg_${Date.now()}`, role: 'assistant', text: 'Cannot connect to chat service. Please wait a moment and try again.', createdAt: new Date().toISOString() }]);
         return;
       }
+      // Legacy REST fallback
       try {
         const response = await fetch('/api/v1/chat/message', {
           method: 'POST',
@@ -162,7 +165,7 @@ const ChatPage = () => {
           setRecommendationsByMessageId(prev => ({ ...prev, [assistantMessage.id]: recommendations }));
         }
       } catch (error) {
-        console.error("Failed to send message:", error);
+        console.error("Failed to send message via REST:", error);
         const errorAssistantMessage = { id: `asst_msg_err_${Date.now()}`, role: 'assistant', text: `Sorry, I seem to be having some trouble right now. (${error.message})`, createdAt: new Date().toISOString() };
         setMessages(prev => [...prev, errorAssistantMessage]);
       } finally {

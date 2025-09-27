@@ -4,7 +4,7 @@ const imageUrlBuilder = require('@sanity/image-url');
 const axios = require('axios');
 
 // --- Pre-flight Checks ---
-const requiredEnvVars = ['ORCHESTRATOR_URL', 'SANITY_TOKEN'];
+const requiredEnvVars = ['SANITY_TOKEN'];
 const missingEnvVars = requiredEnvVars.filter(varName => !process.env[varName]);
 
 if (missingEnvVars.length > 0) {
@@ -15,9 +15,12 @@ if (missingEnvVars.length > 0) {
 }
 // --- End Pre-flight Checks ---
 
+// Helper to construct the base URL for inter-service communication
+const getBaseUrl = () => {
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  return 'http://localhost:3000'; // Fallback for local development
+};
 
-// --- Service Configuration ---
-const { ORCHESTRATOR_URL } = process.env;
 
 // --- Sanity Client Configuration ---
 // These should be set as environment variables for the connector service
@@ -93,7 +96,14 @@ app.post('/trigger-ingest', async (req, res) => {
       products: canonicalProducts,
     };
 
-    const response = await axios.post(`${ORCHESTRATOR_URL}/api/v1/ingest/provider-data`, ingestionPayload);
+    const orchestratorUrl = `${getBaseUrl()}/api/v1/ingest/provider-data`;
+    console.log(`Pushing ${canonicalProducts.length} products to the orchestrator at ${orchestratorUrl}...`);
+    const ingestionPayload = {
+      provider: 'sanity',
+      products: canonicalProducts,
+    };
+
+    const response = await axios.post(orchestratorUrl, ingestionPayload);
     console.log('Successfully pushed data to orchestrator.', response.data);
 
     res.status(200).json({
