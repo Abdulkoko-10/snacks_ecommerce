@@ -22,7 +22,14 @@ const Home = ({ products, bannerData }) => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      setResults(data);
+      // Adapt the data from the CanonicalProduct schema to the format expected by the frontend components.
+      const adaptedResults = data.map(product => ({
+        placeId: product.canonicalProductId,
+        name: product.title,
+        address: product.address,
+        rating: product.rating,
+      }));
+      setResults(adaptedResults);
     } catch (e) {
       setError(e.message);
     } finally {
