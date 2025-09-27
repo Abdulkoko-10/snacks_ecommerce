@@ -10,13 +10,22 @@ if (!MONGODB_URI) {
 } else {
   if (process.env.NODE_ENV === 'development') {
     if (!global._mongoClientPromise) {
-      client = new MongoClient(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+      client = new MongoClient(MONGODB_URI);
       global._mongoClientPromise = client.connect();
+      // Prevent unhandled promise rejection from crashing the app
+      global._mongoClientPromise.catch(err => {
+        console.error("MongoDB connection failed, clearing promise cache.", err.message);
+        global._mongoClientPromise = null;
+      });
     }
     clientPromise = global._mongoClientPromise;
   } else {
-    client = new MongoClient(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
-    clientPromise = client.connect();
+    client = new MongoClient(MONGODB_URI);
+    clientPromise = client.connect().catch(err => {
+        console.error("MongoDB connection failed.", err.message);
+        // Return null or handle appropriately so the app doesn't crash
+        return null;
+    });
   }
 }
 

@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import { CanonicalRestaurant, CanonicalRestaurantSchema } from "@fd/schemas";
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-dotenv.config({ path: '.env.local' });
+dotenv.config();
 
 const SERPAPI_API_KEY = process.env.SERPAPI_API_KEY;
 
