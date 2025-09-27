@@ -29,7 +29,7 @@ const Home = ({ products, bannerData, source }) => {
         preview: {
           slug: result.placeId,
           title: result.name,
-          image: result.primaryPhoto?.photoUri || '/FoodDiscovery.jpg',
+          image: (result.primaryPhoto && result.primaryPhoto.photoUri) || '/FoodDiscovery.jpg',
           rating: result.rating || 0,
           bestProvider: 'Google',
           eta: '10-20 min',
