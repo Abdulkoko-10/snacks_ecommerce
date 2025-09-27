@@ -294,55 +294,29 @@ export const getStaticProps = async ({ params: { canonicalId } }) => {
   // Fallback to Sanity if orchestrator is disabled or fails
   if (!product) {
     console.log(`Using Sanity as fallback to fetch product: ${canonicalId}`);
-    // Parse the sanity ID from the canonicalId
-    const sanityId = canonicalId.split('::')[1];
-    if (sanityId) {
-      const query = `*[_type == "product" && _id == '${sanityId}'][0]`;
-      const sanityProduct = await previewClient.fetch(query);
-      // Manually transform to CanonicalProduct to ensure consistent data structure
-      if (sanityProduct) {
-        product = {
-          canonicalProductId: `sanity::${sanityProduct._id}`,
-          title: sanityProduct.name,
-          images: sanityProduct.image ? sanityProduct.image.map(img => urlFor(img).width(400).url()) : ['/default-product-image.png'],
-          description: sanityProduct.details,
-          price: { amount: sanityProduct.price, currency: 'USD' },
-          rating: 0, numRatings: 0, tags: [],
-          sources: [{ provider: 'sanity', providerProductId: sanityProduct._id, price: sanityProduct.price, lastFetchedAt: new Date().toISOString() }],
-          comments: [], popularityScore: 0,
-          lastFetchedAt: new Date().toISOString(),
-        };
-      } else {
-        product = null;
+    try {
+      const sanityId = canonicalId.split('::')[1];
+      if (sanityId) {
+        const query = `*[_type == "product" && _id == '${sanityId}'][0]`;
+        const sanityProduct = await previewClient.fetch(query);
+        // Manually transform to CanonicalProduct to ensure consistent data structure
+        if (sanityProduct) {
+          product = {
+            canonicalProductId: `sanity::${sanityProduct._id}`,
+            title: sanityProduct.name,
+            images: sanityProduct.image ? sanityProduct.image.map(img => urlFor(img).width(400).url()) : ['/default-product-image.png'],
+            description: sanityProduct.details,
+            price: { amount: sanityProduct.price, currency: 'USD' },
+            rating: 0, numRatings: 0, tags: [],
+            sources: [{ provider: 'sanity', providerProductId: sanityProduct._id, price: sanityProduct.price, lastFetchedAt: new Date().toISOString() }],
+            comments: [], popularityScore: 0,
+            lastFetchedAt: new Date().toISOString(),
+          };
+        }
       }
     } catch (e) {
-      console.error(`Could not fetch from orchestrator for id ${canonicalId}, falling back to Sanity.`, e);
-      product = null;
-    }
-  }
-
-  // Fallback to Sanity if orchestrator is disabled or fails
-  if (!product) {
-    console.log(`Using Sanity as fallback to fetch product: ${canonicalId}`);
-    // Parse the sanity ID from the canonicalId
-    const sanityId = canonicalId.split('::')[1];
-    if (sanityId) {
-      const query = `*[_type == "product" && _id == '${sanityId}'][0]`;
-      const sanityProduct = await previewClient.fetch(query);
-      // Manually transform to CanonicalProduct to ensure consistent data structure
-      if (sanityProduct) {
-        product = {
-          canonicalProductId: `sanity::${sanityProduct._id}`,
-          title: sanityProduct.name,
-          images: sanityProduct.image ? sanityProduct.image.map(img => urlFor(img).width(400).url()) : ['/default-product-image.png'],
-          description: sanityProduct.details,
-          price: { amount: sanityProduct.price, currency: 'USD' },
-          rating: 0, numRatings: 0, tags: [],
-          sources: [{ provider: 'sanity', providerProductId: sanityProduct._id, price: sanityProduct.price, lastFetchedAt: new Date().toISOString() }],
-          comments: [], popularityScore: 0,
-          lastFetchedAt: new Date().toISOString(),
-        };
-      }
+      console.error(`Error during Sanity fallback for id ${canonicalId}:`, e);
+      product = null; // Ensure product is null on error
     }
   }
 
