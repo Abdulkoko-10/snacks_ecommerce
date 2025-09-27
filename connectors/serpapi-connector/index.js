@@ -57,7 +57,7 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
-app.post('/search', checkApiKey, async (req, res) => {
+app.post('/', checkApiKey, async (req, res) => {
   const { query, location } = req.body;
 
   if (!query) {
