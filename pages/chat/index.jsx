@@ -33,6 +33,7 @@ const ChatPage = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const socketRef = useRef(null);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
+  const useOrchestrator = isOrchestratorChatEnabled();
 
   const updateThreadUrl = useCallback((newThreadId) => {
     router.replace(`/chat?threadId=${newThreadId}`, undefined, { shallow: true });
@@ -40,7 +41,6 @@ const ChatPage = () => {
 
   // --- Effect for WebSocket Connection Lifecycle ---
   useEffect(() => {
-    const useOrchestrator = isOrchestratorChatEnabled();
     if (useOrchestrator) {
       const orchestratorUrl = getOrchestratorUrl();
       const socket = io(orchestratorUrl, {
@@ -77,33 +77,27 @@ const ChatPage = () => {
         socket.disconnect();
       };
     }
-  }, [updateThreadUrl]);
+  }, [useOrchestrator, updateThreadUrl]);
 
   // --- Effect for History Fetching ---
   useEffect(() => {
     document.body.classList.add('chat-page-active');
 
-    if (currentThreadId) {
-      setThreadId(currentThreadId);
-    }
-
     const fetchHistory = async () => {
+      if (!useOrchestrator) {
+        setMessages([{ id: 'init_msg_0', role: 'assistant', text: 'Chat is currently disabled.', createdAt: new Date().toISOString() }]);
+        return;
+      }
       if (!currentThreadId) {
         setMessages([{ id: 'init_msg_0', role: 'assistant', text: 'Hello! How can I help you discover amazing food today?', createdAt: new Date().toISOString() }]);
         return;
       }
+
       try {
-        const useOrchestrator = isOrchestratorChatEnabled();
         const orchestratorUrl = getOrchestratorUrl();
-        let historyUrl;
-
-        if (useOrchestrator) {
-          historyUrl = `${orchestratorUrl}/api/v1/chat/history?threadId=${currentThreadId}`;
-        } else {
-          historyUrl = `/api/v1/chat/history?threadId=${currentThreadId}`;
-        }
-
+        const historyUrl = `${orchestratorUrl}/api/v1/chat/history?threadId=${currentThreadId}`;
         const response = await fetch(historyUrl);
+
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({ error: `Failed to load history. Status: ${response.status}` }));
           throw new Error(errorData.error);
@@ -119,67 +113,44 @@ const ChatPage = () => {
 
     fetchHistory();
 
+    if (currentThreadId) {
+      setThreadId(currentThreadId);
+    }
+
     return () => {
       document.body.classList.remove('chat-page-active');
     };
-  }, [currentThreadId]);
+  }, [currentThreadId, useOrchestrator]);
 
 
-  const handleSend = async (text) => {
+  const handleSend = (text) => {
+    if (!useOrchestrator || !socketRef.current?.connected) {
+      setMessages(prev => [...prev, { id: `err_msg_${Date.now()}`, role: 'assistant', text: 'Cannot connect to chat service. Please check your connection or try again later.', createdAt: new Date().toISOString() }]);
+      return;
+    }
+
     const userMessage = { id: `user_msg_${Date.now()}`, role: 'user', text, createdAt: new Date().toISOString() };
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
 
-    const useOrchestrator = isOrchestratorChatEnabled();
-
-    if (useOrchestrator && socketRef.current?.connected) {
-      socketRef.current.emit('chat_message', { text, chatHistory: messages, threadId });
-    } else {
-      if (useOrchestrator) {
-        setIsLoading(false);
-        setMessages(prev => [...prev, { id: `err_msg_${Date.now()}`, role: 'assistant', text: 'Cannot connect to chat service. Please wait a moment and try again.', createdAt: new Date().toISOString() }]);
-        return;
-      }
-      // Legacy REST fallback
-      try {
-        const response = await fetch('/api/v1/chat/message', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text, chatHistory: messages, threadId }),
-        });
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({ error: `API request failed with status: ${response.status}` }));
-          throw new Error(errorData.error);
-        }
-
-        const newThreadId = response.headers.get('X-Thread-Id');
-        if (newThreadId && newThreadId !== threadId) {
-          setThreadId(newThreadId);
-          updateThreadUrl(newThreadId);
-        }
-        const data = await response.json();
-        const { fullText, recommendations } = data;
-        const assistantMessage = { id: `asst_msg_${Date.now()}`, role: 'assistant', text: fullText, createdAt: new Date().toISOString() };
-        setMessages(prev => [...prev, assistantMessage]);
-        if (recommendations && recommendations.length > 0) {
-          setRecommendationsByMessageId(prev => ({ ...prev, [assistantMessage.id]: recommendations }));
-        }
-      } catch (error) {
-        console.error("Failed to send message via REST:", error);
-        const errorAssistantMessage = { id: `asst_msg_err_${Date.now()}`, role: 'assistant', text: `Sorry, I seem to be having some trouble right now. (${error.message})`, createdAt: new Date().toISOString() };
-        setMessages(prev => [...prev, errorAssistantMessage]);
-      } finally {
-        setIsLoading(false);
-      }
-    }
+    socketRef.current.emit('chat_message', { text, chatHistory: messages, threadId });
   };
 
-  const useOrchestrator = isOrchestratorChatEnabled();
+  if (!useOrchestrator) {
+    return (
+      <ChatPageWrapper>
+        <div style={{ margin: 'auto', textAlign: 'center' }}>
+          <h2>Chat is currently disabled.</h2>
+          <p>Please contact an administrator to enable this feature.</p>
+        </div>
+      </ChatPageWrapper>
+    );
+  }
 
   return (
     <ChatPageWrapper>
       <ChatPageLayout messages={messages} recommendationsByMessageId={recommendationsByMessageId} isSidebarOpen={isSidebarOpen} setSidebarOpen={setSidebarOpen} />
-      <ChatInput onSend={handleSend} disabled={isLoading || (useOrchestrator && !isSocketConnected)} />
+      <ChatInput onSend={handleSend} disabled={isLoading || !isSocketConnected} />
       <FloatingCatAssistant onClick={() => setSidebarOpen(true)} />
     </ChatPageWrapper>
   );
