@@ -2,10 +2,13 @@
   "name": "ecommerce",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "next dev",
+    "dev": "node server.js",
     "build": "next build",
-    "start": "next start",
+    "start": "NODE_ENV=production node server.js",
     "lint": "next lint",
     "test": "jest --watch",
     "analyze": "ANALYZE=true npm run build"
@@ -22,16 +25,19 @@
     "@sanity/image-url": "^1.0.1",
     "@stripe/stripe-js": "^1.25.0",
     "canvas-confetti": "^1.5.1",
+    "dotenv": "^17.2.2",
     "mongodb": "^6.20.0",
     "next": "13.5.6",
     "next-sanity-image": "^6.0.0",
     "nodemailer": "^7.0.3",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
+    "socket.io-client": "^4.7.2",
     "react-hot-toast": "^2.2.0",
     "react-icons": "^4.3.1",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
+    "serpapi": "^2.2.1",
     "stripe": "^8.209.0",
     "swiper": "^11.2.8",
     "swr": "^2.2.5"

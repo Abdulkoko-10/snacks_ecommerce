@@ -1,27 +1,38 @@
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image'; // Import next/image
+import Image from 'next/image';
 
-import { urlFor } from '../lib/client';
+const Product = ({ product }) => {
+  // This component now expects the product prop to be a CanonicalProduct.
+  // No more normalization is needed.
 
-const Product = ({ product: {image, name, 
-slug, price } }) => {
-  // Ensure image and image[0] exist before calling urlFor
-  const imageUrl = image && image[0] ? urlFor(image[0]).url() : '/placeholder.png'; // Fallback if no image
+  if (!product || !product.canonicalProductId) {
+    // Don't render if the product or its ID is missing.
+    return null;
+  }
+
+  const {
+    canonicalProductId,
+    title,
+    images,
+    price,
+  } = product;
+
+  const displayImage = images && images.length > 0 ? images[0] : '/placeholder.png';
 
   return (
     <div>
-      <Link href={`/product/${slug.current}`}>
+      <Link href={`/product/${canonicalProductId}`}>
         <div className="product-card">
           <Image
-            src={imageUrl}
-            alt={name} // Already using name for alt
-            width={250} // Placeholder, adjust based on actual CSS/design
-            height={250} // Placeholder, adjust based on actual CSS/design
+            src={displayImage}
+            alt={title}
+            width={250}
+            height={250}
             className="product-image"
           />
-          <p className="product-name">{name}</p>
-          <p className="product-price">N{price}</p>
+          <p className="product-name">{title}</p>
+          <p className="product-price">N{price?.amount}</p>
           <div className="product-card-hover-buttons">
             <button type="button" className="btn-add-to-cart-hover">Add to Cart</button>
             <button type="button" className="btn-quick-view-hover">Quick View</button>
@@ -30,6 +41,6 @@ slug, price } }) => {
       </Link>
     </div>
   );
-}
+};
 
-export default Product
+export default Product;

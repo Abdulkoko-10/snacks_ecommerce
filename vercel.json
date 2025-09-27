@@ -1,0 +1,37 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "connectors/sanity-connector/index.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": [
+          "connectors/sanity-connector/**"
+        ]
+      }
+    },
+    {
+      "src": "connectors/serpapi-connector/index.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": [
+          "connectors/serpapi-connector/**"
+        ]
+      }
+    },
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/connectors/sanity/trigger-ingest",
+      "dest": "/connectors/sanity-connector/index.js"
+    },
+    {
+      "src": "/api/connectors/serpapi/search",
+      "dest": "/connectors/serpapi-connector/index.js"
+    }
+  ]
+}
