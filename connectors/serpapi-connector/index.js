@@ -1,19 +1,4 @@
-const express = require('express');
 const { getJson } = require('serpapi');
-
-const app = express();
-app.use(express.json());
-
-const PORT = process.env.SERPAPI_CONNECTOR_PORT || 3003;
-const SERPAPI_API_KEY = process.env.SERPAPI_API_KEY;
-
-// --- Pre-flight Checks ---
-if (!SERPAPI_API_KEY) {
-  console.error('CRITICAL ERROR: SERPAPI_API_KEY is not set.');
-  console.error('The SerpApi connector cannot start without this variable.');
-  process.exit(1); // Exit with a failure code
-}
-// --- End Pre-flight Checks ---
 
 // --- Data Transformation ---
 const transformToCanonical = (item) => {
@@ -45,19 +30,19 @@ const transformToCanonical = (item) => {
   };
 };
 
-// Middleware to check for the API key
-const checkApiKey = (req, res, next) => {
+// --- Serverless Function Handler ---
+module.exports = async (req, res) => {
+  // --- Pre-flight Checks ---
+  const SERPAPI_API_KEY = process.env.SERPAPI_API_KEY;
   if (!SERPAPI_API_KEY) {
+    console.error('CRITICAL ERROR: SERPAPI_API_KEY is not set.');
     return res.status(503).json({ error: 'Service Unavailable: SERPAPI_API_KEY not configured.' });
   }
-  next();
-};
 
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok' });
-});
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method Not Allowed' });
+  }
 
-app.post('/', checkApiKey, async (req, res) => {
   const { query, location } = req.body;
 
   if (!query) {
@@ -76,15 +61,9 @@ app.post('/', checkApiKey, async (req, res) => {
     const results = json.local_results || [];
     const canonicalProducts = results.map(transformToCanonical);
 
-    res.status(200).json(canonicalProducts);
+    return res.status(200).json(canonicalProducts);
   } catch (error) {
     console.error('Error fetching data from SerpApi:', error.message);
-    res.status(500).json({ error: 'Failed to fetch data from SerpApi.' });
+    return res.status(500).json({ error: 'Failed to fetch data from SerpApi.' });
   }
-});
-
-app.listen(PORT, () => {
-  console.log(`SerpApi Connector service listening on port ${PORT}`);
-});
-
-module.exports = app;
+};
