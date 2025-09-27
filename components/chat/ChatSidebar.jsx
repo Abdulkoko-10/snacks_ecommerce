@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import Link from 'next/link';
+import { isOrchestratorChatEnabled } from '../../lib/flags';
 import { IoClose, IoAddCircleOutline, IoTrashOutline, IoCreateOutline } from 'react-icons/io5';
 import Modal, { ModalButton } from '../Modal';
 
@@ -199,7 +200,20 @@ const ChatSidebar = ({ isOpen, onClose }) => {
     const fetchThreads = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/v1/chat/threads');
+
+        const useOrchestrator = isOrchestratorChatEnabled();
+        let url;
+
+        if (useOrchestrator) {
+          console.log('Fetching chat threads from orchestrator...');
+          const orchestratorUrl = process.env.NEXT_PUBLIC_ORCHESTRATOR_URL || 'http://localhost:3001';
+          url = `${orchestratorUrl}/api/v1/chat/threads`;
+        } else {
+          console.log('Fetching chat threads from monolith...');
+          url = '/api/v1/chat/threads';
+        }
+
+        const response = await fetch(url);
         if (response.ok) {
           const data = await response.json();
           setThreads(data);
@@ -226,9 +240,14 @@ const ChatSidebar = ({ isOpen, onClose }) => {
   const confirmDelete = async () => {
     if (!threadToDelete) return;
     try {
-      const response = await fetch(`/api/v1/chat/threads/${threadToDelete._id}`, {
-        method: 'DELETE',
-      });
+      const useOrchestrator = isOrchestratorChatEnabled();
+      const orchestratorUrl = process.env.NEXT_PUBLIC_ORCHESTRATOR_URL || 'http://localhost:3001';
+      const url = useOrchestrator
+        ? `${orchestratorUrl}/api/v1/chat/threads/${threadToDelete._id}`
+        : `/api/v1/chat/threads/${threadToDelete._id}`;
+
+      const response = await fetch(url, { method: 'DELETE' });
+
       if (response.ok) {
         setThreads(prev => prev.filter(t => t._id !== threadToDelete._id));
       } else {
@@ -252,11 +271,18 @@ const ChatSidebar = ({ isOpen, onClose }) => {
   const confirmRename = async () => {
     if (!threadToRename || !newThreadTitle.trim()) return;
     try {
-      const response = await fetch(`/api/v1/chat/threads/${threadToRename._id}`, {
+      const useOrchestrator = isOrchestratorChatEnabled();
+      const orchestratorUrl = process.env.NEXT_PUBLIC_ORCHESTRATOR_URL || 'http://localhost:3001';
+      const url = useOrchestrator
+        ? `${orchestratorUrl}/api/v1/chat/threads/${threadToRename._id}`
+        : `/api/v1/chat/threads/${threadToRename._id}`;
+
+      const response = await fetch(url, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: newThreadTitle }),
       });
+
       if (response.ok) {
         setThreads(prev => prev.map(t => t._id === threadToRename._id ? { ...t, title: newThreadTitle } : t));
       } else {

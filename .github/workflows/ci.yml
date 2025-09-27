@@ -1,0 +1,38 @@
+name: Continuous Integration
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install root dependencies
+        run: npm install
+
+      - name: Run root tests
+        run: npm test --if-present
+
+      - name: Install orchestrator dependencies
+        run: cd orchestrator && npm install
+
+      - name: Run orchestrator tests
+        run: cd orchestrator && npm test
+
+      - name: Install sanity-connector dependencies
+        run: cd connectors/sanity-connector && npm install
+
+      - name: Run sanity-connector tests
+        run: cd connectors/sanity-connector && npm test

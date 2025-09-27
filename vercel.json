@@ -1,0 +1,62 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "orchestrator/index.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": [
+          "orchestrator/**"
+        ]
+      }
+    },
+    {
+      "src": "connectors/sanity-connector/index.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": [
+          "connectors/sanity-connector/**"
+        ]
+      }
+    },
+    {
+      "src": "connectors/serpapi-connector/index.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": [
+          "connectors/serpapi-connector/**"
+        ]
+      }
+    },
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/v1/chat/(.*)",
+      "dest": "/orchestrator/index.js"
+    },
+    {
+      "src": "/api/v1/product/(.*)",
+      "dest": "/orchestrator/index.js"
+    },
+    {
+      "src": "/api/v1/search",
+      "dest": "/orchestrator/index.js"
+    },
+    {
+      "src": "/api/v1/ingest/(.*)",
+      "dest": "/orchestrator/index.js"
+    },
+    {
+      "src": "/api/connectors/sanity/trigger-ingest",
+      "dest": "/connectors/sanity-connector/index.js"
+    },
+    {
+      "src": "/api/connectors/serpapi/search",
+      "dest": "/connectors/serpapi-connector/index.js"
+    }
+  ]
+}
