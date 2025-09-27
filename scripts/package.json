@@ -1,0 +1,15 @@
+{
+  "name": "migration-scripts",
+  "version": "1.0.0",
+  "description": "One-time scripts for data migration and other tasks.",
+  "main": "migrate-sanity-to-mongo.js",
+  "scripts": {
+    "migrate": "node migrate-sanity-to-mongo.js"
+  },
+  "dependencies": {
+    "@sanity/client": "^6.1.7",
+    "@sanity/image-url": "^1.0.2",
+    "mongodb": "^6.2.0",
+    "dotenv": "^16.3.1"
+  }
+}
